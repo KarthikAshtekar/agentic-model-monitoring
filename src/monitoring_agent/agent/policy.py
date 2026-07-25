@@ -36,6 +36,14 @@ def build_policy_context(
         if item.domain == "performance" and item.status == "critical"
     ]
     return {
+        "model_id": monitoring_result.model_id,
+        "display_name": monitoring_result.display_name,
+        "task_type": monitoring_result.task_type,
+        "domain_id": monitoring_result.domain_id,
+        "use_case": monitoring_result.use_case,
+        "positive_outcome": monitoring_result.positive_outcome,
+        "prediction_unit": monitoring_result.prediction_unit,
+        "operating_threshold": monitoring_result.operating_threshold,
         "incident_candidates": monitoring_result.incident_candidates,
         "deterministic_overall_severity": monitoring_result.overall_severity,
         "batch_blocked": monitoring_result.batch_blocked,
@@ -55,6 +63,10 @@ def build_policy_context(
         "material_performance_evidence_ids": material_performance_ids,
         "normal_allowed_actions": sorted(NORMAL_ALLOWED_ACTIONS),
         "blocked_allowed_actions": sorted(BLOCKED_ALLOWED_ACTIONS),
+        "allowed_action_types": monitoring_result.allowed_action_types,
+        "prohibited_claims": monitoring_result.prohibited_claims,
+        "safe_business_terminology": monitoring_result.safe_business_terminology,
+        "domain_limitations": monitoring_result.domain_limitations,
         "all_non_normal_incidents_require_human_approval": True,
         "actions_are_recommendations_only": True,
     }
@@ -166,6 +178,35 @@ def evaluate_hard_policy(
     ]
     action_types = {action.action_type for action in recommendation.recommended_actions}
     claim_text = " ".join(claim.claim for claim in recommendation.claims)
+    full_text = " ".join(
+        [
+            recommendation.executive_summary,
+            claim_text,
+            recommendation.root_cause_hypothesis or "",
+            *recommendation.uncertainties,
+            *[
+                f"{action.action} {action.rationale}"
+                for action in recommendation.recommended_actions
+            ],
+        ]
+    )
+
+    disallowed_registered_actions = action_types - set(result.allowed_action_types)
+    if disallowed_registered_actions:
+        violations.append(
+            "Recommendation contains actions outside the registered model policy: "
+            f"{sorted(disallowed_registered_actions)}."
+        )
+    prohibited_matches = [
+        phrase
+        for phrase in result.prohibited_claims
+        if phrase.lower() in full_text.lower()
+    ]
+    if prohibited_matches:
+        violations.append(
+            "Recommendation violates domain wording policy: "
+            f"{sorted(prohibited_matches)}."
+        )
 
     if recommendation.incident_type not in result.incident_candidates:
         violations.append(

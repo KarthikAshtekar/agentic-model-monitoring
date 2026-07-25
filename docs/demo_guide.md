@@ -10,7 +10,7 @@ Activate the project environment from the repository root:
 
 For a live-provider demo, confirm that the untracked `.env` contains `GROQ_API_KEY` and
 that `LLM_MODEL=openai/gpt-oss-20b`. Do not display the file or key. Keep the
-[extended live evaluation report](../reports/evaluations/live_groq_six_scenarios/live_evaluation_report.md)
+[cross-model evaluation report](../reports/evaluations/cross_model/cross_model_report.md)
 open as a no-network backup.
 
 Do not regenerate the bundle, scenarios, or deterministic reports for an ordinary demo.
@@ -21,6 +21,9 @@ The existing artifacts are the reviewed source of truth.
 ### 1. Show the architecture — 30 seconds
 
 Open the Mermaid diagram in the [README](../README.md#architecture).
+
+Run `python scripts\list_registered_models.py` and point out the two strict model/domain
+entries before selecting a replay.
 
 Say:
 
@@ -126,15 +129,16 @@ Say:
 ### 7. Show the evaluation summary — 30 seconds
 
 ```powershell
-python scripts\evaluate_live_agent.py --extended
+python scripts\evaluate_live_agent.py --model-id diabetes_risk
+python scripts\evaluate_cross_model_agent.py
 ```
 
 Say:
 
-> “This evaluator makes no network call and uses no judge LLM. Across six controlled
-> replays, incident/routing compatibility, grounding, policy, and approval were 100%.
-> Five recommendations passed immediately; data quality used the one bounded revision;
-> final fallback usage was zero.”
+> “These evaluators make no network call and use no judge LLM. Across two models and 12
+> controlled replays, incident/routing compatibility, grounding, policy, and approval
+> were 100%. Structured output was 83.33%; two diabetes cases safely used fallback and
+> remain preserved as first-run outcomes.”
 
 ### 8. Optional durable-resume proof — 30 seconds
 

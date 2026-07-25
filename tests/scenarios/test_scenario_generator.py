@@ -41,7 +41,7 @@ def test_generated_manifests_and_feature_order() -> None:
 def test_normal_scenario_generation_is_reproducible(tmp_path, monkeypatch) -> None:
     """The fixed seed regenerates byte-identical feature and label Parquet files."""
     monkeypatch.setattr(generator, "PROJECT_ROOT", tmp_path)
-    scenario_dir = tmp_path / "data/scenarios/normal_operation"
+    scenario_dir = tmp_path / "data/scenarios/credit_default/normal_operation"
     feature_path = scenario_dir / "features.parquet"
     label_path = scenario_dir / "labels.parquet"
     generate_scenario("normal_operation")

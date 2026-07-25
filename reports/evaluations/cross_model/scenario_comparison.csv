@@ -1,0 +1,13 @@
+model_id,domain_id,scenario_name,incident_type,diagnostic_route,completed,structured_output_success,incident_compatible,route_compatible,evidence_grounded,policy_compliant,first_pass_verification,revision_count,used_fallback,approval_completed,latency_ms,input_tokens,output_tokens,total_tokens
+credit_default,credit_risk,normal_operation,normal_operation,no_additional_diagnostics,True,True,True,True,True,True,True,0,False,True,2673.26,4515,1296,5811
+credit_default,credit_risk,feature_drift,mixed_incident,mixed_diagnostics,True,True,True,True,True,True,True,0,False,True,4457.58,5861,2098,7959
+credit_default,credit_risk,data_quality_failure,data_quality_failure,data_quality_diagnostics,True,True,True,True,True,True,False,1,False,True,4418.93,4563,2661,7224
+credit_default,credit_risk,performance_degradation,performance_degradation,performance_diagnostics,True,True,True,True,True,True,True,0,False,True,2604.25,3332,1491,4823
+credit_default,credit_risk,unlabelled_drift,feature_drift,drift_diagnostics,True,True,True,True,True,True,True,0,False,True,4137.0,4661,2843,7504
+credit_default,credit_risk,insufficient_labels,insufficient_evidence,evidence_sufficiency_review,True,True,True,True,True,True,True,0,False,True,2230.44,2384,1331,3715
+diabetes_risk,diabetes_screening,normal_operation,normal_operation,no_additional_diagnostics,True,True,True,True,True,True,True,0,False,True,3922.12,6282,1619,7901
+diabetes_risk,diabetes_screening,feature_drift,mixed_incident,mixed_diagnostics,True,False,True,True,True,True,False,0,True,True,31281.17,3520,679,4199
+diabetes_risk,diabetes_screening,data_quality_failure,data_quality_failure,data_quality_diagnostics,True,True,True,True,True,True,True,0,False,True,3068.92,4406,1549,5955
+diabetes_risk,diabetes_screening,performance_degradation,performance_degradation,performance_diagnostics,True,True,True,True,True,True,True,0,False,True,16227.06,4883,1347,6230
+diabetes_risk,diabetes_screening,unlabelled_drift,feature_drift,drift_diagnostics,True,False,True,True,True,True,False,0,True,True,29900.07,2868,867,3735
+diabetes_risk,diabetes_screening,insufficient_labels,insufficient_evidence,evidence_sufficiency_review,True,True,True,True,True,True,True,0,False,True,2794.49,3537,938,4475

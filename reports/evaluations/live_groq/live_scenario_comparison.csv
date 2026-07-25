@@ -1,0 +1,5 @@
+scenario_name,completed,incident_type,incident_compatible,diagnostic_route,route_compatible,triage_parse_success,recommendation_parse_success,first_pass_verification,revision_count,used_fallback,all_cited_evidence_valid,all_claims_cited,all_actions_cited,policy_compliant,approval_completed,final_status,latency_ms,input_tokens,output_tokens,total_tokens,violations
+normal_operation,True,normal_operation,True,no_additional_diagnostics,True,True,True,True,0,False,True,True,True,True,True,completed_no_approval_required,2673.26,4515,1296,5811,
+feature_drift,True,mixed_incident,True,mixed_diagnostics,True,True,True,True,0,False,True,True,True,True,True,approved,4457.58,5861,2098,7959,
+data_quality_failure,True,data_quality_failure,True,data_quality_diagnostics,True,True,True,False,1,False,True,True,True,True,True,approved,4418.93,4563,2661,7224,
+performance_degradation,True,performance_degradation,True,performance_diagnostics,True,True,True,True,0,False,True,True,True,True,True,approved,2604.25,3332,1491,4823,

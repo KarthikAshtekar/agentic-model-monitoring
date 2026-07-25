@@ -1,4 +1,4 @@
-"""Orchestration for deterministic monitoring of replayed scenario batches."""
+"""Model-aware deterministic monitoring orchestration."""
 
 from __future__ import annotations
 
@@ -10,13 +10,13 @@ from typing import Any
 import pandas as pd
 import yaml
 
-from monitoring_agent.bundle.loader import CreditDefaultBundle
+from monitoring_agent.adapters.binary_classification import BinaryClassificationAdapter
+from monitoring_agent.domains.base import load_domain_policy
+from monitoring_agent.models.bundle import RegisteredModelBundle
+from monitoring_agent.models.registry import ModelRegistry
 from monitoring_agent.monitoring.data_quality import evaluate_data_quality
 from monitoring_agent.monitoring.drift import evaluate_drift
-from monitoring_agent.monitoring.evidence import (
-    EvidenceRegistry,
-    maximum_severity,
-)
+from monitoring_agent.monitoring.evidence import EvidenceRegistry, maximum_severity
 from monitoring_agent.monitoring.performance import evaluate_performance
 from monitoring_agent.monitoring.schemas import (
     DriftResult,
@@ -24,28 +24,50 @@ from monitoring_agent.monitoring.schemas import (
     MonitoringRunResult,
     PerformanceResult,
 )
-from monitoring_agent.paths import CONFIG_DIR, PROJECT_ROOT
+from monitoring_agent.paths import CONFIG_DIR
+from monitoring_agent.scenarios.generator import resolve_scenario_directory
 
 
 class MonitoringEngine:
-    """Run data-quality, drift, performance, and incident rules without an LLM."""
+    """Run generic binary monitoring with manifest and domain context."""
 
     def __init__(
         self,
-        bundle: CreditDefaultBundle | None = None,
+        bundle: RegisteredModelBundle | None = None,
         config_path: Path | str | None = None,
+        *,
+        model_id: str | None = None,
+        adapter: BinaryClassificationAdapter | None = None,
+        registry: ModelRegistry | None = None,
     ) -> None:
-        self.bundle = bundle or CreditDefaultBundle()
+        self.registry = registry or ModelRegistry()
+        self.bundle = bundle or RegisteredModelBundle(
+            model_id,
+            registry=self.registry,
+        )
+        self.registered = self.bundle.registered_manifest
+        self.model_id = self.registered.model_id
+        self.adapter = adapter or self.bundle.adapter()
         self.config_path = Path(config_path or CONFIG_DIR / "monitoring.yaml")
         with self.config_path.open(encoding="utf-8") as handle:
             payload = yaml.safe_load(handle)
         self.config: dict[str, Any] = payload["monitoring"]
+        policy = self.registered.monitoring_policy
+        self.config["data_quality"]["minimum_batch_size"] = policy.minimum_batch_size
+        self.config["feature_drift"] = dict(policy.feature_drift_thresholds)
+        self.config["prediction_drift"] = dict(policy.prediction_drift_thresholds)
+        self.config["performance"] = {
+            "minimum_labelled_samples": policy.minimum_labelled_samples,
+            **policy.performance_thresholds,
+        }
+        self.domain_policy = load_domain_policy(self.registered.identity.domain_id)
         self.metadata = self.bundle.load_metadata()
         self.schema = self.bundle.load_feature_schema()
         self.reference_metrics = self.bundle.load_reference_metrics()
         self.reference_features = self.bundle.load_reference_features()
         self.reference_predictions = self.bundle.load_reference_predictions()
         self.reference_summary = self.bundle.load_reference_feature_summary()
+        self.identifier_column = self.registered.data_contract.identifier_column
 
     @staticmethod
     def _empty_drift() -> DriftResult:
@@ -98,11 +120,18 @@ class MonitoringEngine:
         )
 
     @staticmethod
-    def _run_id(scenario_name: str, features: pd.DataFrame) -> str:
+    def _run_id(
+        model_id: str,
+        scenario_name: str,
+        features: pd.DataFrame,
+    ) -> str:
         digest = hashlib.sha256()
+        digest.update(model_id.encode())
         digest.update(scenario_name.encode())
         digest.update(pd.util.hash_pandas_object(features, index=False).values.tobytes())
-        return f"MON-{scenario_name.upper().replace('_', '-')}-{digest.hexdigest()[:12].upper()}"
+        scenario = scenario_name.upper().replace("_", "-")
+        model = model_id.upper().replace("_", "-")
+        return f"MON-{model}-{scenario}-{digest.hexdigest()[:12].upper()}"
 
     @staticmethod
     def _incident_candidates(
@@ -125,10 +154,8 @@ class MonitoringEngine:
             for item in evidence
         )
         critical_feature = drift.critical_feature_count > 0
-
         if blocked or critical_data_quality:
             return ["data_quality_failure"]
-
         candidates: list[str] = []
         if critical_performance and (critical_feature or critical_prediction):
             candidates.append("mixed_incident")
@@ -138,7 +165,6 @@ class MonitoringEngine:
             candidates.append("feature_drift")
         if critical_prediction:
             candidates.append("prediction_drift")
-
         if not performance.evaluated:
             candidates.append("insufficient_evidence")
         return candidates or ["normal_operation"]
@@ -149,7 +175,6 @@ class MonitoringEngine:
         features: pd.DataFrame,
         labels: pd.DataFrame | None,
     ) -> MonitoringRunResult:
-        """Run one in-memory batch through the deterministic monitoring gates."""
         data_quality = evaluate_data_quality(
             features,
             self.schema,
@@ -160,25 +185,26 @@ class MonitoringEngine:
         label_coverage_rate = (
             labelled_row_count / feature_row_count if feature_row_count else 0.0
         )
-        minimum_labelled_sample_size = int(
-            self.config["performance"]["minimum_labelled_samples"]
-        )
-
+        minimum_labels = int(self.config["performance"]["minimum_labelled_samples"])
         if data_quality.batch_blocked:
             drift = self._empty_drift()
             performance = self._blocked_performance(
                 "Performance and drift were not evaluated because data quality blocked inference.",
                 feature_row_count=feature_row_count,
                 labelled_row_count=labelled_row_count,
-                minimum_required_sample_size=minimum_labelled_sample_size,
+                minimum_required_sample_size=minimum_labels,
             )
         else:
-            inference_frame = features.drop(columns=["record_id"])
-            probabilities = self.bundle.predict_probabilities(inference_frame)
+            inference_frame = features[self.schema.ordered_features]
+            probabilities = self.adapter.predict_scores(inference_frame).to_numpy(
+                dtype=float
+            )
             drift = evaluate_drift(
                 self.reference_features,
                 features,
-                self.reference_predictions["predicted_probability"].to_numpy(dtype=float),
+                self.reference_predictions["predicted_probability"].to_numpy(
+                    dtype=float
+                ),
                 probabilities,
                 self.schema,
                 self.metadata,
@@ -192,6 +218,7 @@ class MonitoringEngine:
                 self.metadata,
                 self.reference_metrics,
                 self.config["performance"],
+                identifier_column=self.identifier_column,
             )
 
         registry = EvidenceRegistry()
@@ -199,6 +226,9 @@ class MonitoringEngine:
         registry.extend(drift.evidence)
         registry.extend(performance.evidence)
         evidence = registry.items
+        for item in evidence:
+            item.model_id = self.model_id
+            item.domain_id = self.registered.identity.domain_id
         incidents = self._incident_candidates(
             blocked=data_quality.batch_blocked,
             evidence=evidence,
@@ -206,11 +236,25 @@ class MonitoringEngine:
             performance=performance,
         )
         return MonitoringRunResult(
-            run_id=self._run_id(scenario_name, features),
+            run_id=self._run_id(self.model_id, scenario_name, features),
             scenario_name=scenario_name,
             created_at_utc=datetime.now(UTC),
+            model_id=self.model_id,
+            display_name=self.registered.identity.display_name,
             model_name=self.metadata.model_name,
-            model_version=self.metadata.model_version,
+            model_version=self.registered.identity.model_version,
+            task_type=self.registered.identity.task_type,
+            domain_id=self.registered.identity.domain_id,
+            bundle_mode=self.registered.provenance.bundle_mode,
+            reference_sample_count=self.metadata.reference_sample_count,
+            feature_count=len(self.schema.ordered_features),
+            use_case=self.registered.business_context.use_case,
+            positive_outcome=self.registered.business_context.positive_outcome,
+            prediction_unit=self.registered.business_context.prediction_unit,
+            allowed_action_types=self.registered.governance.allowed_action_types,
+            prohibited_claims=self.domain_policy.prohibited_claims,
+            safe_business_terminology=self.domain_policy.safe_business_terminology,
+            domain_limitations=self.domain_policy.domain_specific_limitations,
             operating_threshold=self.metadata.operating_threshold,
             batch_valid=data_quality.batch_valid,
             batch_blocked=data_quality.batch_blocked,
@@ -218,7 +262,7 @@ class MonitoringEngine:
             feature_row_count=feature_row_count,
             labelled_row_count=labelled_row_count,
             label_coverage_rate=label_coverage_rate,
-            minimum_labelled_sample_size=minimum_labelled_sample_size,
+            minimum_labelled_sample_size=minimum_labels,
             data_quality=data_quality,
             drift=drift,
             performance=performance,
@@ -229,8 +273,7 @@ class MonitoringEngine:
         )
 
     def run_scenario(self, scenario_name: str) -> MonitoringRunResult:
-        """Load one generated scenario and monitor it."""
-        scenario_dir = PROJECT_ROOT / "data/scenarios" / scenario_name
+        scenario_dir = resolve_scenario_directory(self.model_id, scenario_name)
         feature_path = scenario_dir / "features.parquet"
         label_path = scenario_dir / "labels.parquet"
         if not feature_path.is_file():

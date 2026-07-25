@@ -1,0 +1,10 @@
+default_model_id: credit_default
+
+models:
+  credit_default:
+    manifest: configs/models/credit_default.yaml
+    enabled: true
+
+  diabetes_risk:
+    manifest: configs/models/diabetes_risk.yaml
+    enabled: true

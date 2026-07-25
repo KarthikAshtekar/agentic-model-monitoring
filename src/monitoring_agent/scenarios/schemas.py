@@ -13,6 +13,7 @@ class ScenarioManifest(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    model_id: str = "credit_default"
     scenario_name: str
     scenario_version: str
     description: str

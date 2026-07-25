@@ -1,0 +1,95 @@
+defaults:
+  random_seed: 20260725
+  sample_size: 1000
+
+scenarios:
+  normal_operation:
+    enabled: true
+    description: Clean stratified replay sample from the BRFSS binary held-out split.
+    simulation_type: unchanged_reference_replay
+    expected_incident_candidates:
+      - normal_operation
+    parameters: {}
+    limitations:
+      - Sampling variation may produce small non-material metric differences.
+
+  feature_drift:
+    enabled: true
+    description: Controlled BMI, general-health, and high-blood-pressure covariate shift.
+    simulation_type: deterministic_covariate_shift
+    expected_incident_candidates:
+      - feature_drift
+    parameters:
+      continuous_feature: BMI
+      continuous_scale_factor: 1.40
+      continuous_affected_fraction: 1.0
+      discrete_shifts:
+        - feature: HighBP
+          target_value: 1
+          affected_fraction: 0.80
+        - feature: GenHlth
+          target_value: 5
+          affected_fraction: 0.70
+    limitations:
+      - Transformations preserve observed feature ranges but not all survey dependencies.
+
+  data_quality_failure:
+    enabled: true
+    description: Duplicate IDs, critical BMI missingness, and physical-health range violations.
+    simulation_type: deterministic_data_corruption
+    expected_incident_candidates:
+      - data_quality_failure
+    parameters:
+      duplicate_record_count: 20
+      missing_feature: BMI
+      missing_fraction: 0.15
+      range_violation_feature: PhysHlth
+      range_violation_fraction: 0.08
+      range_violation_multiplier: 1.20
+    limitations:
+      - Faults are intentionally concentrated and are not organic survey data errors.
+
+  performance_degradation:
+    enabled: true
+    description: Synthetic outcome shift concentrated among lowest-score negative labels.
+    simulation_type: deterministic_concept_and_outcome_shift
+    expected_incident_candidates:
+      - performance_degradation
+    parameters:
+      negative_to_positive_count: 180
+      selector: lowest_probability_observed_negatives
+    limitations:
+      - Labels are deliberately modified; this is synthetic outcome drift.
+
+  unlabelled_drift:
+    enabled: true
+    description: Controlled BMI and health-risk covariate shift before labels are available.
+    simulation_type: deterministic_unlabelled_covariate_shift
+    expected_incident_candidates:
+      - feature_drift
+      - prediction_drift
+      - insufficient_evidence
+    parameters:
+      continuous_feature: BMI
+      continuous_scale_factor: 1.30
+      continuous_affected_fraction: 0.85
+      discrete_shifts:
+        - feature: DiffWalk
+          target_value: 1
+          affected_fraction: 0.65
+        - feature: GenHlth
+          target_value: 5
+          affected_fraction: 0.60
+    limitations:
+      - Outcomes are intentionally absent, so model performance cannot be evaluated.
+
+  insufficient_labels:
+    enabled: true
+    description: Stable 1,000-row replay with only 100 aligned outcomes available.
+    simulation_type: deterministic_partial_label_availability
+    expected_incident_candidates:
+      - insufficient_evidence
+    parameters:
+      labelled_sample_count: 100
+    limitations:
+      - Ten-percent label coverage is below the 200-label policy minimum.

@@ -1,0 +1,161 @@
+{
+  "model_id": "credit_default",
+  "captured_before_refactor": true,
+  "verification_result": "22/22 byte-identical after refactor",
+  "files": [
+    {
+      "relative_path": "artifacts/models/credit_default_pipeline.joblib",
+      "sha256": "ff04b857b2548174d88156332f5af8e135d50aacba4f5a47ca913c57a1097340",
+      "file_size": 255443,
+      "purpose": "Authoritative fitted credit-default inference pipeline.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "artifacts/metadata/model_metadata.json",
+      "sha256": "0e49cbf08d7fb6428125e7b07193cdca79dfd560fe8bcc37c4a6f03cf92c4668",
+      "file_size": 3348,
+      "purpose": "Authoritative credit model identity, split, threshold and provenance.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "artifacts/metadata/feature_schema.json",
+      "sha256": "9fa0de1701648d4352fcbd38f721e79df4c15017dc19f3edf3420ef272b08286",
+      "file_size": 12625,
+      "purpose": "Authoritative ordered 36-feature credit inference contract.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "artifacts/metadata/bundle_manifest.json",
+      "sha256": "5a8feb5eaff711a86fed179105f0fcd93f507f7faf12abb9fa1f38d1fa42e677",
+      "file_size": 6019,
+      "purpose": "Authoritative credit bundle inventory and payload checksums.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "artifacts/baselines/reference_metrics.json",
+      "sha256": "0be5ae84e6269a350628e2eda982c36ab9f0c4918185706d13adedc95f8d57a5",
+      "file_size": 3163,
+      "purpose": "Authoritative credit held-out reference metrics.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "artifacts/baselines/reference_feature_summary.parquet",
+      "sha256": "d93aa710f52cf0c9786e650e981779fbfa5707cdfc8865a95f421251c55eb70b",
+      "file_size": 13963,
+      "purpose": "Authoritative credit reference feature-distribution summary.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "data/reference/reference_features.parquet",
+      "sha256": "e43e0f1813c08ece1507af2b37b6f339ea3829907794a460553c4511148ea719",
+      "file_size": 950213,
+      "purpose": "Authoritative 6,002-row credit held-out inference features.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "data/reference/reference_labels.parquet",
+      "sha256": "9b82c6718d827d8f741420d4afa9283ee6bcf946644d0bc20fb7eb232e8109bc",
+      "file_size": 36603,
+      "purpose": "Authoritative aligned credit held-out labels.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "data/reference/reference_predictions.parquet",
+      "sha256": "16dea09d66ffef50285a77a09f5685fc110456e48ea9e66964cb6f49be750c23",
+      "file_size": 84054,
+      "purpose": "Authoritative credit held-out probabilities and threshold decisions.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "data/scenarios/normal_operation/scenario_manifest.json",
+      "sha256": "9a158607d4c1b3f1210a3702f47a6191b5f0b1d36d75041615e22b043659a9bb",
+      "file_size": 825,
+      "purpose": "Preserved credit normal-operation scenario definition.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "data/scenarios/feature_drift/scenario_manifest.json",
+      "sha256": "6b1312a71283417e8b73d2871bb46e6fd7dd2f983e71b0a108475615be0914f9",
+      "file_size": 1368,
+      "purpose": "Preserved credit feature-drift scenario definition.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "data/scenarios/data_quality_failure/scenario_manifest.json",
+      "sha256": "de4926a1546387d75db3e26848900f6d03809584a9fabc4e401a036b1c6d386b",
+      "file_size": 1347,
+      "purpose": "Preserved credit data-quality-failure scenario definition.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "data/scenarios/performance_degradation/scenario_manifest.json",
+      "sha256": "07ad6cecbfc8d90f6a45d52ed92a03f6ac728a00590b78b974de056717a5bbcd",
+      "file_size": 1121,
+      "purpose": "Preserved credit performance-degradation scenario definition.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "data/scenarios/unlabelled_drift/scenario_manifest.json",
+      "sha256": "b7c3109047b94d04a27fdfdd52e2b8410749079725ca2d488a25910c9b300181",
+      "file_size": 1610,
+      "purpose": "Preserved credit unlabelled-drift scenario definition.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "data/scenarios/insufficient_labels/scenario_manifest.json",
+      "sha256": "3fe34ac14df462166533a55811c9446292650896ebf98f2adb2ef24f69aae578",
+      "file_size": 1065,
+      "purpose": "Preserved credit insufficient-labels scenario definition.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "reports/generated/normal_operation/live_groq/agentic_result.json",
+      "sha256": "6f407acc5ad661fe2a94c39690f88f2a90056ab8862c5ec2af85eb2ce112d11f",
+      "file_size": 16263,
+      "purpose": "Preserved final live credit normal-operation result.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "reports/generated/feature_drift/live_groq/agentic_result.json",
+      "sha256": "37d9130541fb34592c96cb9dace778ffc8965b06ae4de9aa376ba09c54f2473e",
+      "file_size": 24495,
+      "purpose": "Preserved final live credit feature-drift result.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "reports/generated/data_quality_failure/live_groq/agentic_result.json",
+      "sha256": "3f46f715482d59627f0eeff0e5fe9f456d9ea485fcb21ee3b4ac64ea95b53eac",
+      "file_size": 11062,
+      "purpose": "Preserved final live credit data-quality result.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "reports/generated/performance_degradation/live_groq/agentic_result.json",
+      "sha256": "aefea66ed5ab28176030f7ab8d417f966bc84431b4a51305aebeecab9bad9ffa",
+      "file_size": 11771,
+      "purpose": "Preserved final live credit performance-degradation result.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "reports/generated/unlabelled_drift/live_groq/agentic_result.json",
+      "sha256": "0c837bd5c2ded723c20927b345d703d1f9f9ddcb39ec067719464660b812bba9",
+      "file_size": 17130,
+      "purpose": "Preserved final live credit unlabelled-drift result.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "reports/generated/insufficient_labels/live_groq/agentic_result.json",
+      "sha256": "d1542fca86554db6721220ae88220aaf4fdd8d50abf25f7786e287530b77d4c0",
+      "file_size": 6119,
+      "purpose": "Preserved final live credit insufficient-labels result.",
+      "must_remain_byte_identical": true
+    },
+    {
+      "relative_path": "reports/evaluations/live_groq_six_scenarios/live_evaluation_summary.json",
+      "sha256": "b4b89328bfe80ddc378a1774a146ff4faea13bdfa2335587d53cb9648eede7bd",
+      "file_size": 8855,
+      "purpose": "Preserved authoritative six-scenario credit live evaluation summary.",
+      "must_remain_byte_identical": true
+    }
+  ]
+}

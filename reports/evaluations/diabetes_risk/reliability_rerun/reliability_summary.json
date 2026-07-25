@@ -1,0 +1,231 @@
+{
+  "evaluation_type": "repeat_reliability_run",
+  "replaces_original_evaluation": false,
+  "original_result_preserved": true,
+  "model_id": "diabetes_risk",
+  "scenario": [
+    "feature_drift",
+    "unlabelled_drift"
+  ],
+  "provider": "groq",
+  "provider_model": "openai/gpt-oss-20b",
+  "execution_timestamp": "2026-07-25T11:34:04.900918+00:00",
+  "original_result_path": [
+    "reports/generated/diabetes_risk/feature_drift/live_groq/agentic_result.json",
+    "reports/generated/diabetes_risk/unlabelled_drift/live_groq/agentic_result.json"
+  ],
+  "repeat_result_path": [
+    "reports/generated/diabetes_risk/reliability_rerun_01/feature_drift/agentic_result.json",
+    "reports/generated/diabetes_risk/reliability_rerun_01/unlabelled_drift/agentic_result.json"
+  ],
+  "original_hashes_verified": true,
+  "verified_original_artifacts": [
+    {
+      "path": "reports/evaluations/diabetes_risk/live_groq_six_scenarios/live_evaluation_summary.json",
+      "sha256": "573e97437297972e4ed1a37717895dc0103cc0643c2a52c060ff98fc7b16ef02",
+      "size_bytes": 10084,
+      "verified": true
+    },
+    {
+      "path": "reports/evaluations/diabetes_risk/live_groq_six_scenarios/live_evaluation_report.md",
+      "sha256": "3bb5fe7ad8bd7044fe1a56f34bfa1df0700392592313b09f9cbd28898b7aa860",
+      "size_bytes": 5441,
+      "verified": true
+    },
+    {
+      "path": "reports/evaluations/cross_model/cross_model_summary.json",
+      "sha256": "1cd244d9167fe3ca1013678cea9704fd4d2ac5012b6800b9f6b196b487bc8685",
+      "size_bytes": 2376,
+      "verified": true
+    },
+    {
+      "path": "reports/evaluations/cross_model/cross_model_report.md",
+      "sha256": "55fac9e3b7563271219d8430984c6795c010fd7894922e5e28aee9403430d7d1",
+      "size_bytes": 1375,
+      "verified": true
+    },
+    {
+      "path": "reports/generated/diabetes_risk/feature_drift/live_groq/agentic_result.json",
+      "sha256": "5cb802b1bde543c07b4e79d60edf8e867b087d44b4f102f358fde678160201f1",
+      "size_bytes": 24991,
+      "verified": true
+    },
+    {
+      "path": "reports/generated/diabetes_risk/unlabelled_drift/live_groq/agentic_result.json",
+      "sha256": "46d588b17f87753443e143f9d03ba87ccf81b6033aa6fc6c2f2af1a42f73197e",
+      "size_bytes": 19985,
+      "verified": true
+    }
+  ],
+  "repeat_scenario_count": 2,
+  "repeat_structured_output_success_rate": 1.0,
+  "repeat_incident_compatibility_rate": 1.0,
+  "repeat_route_compatibility_rate": 1.0,
+  "repeat_evidence_grounding_rate": 1.0,
+  "repeat_policy_compliance_rate": 1.0,
+  "repeat_first_pass_verification_rate": 0.5,
+  "repeat_fallback_rate": 0.0,
+  "repeat_approval_completion_rate": 1.0,
+  "mean_repeat_latency_ms": 43820.71,
+  "total_repeat_input_tokens": 17541,
+  "total_repeat_output_tokens": 6479,
+  "total_repeat_tokens": 24020,
+  "original_headline_metrics_unchanged": {
+    "diabetes_completed": "6/6",
+    "diabetes_structured_output_success": 0.6667,
+    "diabetes_fallback_rate": 0.3333,
+    "cross_model_completed": "12/12",
+    "cross_model_structured_output_success": 0.8333,
+    "cross_model_fallback_rate": 0.1666
+  },
+  "scenario_results": [
+    {
+      "evaluation_type": "repeat_reliability_run",
+      "replaces_original_evaluation": false,
+      "original_result_preserved": true,
+      "model_id": "diabetes_risk",
+      "scenario": "feature_drift",
+      "provider": "groq",
+      "provider_model": "openai/gpt-oss-20b",
+      "execution_timestamp": "2026-07-25T11:31:38.044271+00:00",
+      "original_result_path": "reports/generated/diabetes_risk/feature_drift/live_groq/agentic_result.json",
+      "repeat_result_path": "reports/generated/diabetes_risk/reliability_rerun_01/feature_drift/agentic_result.json",
+      "original_issue": "Groq recommendation HTTP 429",
+      "classification": "provider_failure_not_reproduced",
+      "original_provider_failure": true,
+      "repeat_provider_failure": false,
+      "original_model_output_failure": false,
+      "repeat_model_output_failure": false,
+      "repeat_revision_required": false,
+      "repeat_provider_error": [],
+      "repeat_output_verification_error": [],
+      "original": {
+        "structured_output_success": false,
+        "incident_type": "mixed_incident",
+        "incident_compatible": true,
+        "diagnostic_route": "mixed_diagnostics",
+        "route_compatible": true,
+        "evidence_grounding": true,
+        "policy_compliant": true,
+        "first_pass_verification": false,
+        "final_verification_passed": false,
+        "revision_count": 0,
+        "fallback_used": true,
+        "approval_completed": true,
+        "llm_latency_ms": 31281.17,
+        "input_tokens": 3520,
+        "output_tokens": 679,
+        "total_tokens": 4199,
+        "violations": [
+          "Live recommendation structured output did not parse successfully."
+        ],
+        "notes": [
+          "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
+          "No external remediation execution is part of the agent workflow.",
+          "Live execution error preserved at recommendation: RateLimitError \u2014 Groq request was rate-limited (HTTP 429)."
+        ]
+      },
+      "repeat": {
+        "structured_output_success": true,
+        "incident_type": "mixed_incident",
+        "incident_compatible": true,
+        "diagnostic_route": "mixed_diagnostics",
+        "route_compatible": true,
+        "evidence_grounding": true,
+        "policy_compliant": true,
+        "first_pass_verification": true,
+        "final_verification_passed": true,
+        "revision_count": 0,
+        "fallback_used": false,
+        "approval_completed": true,
+        "llm_latency_ms": 9383.07,
+        "input_tokens": 7681,
+        "output_tokens": 2577,
+        "total_tokens": 10258,
+        "violations": [],
+        "notes": [
+          "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
+          "No external remediation execution is part of the agent workflow."
+        ]
+      }
+    },
+    {
+      "evaluation_type": "repeat_reliability_run",
+      "replaces_original_evaluation": false,
+      "original_result_preserved": true,
+      "model_id": "diabetes_risk",
+      "scenario": "unlabelled_drift",
+      "provider": "groq",
+      "provider_model": "openai/gpt-oss-20b",
+      "execution_timestamp": "2026-07-25T11:33:24.977561+00:00",
+      "original_result_path": "reports/generated/diabetes_risk/unlabelled_drift/live_groq/agentic_result.json",
+      "repeat_result_path": "reports/generated/diabetes_risk/reliability_rerun_01/unlabelled_drift/agentic_result.json",
+      "original_issue": "Incompatible initial triage rejected by deterministic verification; subsequent Groq recommendation HTTP 429",
+      "classification": "mixed_repeat_outcome",
+      "original_provider_failure": true,
+      "repeat_provider_failure": false,
+      "original_model_output_failure": true,
+      "repeat_model_output_failure": false,
+      "repeat_revision_required": true,
+      "repeat_provider_error": [],
+      "repeat_output_verification_error": [],
+      "original": {
+        "structured_output_success": false,
+        "incident_type": "feature_drift",
+        "incident_compatible": true,
+        "diagnostic_route": "drift_diagnostics",
+        "route_compatible": true,
+        "evidence_grounding": true,
+        "policy_compliant": true,
+        "first_pass_verification": false,
+        "final_verification_passed": false,
+        "revision_count": 0,
+        "fallback_used": true,
+        "approval_completed": true,
+        "llm_latency_ms": 29900.07,
+        "input_tokens": 2868,
+        "output_tokens": 867,
+        "total_tokens": 3735,
+        "violations": [
+          "Live recommendation structured output did not parse successfully."
+        ],
+        "notes": [
+          "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
+          "No external remediation execution is part of the agent workflow.",
+          "Live execution error preserved at triage: TriageVerificationError \u2014 Triage incident type is incompatible with deterministic candidates.",
+          "Live execution error preserved at recommendation: RateLimitError \u2014 Groq request was rate-limited (HTTP 429)."
+        ]
+      },
+      "repeat": {
+        "structured_output_success": true,
+        "incident_type": "feature_drift",
+        "incident_compatible": true,
+        "diagnostic_route": "drift_diagnostics",
+        "route_compatible": true,
+        "evidence_grounding": true,
+        "policy_compliant": true,
+        "first_pass_verification": false,
+        "final_verification_passed": true,
+        "revision_count": 1,
+        "fallback_used": false,
+        "approval_completed": true,
+        "llm_latency_ms": 78258.36,
+        "input_tokens": 9860,
+        "output_tokens": 3902,
+        "total_tokens": 13762,
+        "violations": [],
+        "notes": [
+          "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
+          "No external remediation execution is part of the agent workflow."
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "This is a two-case repeat reliability check, not a replacement evaluation.",
+    "The original 12-case first-run evaluation remains authoritative.",
+    "A successful repeat does not erase an original provider or output failure.",
+    "Two repeat calls do not estimate general or production reliability.",
+    "No prompts, evidence, routing, verification, revision, or approval policies changed."
+  ]
+}

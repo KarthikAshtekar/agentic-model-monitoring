@@ -1,14 +1,34 @@
 # Architecture
 
-This repository is the future monitoring and investigation layer for an existing
-credit-default model. It is intentionally separate from model development so that
-monitoring can depend on a versioned, stable export rather than on the internal source
-layout of another repository.
+This repository is a registry-driven monitoring and investigation layer for two existing
+binary classifiers: credit default and BRFSS diabetes-risk screening. It is intentionally
+separate from model development so monitoring depends on versioned, stable exports rather
+than either source repository's internal layout.
+
+## Registry and adapter boundary
+
+```text
+configs/model_registry.yaml
+        ↓ resolve model_id
+strict configs/models/<model_id>.yaml
+        ↓
+RegisteredModelBundle
+        ↓
+BinaryClassificationAdapter
+        ↓
+deterministic monitoring + domain policy pack
+```
+
+The registry rejects unknown, disabled, duplicated, mismatched, escaping, or malformed
+entries. Manifests explicitly identify the positive class, score method, ordered raw
+features, target, identifier, thresholds, reference assets, permitted actions, and
+source-relative provenance. The adapter owns estimator calls and generic binary metrics;
+the `credit_risk` and `diabetes_screening` packs own terminology and policy.
 
 ## Implemented system flow
 
 ```text
-Validated model bundle
+Registered model bundle
         ↓
 Deterministic monitoring engine
         ↓
@@ -33,7 +53,7 @@ deterministic functions and are not described as agents.
 ## Implemented monitoring flow
 
 ```text
-Validated credit-default bundle
+Registered binary-classification bundle
         ↓
 Scenario replay batch
         ↓
@@ -60,7 +80,8 @@ ordered rule outputs, not final recommendations.
 
 ## Implemented model-bundle contract
 
-The source repository exports a self-contained versioned bundle with this contract:
+The original credit source repository exports its legacy self-contained bundle. Newly
+onboarded models use the equivalent namespaced contract:
 
 ```text
 artifacts/
@@ -78,6 +99,24 @@ data/
     ├── reference_features.parquet
     ├── reference_labels.parquet
     └── reference_predictions.parquet
+
+registered_models/<model_id>/
+├── artifacts/
+│   ├── model.joblib
+│   ├── model_metadata.json
+│   ├── feature_schema.json
+│   └── bundle_manifest.json
+├── baselines/
+│   ├── reference_metrics.json
+│   └── reference_feature_summary.parquet
+├── reference/
+│   ├── features.parquet
+│   ├── labels.parquet
+│   └── predictions.parquet
+└── onboarding/
+    ├── source_inventory.md
+    ├── validation_result.json
+    └── validation_report.md
 ```
 
 `credit_default_pipeline.joblib` is the selected `xgboost_public` fitted scikit-learn
@@ -114,6 +153,12 @@ Validation checks required files, Pydantic JSON contracts, record alignment, tar
 separation, feature order, probability bounds, threshold decisions, metadata counts,
 manifest checksums, and complete-pipeline probability reproduction.
 
+The diabetes one-time exporter reads the source at its verified clean commit, replaces
+only source-module references for stateless feature engineering/calibration composition,
+and writes a self-contained fitted artifact. It does not retrain the model. The runtime
+accepts the source XGBoost `3.3.0` versus runtime `3.2.0` warning only because 50,736
+held-out scores and all authoritative metrics reproduce within explicit tolerances.
+
 ## Planned monitoring domains
 
 - **Data quality:** schema, types, ranges, missingness, and invalid values.
@@ -146,12 +191,15 @@ only JSON-like monitoring/recommendation values—never keys, raw datasets, fitt
 or connections. This local SQLite backend demonstrates process-restart behavior; it is not
 production-grade persistence.
 
-Agentic reports are separated by execution provenance under each scenario:
+New model reports are namespaced as
+`reports/generated/<model_id>/<scenario>/`. Agentic reports are separated by execution
+provenance under each scenario:
 `fake/` contains offline test-provider outputs and `live_groq/` contains real-provider
 outputs. The deterministic evaluation layer reads only `live_groq/agentic_result.json`
 plus the corresponding `monitoring_result.json`, then writes JSON, Markdown, and CSV
-artifacts under `reports/evaluations/live_groq/`. The preserved core evaluation remains
-there; the six-scenario extension writes under
-`reports/evaluations/live_groq_six_scenarios/`. SQLite demonstration reports use a
+artifacts under model-specific evaluation directories. Preserved credit outputs remain
+under `reports/evaluations/live_groq*`; diabetes writes under
+`reports/evaluations/diabetes_risk/live_groq_six_scenarios/`; and an aggregate of the two
+validated summaries writes under `reports/evaluations/cross_model/`. SQLite demonstration reports use a
 separate `live_groq_persistent/<thread-id>/` namespace. Evaluation performs no network
 call and uses no LLM judge.

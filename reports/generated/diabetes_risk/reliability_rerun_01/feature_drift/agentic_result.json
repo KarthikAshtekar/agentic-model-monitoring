@@ -1,0 +1,828 @@
+{
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "execution_mode": "live",
+  "is_fake_llm": false,
+  "run_id": "MON-DIABETES-RISK-FEATURE-DRIFT-44994E7FD981",
+  "thread_id": "agentic-mon-diabetes-risk-feature-drift-44994e7fd981",
+  "created_at_utc": "2026-07-25T11:31:38.044271+00:00",
+  "checkpoint_backend": "memory",
+  "checkpoint_database": null,
+  "resumed_from_checkpoint": false,
+  "pause_count": 1,
+  "resume_count": 1,
+  "scenario_name": "feature_drift",
+  "model_id": "diabetes_risk",
+  "display_name": "BRFSS Diabetes Risk XGBoost",
+  "domain_id": "diabetes_screening",
+  "task_type": "binary_classification",
+  "bundle_mode": "live_inference",
+  "deterministic_incident_candidates": [
+    "mixed_incident",
+    "performance_degradation",
+    "feature_drift",
+    "prediction_drift"
+  ],
+  "selected_evidence": {
+    "case_summary": {
+      "run_id": "MON-DIABETES-RISK-FEATURE-DRIFT-44994E7FD981",
+      "scenario_name": "feature_drift",
+      "model_id": "diabetes_risk",
+      "display_name": "BRFSS Diabetes Risk XGBoost",
+      "model_name": "BRFSS Diabetes Risk XGBoost",
+      "model_version": "1.0.0",
+      "task_type": "binary_classification",
+      "domain_id": "diabetes_screening",
+      "use_case": "survey-based diabetes-risk screening",
+      "positive_outcome": "diabetes-positive class",
+      "prediction_unit": "BRFSS respondent screening record",
+      "operating_threshold": 0.25,
+      "allowed_action_types": [
+        "no_action",
+        "continue_monitoring",
+        "quarantine_batch",
+        "investigate_data_pipeline",
+        "investigate_feature_drift",
+        "collect_more_labels",
+        "evaluate_threshold",
+        "evaluate_recalibration",
+        "evaluate_retraining",
+        "run_challenger_in_shadow",
+        "escalate_model_governance"
+      ],
+      "prohibited_claims": [
+        "diagnostic AI",
+        "medical diagnosis",
+        "diagnose a patient",
+        "clinical treatment",
+        "recommend treatment",
+        "individual patient care",
+        "autonomous clinical action",
+        "automatically treat",
+        "borrower",
+        "loan"
+      ],
+      "batch_valid": true,
+      "batch_blocked": false,
+      "labels_available": true,
+      "performance_evaluated": true,
+      "labelled_sample_size": 1000,
+      "feature_row_count": 1000,
+      "labelled_row_count": 1000,
+      "label_coverage_rate": 1.0,
+      "minimum_labelled_sample_size": 200,
+      "performance_reason_not_evaluated": null,
+      "incident_candidates": [
+        "mixed_incident",
+        "performance_degradation",
+        "feature_drift",
+        "prediction_drift"
+      ],
+      "overall_severity": "high"
+    },
+    "evidence": [
+      {
+        "evidence_id": "DRIFT-PSI-BMI",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "feature_drift",
+        "metric": "population_stability_index",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": 3.8463453255706206,
+        "reference_value": 0.0,
+        "threshold": {
+          "warning": 0.1,
+          "critical": 0.25
+        },
+        "feature": "BMI",
+        "message": "BMI PSI is 3.8463.",
+        "details": {
+          "mean_shift": 11.232244244717755,
+          "median_shift": 11.0
+        },
+        "source": "reference_features.parquet"
+      },
+      {
+        "evidence_id": "DRIFT-PSI-GENHLTH",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "feature_drift",
+        "metric": "categorical_distribution_drift",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": {
+          "psi": 2.5905973539479383,
+          "js_divergence": 0.3869175178673727,
+          "unseen_category_rate": 0.0
+        },
+        "reference_value": {
+          "psi": 0.0,
+          "js_divergence": 0.0
+        },
+        "threshold": {
+          "psi_warning": 0.1,
+          "psi_critical": 0.25,
+          "js_warning": 0.1,
+          "js_critical": 0.2
+        },
+        "feature": "GenHlth",
+        "message": "GenHlth categorical PSI=2.5906, JS=0.3869.",
+        "details": {
+          "primary_signal": "PSI/JS; unseen rate is supporting"
+        },
+        "source": "reference_features.parquet"
+      },
+      {
+        "evidence_id": "DRIFT-PSI-HIGHBP",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "feature_drift",
+        "metric": "categorical_distribution_drift",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": {
+          "psi": 1.0917497535537817,
+          "js_divergence": 0.18211459881143033,
+          "unseen_category_rate": 0.0
+        },
+        "reference_value": {
+          "psi": 0.0,
+          "js_divergence": 0.0
+        },
+        "threshold": {
+          "psi_warning": 0.1,
+          "psi_critical": 0.25,
+          "js_warning": 0.1,
+          "js_critical": 0.2
+        },
+        "feature": "HighBP",
+        "message": "HighBP categorical PSI=1.0917, JS=0.1821.",
+        "details": {
+          "primary_signal": "PSI/JS; unseen rate is supporting"
+        },
+        "source": "reference_features.parquet"
+      },
+      {
+        "evidence_id": "PERF-BRIER",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "performance",
+        "metric": "brier_score_increase",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": 0.16890077426431976,
+        "reference_value": 0.09698639029766047,
+        "threshold": {
+          "warning_increase": 0.03,
+          "critical_increase": 0.06
+        },
+        "feature": null,
+        "message": "Brier score is 0.1689; increase from reference is 0.0719.",
+        "details": {},
+        "source": "reference_metrics.json"
+      },
+      {
+        "evidence_id": "PERF-F1-OPERATING",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "performance",
+        "metric": "f1_drop_operating_threshold",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": 0.3125,
+        "reference_value": 0.46699143289097933,
+        "threshold": {
+          "warning_drop": 0.06,
+          "critical_drop": 0.12
+        },
+        "feature": null,
+        "message": "Operating-threshold f1 is 0.3125; drop from reference is 0.1545.",
+        "details": {},
+        "source": "reference_metrics.json"
+      },
+      {
+        "evidence_id": "PERF-PRECISION-OPERATING",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "performance",
+        "metric": "precision_drop_operating_threshold",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": 0.18759018759018758,
+        "reference_value": 0.386468952734013,
+        "threshold": {
+          "warning_drop": 0.08,
+          "critical_drop": 0.15
+        },
+        "feature": null,
+        "message": "Operating-threshold precision is 0.1876; drop from reference is 0.1989.",
+        "details": {},
+        "source": "reference_metrics.json"
+      },
+      {
+        "evidence_id": "PRED-PSI-PROBABILITY",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "prediction_drift",
+        "metric": "prediction_probability_psi",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": 1.4498538587920713,
+        "reference_value": 0.0,
+        "threshold": {
+          "warning": 0.1,
+          "critical": 0.25
+        },
+        "feature": null,
+        "message": "Prediction probability PSI is 1.4499.",
+        "details": {},
+        "source": "reference_predictions.parquet"
+      },
+      {
+        "evidence_id": "PRED-RATE-DEFAULT",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "prediction_drift",
+        "metric": "positive_rate_change_default",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": 0.2374538000630716,
+        "reference_value": 0.0,
+        "threshold": {
+          "warning": 0.05,
+          "critical": 0.1
+        },
+        "feature": null,
+        "message": "Default-threshold predicted-positive-rate change is +0.2375.",
+        "details": {},
+        "source": "reference_predictions.parquet"
+      },
+      {
+        "evidence_id": "PRED-RATE-OPERATING",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "prediction_drift",
+        "metric": "positive_rate_change_operating",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": 0.480330495111952,
+        "reference_value": 0.0,
+        "threshold": {
+          "warning": 0.05,
+          "critical": 0.1
+        },
+        "feature": null,
+        "message": "Operating-threshold predicted-positive-rate change is +0.4803.",
+        "details": {},
+        "source": "reference_predictions.parquet"
+      },
+      {
+        "evidence_id": "DRIFT-KS-BMI",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "feature_drift",
+        "metric": "kolmogorov_smirnov_statistic",
+        "status": "warning",
+        "severity": "medium",
+        "observed_value": 0.6248770104068118,
+        "reference_value": 0.0,
+        "threshold": {
+          "warning": 0.1,
+          "critical_supporting": 0.2
+        },
+        "feature": "BMI",
+        "message": "BMI KS statistic is 0.6249 with p=0.",
+        "details": {
+          "p_value": 0.0,
+          "interpretation": "Supporting distribution evidence only; p-value alone does not determine material drift."
+        },
+        "source": "reference_features.parquet"
+      },
+      {
+        "evidence_id": "PERF-PRAUC",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "performance",
+        "metric": "pr_auc_drop",
+        "status": "warning",
+        "severity": "medium",
+        "observed_value": 0.3375400802449485,
+        "reference_value": 0.4293533033313817,
+        "threshold": {
+          "warning_drop": 0.05,
+          "critical_drop": 0.1
+        },
+        "feature": null,
+        "message": "PR_AUC is 0.3375; drop from reference is 0.0918.",
+        "details": {},
+        "source": "reference_metrics.json"
+      },
+      {
+        "evidence_id": "PERF-ROCAUC",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "performance",
+        "metric": "roc_auc_drop",
+        "status": "warning",
+        "severity": "medium",
+        "observed_value": 0.7362110311750599,
+        "reference_value": 0.8285926194023938,
+        "threshold": {
+          "warning_drop": 0.05,
+          "critical_drop": 0.1
+        },
+        "feature": null,
+        "message": "ROC_AUC is 0.7362; drop from reference is 0.0924.",
+        "details": {},
+        "source": "reference_metrics.json"
+      },
+      {
+        "evidence_id": "PRED-KS-PROBABILITY",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "prediction_drift",
+        "metric": "prediction_probability_ks",
+        "status": "warning",
+        "severity": "medium",
+        "observed_value": 0.4963777988016399,
+        "reference_value": 0.0,
+        "threshold": 0.1,
+        "feature": null,
+        "message": "Prediction KS statistic is 0.4964; it is supporting evidence only.",
+        "details": {
+          "p_value": 8.366285649916297e-224
+        },
+        "source": "reference_predictions.parquet"
+      }
+    ]
+  },
+  "triage": {
+    "incident_type": "mixed_incident",
+    "severity": "high",
+    "diagnostic_route": "mixed_diagnostics",
+    "needs_additional_diagnostics": false,
+    "selected_evidence_ids": [
+      "DRIFT-PSI-BMI",
+      "DRIFT-PSI-GENHLTH",
+      "DRIFT-PSI-HIGHBP",
+      "PERF-BRIER",
+      "PERF-F1-OPERATING",
+      "PERF-PRECISION-OPERATING",
+      "PRED-PSI-PROBABILITY",
+      "PRED-RATE-DEFAULT",
+      "PRED-RATE-OPERATING"
+    ],
+    "reason": "High severity evidence for feature drift (BMI, GenHlth, HighBP), prediction drift (probability PSI, positive rate changes), and performance (Brier, F1, precision) indicates a mixed incident."
+  },
+  "diagnostic_context": {
+    "route": "mixed_diagnostics",
+    "evidence": [
+      {
+        "evidence_id": "DRIFT-PSI-BMI",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "feature_drift",
+        "metric": "population_stability_index",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": 3.8463453255706206,
+        "reference_value": 0.0,
+        "threshold": {
+          "warning": 0.1,
+          "critical": 0.25
+        },
+        "feature": "BMI",
+        "message": "BMI PSI is 3.8463.",
+        "details": {
+          "mean_shift": 11.232244244717755,
+          "median_shift": 11.0
+        },
+        "source": "reference_features.parquet"
+      },
+      {
+        "evidence_id": "DRIFT-PSI-GENHLTH",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "feature_drift",
+        "metric": "categorical_distribution_drift",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": {
+          "psi": 2.5905973539479383,
+          "js_divergence": 0.3869175178673727,
+          "unseen_category_rate": 0.0
+        },
+        "reference_value": {
+          "psi": 0.0,
+          "js_divergence": 0.0
+        },
+        "threshold": {
+          "psi_warning": 0.1,
+          "psi_critical": 0.25,
+          "js_warning": 0.1,
+          "js_critical": 0.2
+        },
+        "feature": "GenHlth",
+        "message": "GenHlth categorical PSI=2.5906, JS=0.3869.",
+        "details": {
+          "primary_signal": "PSI/JS; unseen rate is supporting"
+        },
+        "source": "reference_features.parquet"
+      },
+      {
+        "evidence_id": "DRIFT-PSI-HIGHBP",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "feature_drift",
+        "metric": "categorical_distribution_drift",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": {
+          "psi": 1.0917497535537817,
+          "js_divergence": 0.18211459881143033,
+          "unseen_category_rate": 0.0
+        },
+        "reference_value": {
+          "psi": 0.0,
+          "js_divergence": 0.0
+        },
+        "threshold": {
+          "psi_warning": 0.1,
+          "psi_critical": 0.25,
+          "js_warning": 0.1,
+          "js_critical": 0.2
+        },
+        "feature": "HighBP",
+        "message": "HighBP categorical PSI=1.0917, JS=0.1821.",
+        "details": {
+          "primary_signal": "PSI/JS; unseen rate is supporting"
+        },
+        "source": "reference_features.parquet"
+      },
+      {
+        "evidence_id": "PERF-BRIER",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "performance",
+        "metric": "brier_score_increase",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": 0.16890077426431976,
+        "reference_value": 0.09698639029766047,
+        "threshold": {
+          "warning_increase": 0.03,
+          "critical_increase": 0.06
+        },
+        "feature": null,
+        "message": "Brier score is 0.1689; increase from reference is 0.0719.",
+        "details": {},
+        "source": "reference_metrics.json"
+      },
+      {
+        "evidence_id": "PERF-F1-OPERATING",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "performance",
+        "metric": "f1_drop_operating_threshold",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": 0.3125,
+        "reference_value": 0.46699143289097933,
+        "threshold": {
+          "warning_drop": 0.06,
+          "critical_drop": 0.12
+        },
+        "feature": null,
+        "message": "Operating-threshold f1 is 0.3125; drop from reference is 0.1545.",
+        "details": {},
+        "source": "reference_metrics.json"
+      },
+      {
+        "evidence_id": "PERF-PRECISION-OPERATING",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "performance",
+        "metric": "precision_drop_operating_threshold",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": 0.18759018759018758,
+        "reference_value": 0.386468952734013,
+        "threshold": {
+          "warning_drop": 0.08,
+          "critical_drop": 0.15
+        },
+        "feature": null,
+        "message": "Operating-threshold precision is 0.1876; drop from reference is 0.1989.",
+        "details": {},
+        "source": "reference_metrics.json"
+      },
+      {
+        "evidence_id": "PRED-PSI-PROBABILITY",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "prediction_drift",
+        "metric": "prediction_probability_psi",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": 1.4498538587920713,
+        "reference_value": 0.0,
+        "threshold": {
+          "warning": 0.1,
+          "critical": 0.25
+        },
+        "feature": null,
+        "message": "Prediction probability PSI is 1.4499.",
+        "details": {},
+        "source": "reference_predictions.parquet"
+      },
+      {
+        "evidence_id": "PRED-RATE-DEFAULT",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "prediction_drift",
+        "metric": "positive_rate_change_default",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": 0.2374538000630716,
+        "reference_value": 0.0,
+        "threshold": {
+          "warning": 0.05,
+          "critical": 0.1
+        },
+        "feature": null,
+        "message": "Default-threshold predicted-positive-rate change is +0.2375.",
+        "details": {},
+        "source": "reference_predictions.parquet"
+      },
+      {
+        "evidence_id": "PRED-RATE-OPERATING",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "prediction_drift",
+        "metric": "positive_rate_change_operating",
+        "status": "critical",
+        "severity": "high",
+        "observed_value": 0.480330495111952,
+        "reference_value": 0.0,
+        "threshold": {
+          "warning": 0.05,
+          "critical": 0.1
+        },
+        "feature": null,
+        "message": "Operating-threshold predicted-positive-rate change is +0.4803.",
+        "details": {},
+        "source": "reference_predictions.parquet"
+      },
+      {
+        "evidence_id": "DRIFT-KS-BMI",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "feature_drift",
+        "metric": "kolmogorov_smirnov_statistic",
+        "status": "warning",
+        "severity": "medium",
+        "observed_value": 0.6248770104068118,
+        "reference_value": 0.0,
+        "threshold": {
+          "warning": 0.1,
+          "critical_supporting": 0.2
+        },
+        "feature": "BMI",
+        "message": "BMI KS statistic is 0.6249 with p=0.",
+        "details": {
+          "p_value": 0.0,
+          "interpretation": "Supporting distribution evidence only; p-value alone does not determine material drift."
+        },
+        "source": "reference_features.parquet"
+      },
+      {
+        "evidence_id": "PERF-PRAUC",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "performance",
+        "metric": "pr_auc_drop",
+        "status": "warning",
+        "severity": "medium",
+        "observed_value": 0.3375400802449485,
+        "reference_value": 0.4293533033313817,
+        "threshold": {
+          "warning_drop": 0.05,
+          "critical_drop": 0.1
+        },
+        "feature": null,
+        "message": "PR_AUC is 0.3375; drop from reference is 0.0918.",
+        "details": {},
+        "source": "reference_metrics.json"
+      },
+      {
+        "evidence_id": "PERF-ROCAUC",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "performance",
+        "metric": "roc_auc_drop",
+        "status": "warning",
+        "severity": "medium",
+        "observed_value": 0.7362110311750599,
+        "reference_value": 0.8285926194023938,
+        "threshold": {
+          "warning_drop": 0.05,
+          "critical_drop": 0.1
+        },
+        "feature": null,
+        "message": "ROC_AUC is 0.7362; drop from reference is 0.0924.",
+        "details": {},
+        "source": "reference_metrics.json"
+      },
+      {
+        "evidence_id": "PRED-KS-PROBABILITY",
+        "model_id": "diabetes_risk",
+        "domain_id": "diabetes_screening",
+        "domain": "prediction_drift",
+        "metric": "prediction_probability_ks",
+        "status": "warning",
+        "severity": "medium",
+        "observed_value": 0.4963777988016399,
+        "reference_value": 0.0,
+        "threshold": 0.1,
+        "feature": null,
+        "message": "Prediction KS statistic is 0.4964; it is supporting evidence only.",
+        "details": {
+          "p_value": 8.366285649916297e-224
+        },
+        "source": "reference_predictions.parquet"
+      }
+    ],
+    "recalculated_metrics": false
+  },
+  "recommendation": {
+    "incident_type": "mixed_incident",
+    "severity": "high",
+    "executive_summary": "The model exhibits high\u2011severity feature drift in BMI, GenHlth, and HighBP, concurrent prediction drift (high PSI and increased positive rates), and degraded performance metrics (Brier, F1, precision).",
+    "claims": [
+      {
+        "claim": "Feature drift detected in BMI, GenHlth, and HighBP.",
+        "evidence_ids": [
+          "DRIFT-PSI-BMI",
+          "DRIFT-PSI-GENHLTH",
+          "DRIFT-PSI-HIGHBP"
+        ]
+      },
+      {
+        "claim": "Prediction drift observed via high probability PSI and increased positive rates.",
+        "evidence_ids": [
+          "PRED-PSI-PROBABILITY",
+          "PRED-RATE-DEFAULT",
+          "PRED-RATE-OPERATING"
+        ]
+      },
+      {
+        "claim": "Performance metrics degraded: Brier score, F1, and precision have fallen below thresholds.",
+        "evidence_ids": [
+          "PERF-BRIER",
+          "PERF-F1-OPERATING",
+          "PERF-PRECISION-OPERATING"
+        ]
+      }
+    ],
+    "root_cause_hypothesis": "Hypothesis: Feature drift in BMI, GenHlth, and HighBP is contributing to prediction drift and performance degradation.",
+    "root_cause_evidence_ids": [
+      "DRIFT-PSI-BMI",
+      "DRIFT-PSI-GENHLTH",
+      "DRIFT-PSI-HIGHBP"
+    ],
+    "recommended_actions": [
+      {
+        "action_type": "investigate_feature_drift",
+        "action": "Investigate the source and extent of feature drift in BMI, GenHlth, and HighBP.",
+        "rationale": "Feature drift is the primary evidence for the mixed incident and requires confirmation of data quality or collection changes.",
+        "priority": "high",
+        "evidence_ids": [
+          "DRIFT-PSI-BMI",
+          "DRIFT-PSI-GENHLTH",
+          "DRIFT-PSI-HIGHBP"
+        ],
+        "requires_human_approval": true
+      },
+      {
+        "action_type": "investigate_data_pipeline",
+        "action": "Examine the data ingestion and preprocessing pipeline for recent changes that could explain the observed drift.",
+        "rationale": "Pipeline alterations can introduce distribution shifts; investigation will clarify root cause.",
+        "priority": "high",
+        "evidence_ids": [
+          "DRIFT-PSI-BMI",
+          "DRIFT-PSI-GENHLTH",
+          "DRIFT-PSI-HIGHBP",
+          "PRED-PSI-PROBABILITY",
+          "PRED-RATE-DEFAULT",
+          "PRED-RATE-OPERATING"
+        ],
+        "requires_human_approval": true
+      },
+      {
+        "action_type": "evaluate_threshold",
+        "action": "Assess whether adjusting the operating threshold could mitigate performance drops.",
+        "rationale": "Threshold tuning may temporarily improve metrics while root cause is addressed.",
+        "priority": "medium",
+        "evidence_ids": [
+          "PERF-F1-OPERATING",
+          "PERF-PRECISION-OPERATING"
+        ],
+        "requires_human_approval": true
+      }
+    ],
+    "uncertainties": [
+      "Uncertainty whether drift originates from data collection changes or external population shifts; threshold adjustment may not fully restore performance."
+    ],
+    "overall_evidence_ids": [
+      "DRIFT-PSI-BMI",
+      "DRIFT-PSI-GENHLTH",
+      "DRIFT-PSI-HIGHBP",
+      "PERF-BRIER",
+      "PERF-F1-OPERATING",
+      "PERF-PRECISION-OPERATING",
+      "PRED-PSI-PROBABILITY",
+      "PRED-RATE-DEFAULT",
+      "PRED-RATE-OPERATING"
+    ],
+    "requires_human_approval": true,
+    "confidence": 0.8
+  },
+  "verification": {
+    "status": "pass",
+    "violations": [],
+    "unsupported_evidence_ids": [],
+    "policy_checks": [
+      "citation_existence_and_uniqueness",
+      "claim_and_action_grounding",
+      "overall_evidence_coverage",
+      "severity_compatibility",
+      "confidence_schema_bounds",
+      "uncertainty_presence",
+      "incident_candidate_compatibility",
+      "batch_blocking_policy",
+      "label_and_performance_availability_policy",
+      "normal_operation_action_policy",
+      "retraining_eligibility_policy",
+      "feature_drift_interpretation_policy",
+      "human_approval_policy",
+      "no_automatic_action_policy"
+    ],
+    "revision_feedback": null
+  },
+  "revision_count": 0,
+  "fallback_used": false,
+  "approval_required": true,
+  "approval_decision": {
+    "decision": "approve",
+    "comment": null,
+    "reviewer": "reliability-rerun-01",
+    "reviewed_at_utc": "2026-07-25T11:31:38.035276Z"
+  },
+  "llm_call_metadata": [
+    {
+      "stage": "triage",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "schema": "AgentTriage",
+      "latency_ms": 1891.81,
+      "token_usage": {
+        "input_tokens": 3520,
+        "output_tokens": 1112,
+        "total_tokens": 4632,
+        "output_token_details": {
+          "reasoning": 946
+        }
+      },
+      "parse_success": true,
+      "is_fake": false
+    },
+    {
+      "stage": "recommendation",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "schema": "AgentRecommendation",
+      "latency_ms": 7491.26,
+      "token_usage": {
+        "input_tokens": 4161,
+        "output_tokens": 1465,
+        "total_tokens": 5626,
+        "output_token_details": {
+          "reasoning": 779
+        }
+      },
+      "parse_success": true,
+      "is_fake": false
+    }
+  ],
+  "execution_errors": [],
+  "final_status": "approved",
+  "evaluation_type": "repeat_reliability_run",
+  "replaces_original_evaluation": false,
+  "original_result_preserved": true,
+  "scenario": "feature_drift",
+  "provider_model": "openai/gpt-oss-20b",
+  "execution_timestamp": "2026-07-25T11:31:38.044271+00:00",
+  "original_result_path": "reports/generated/diabetes_risk/feature_drift/live_groq/agentic_result.json",
+  "repeat_result_path": "reports/generated/diabetes_risk/reliability_rerun_01/feature_drift/agentic_result.json"
+}

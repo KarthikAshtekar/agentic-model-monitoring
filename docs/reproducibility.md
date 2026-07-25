@@ -1,5 +1,53 @@
 # Reproducibility Guide
 
+## Registered-model commands
+
+List the strict registry:
+
+```powershell
+python scripts\list_registered_models.py
+```
+
+Inspect and onboard the existing fitted BRFSS binary model without retraining:
+
+```powershell
+python scripts\inspect_model_project.py `
+  --source-project "<path-to-25BM6JP22>" `
+  --output reports\onboarding\diabetes_risk
+
+python scripts\onboard_binary_classifier.py `
+  --source-project "<path-to-25BM6JP22>" `
+  --manifest configs\models\diabetes_risk.yaml `
+  --model-id diabetes_risk
+```
+
+Generate and monitor only diabetes namespaced scenarios:
+
+```powershell
+python scripts\generate_monitoring_scenarios.py --all --model-id diabetes_risk
+python scripts\run_monitoring.py --all --model-id diabetes_risk
+```
+
+Run one live scenario and evaluate already-completed live reports:
+
+```powershell
+python scripts\run_agentic_monitoring.py `
+  --model-id diabetes_risk `
+  --scenario performance_degradation `
+  --decision approve `
+  --reviewer "reproduction-reviewer"
+
+python scripts\evaluate_live_agent.py --model-id diabetes_risk
+python scripts\evaluate_cross_model_agent.py
+```
+
+The last two commands make no provider calls. Diabetes generated outputs use
+`data/scenarios/diabetes_risk/<scenario>/`,
+`reports/generated/diabetes_risk/<scenario>/`, and
+`reports/evaluations/diabetes_risk/live_groq_six_scenarios/`. Re-running a live scenario
+replaces that model/scenario/mode report, so preserve reviewed results before intentional
+reproduction.
+
 ## Reproduced environment
 
 The final local evaluation used:
@@ -61,14 +109,14 @@ The model is exported from a separate `credit-default-xai` checkout. On the orig
 machine, this local checkout was:
 
 ```text
-D:\PGDBA\Projects\Credit Default Risk\credit-default-xai
+<path-to-credit-default-xai>
 ```
 
 That is a provenance example, not a universal required path. Set the variable to the
 location of your own verified source checkout:
 
 ```powershell
-$SourceRepo = "D:\PGDBA\Projects\Credit Default Risk\credit-default-xai"
+$SourceRepo = "<path-to-credit-default-xai>"
 python scripts\export_credit_default_bundle.py `
   --source-repo $SourceRepo `
   --overwrite
@@ -195,6 +243,39 @@ The evaluator performs no network call and uses no LLM judge. It reads live agen
 deterministic monitoring JSON, then checks structured parsing, incident/route
 compatibility, citation grounding, policy, verification, fallback, approval, latency, and
 tokens.
+
+### Repeat reliability check
+
+The reviewed repeat used only the two first-run diabetes fallback cases:
+
+```powershell
+python scripts\run_agentic_monitoring.py `
+  --model-id diabetes_risk `
+  --scenario feature_drift `
+  --decision approve `
+  --reviewer "reliability-rerun-01" `
+  --run-label reliability_rerun_01
+
+python scripts\run_agentic_monitoring.py `
+  --model-id diabetes_risk `
+  --scenario unlabelled_drift `
+  --decision approve `
+  --reviewer "reliability-rerun-01" `
+  --run-label reliability_rerun_01
+
+python scripts\evaluate_reliability_rerun.py
+```
+
+`--run-label` preserves the default `live_groq/` result and writes the repeat under
+`reports/generated/diabetes_risk/reliability_rerun_01/<scenario>/`. The comparison is
+under `reports/evaluations/diabetes_risk/reliability_rerun/`. Do not rerun the reviewed
+`reliability_rerun_01` label in place; use a new unique label for any future experiment
+and treat it as a separate comparison.
+
+The original 12-case evaluation remains authoritative. The repeat used unchanged model
+assets, scenario artifacts, prompts, evidence, structured schemas, routing, verification,
+revision, and approval policies. The two repeat observations do not estimate production
+or long-run reliability.
 
 ## 7. Reproduce local cross-process approval resume
 

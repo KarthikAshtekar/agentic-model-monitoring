@@ -1,0 +1,186 @@
+{
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "scenario_count": 4,
+  "completed_count": 4,
+  "structured_output_success_rate": 1.0,
+  "incident_compatibility_rate": 1.0,
+  "route_compatibility_rate": 1.0,
+  "evidence_grounding_rate": 1.0,
+  "policy_compliance_rate": 1.0,
+  "first_pass_verification_rate": 0.75,
+  "fallback_rate": 0.0,
+  "approval_completion_rate": 1.0,
+  "mean_latency_ms": 3538.51,
+  "median_latency_ms": 3546.1,
+  "total_input_tokens": 18271,
+  "total_output_tokens": 7546,
+  "total_tokens": 25817,
+  "scenario_results": [
+    {
+      "scenario_name": "normal_operation",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "execution_mode": "live",
+      "completed": true,
+      "used_fallback": false,
+      "triage_parse_success": true,
+      "recommendation_parse_success": true,
+      "first_pass_verification": true,
+      "final_verification_passed": true,
+      "revision_count": 0,
+      "incident_type": "normal_operation",
+      "expected_incident_types": [
+        "normal_operation"
+      ],
+      "incident_compatible": true,
+      "diagnostic_route": "no_additional_diagnostics",
+      "expected_routes": [
+        "no_additional_diagnostics"
+      ],
+      "route_compatible": true,
+      "all_cited_evidence_valid": true,
+      "all_claims_cited": true,
+      "all_actions_cited": true,
+      "policy_compliant": true,
+      "approval_required": false,
+      "approval_completed": true,
+      "final_status": "completed_no_approval_required",
+      "latency_ms": 2673.26,
+      "input_tokens": 4515,
+      "output_tokens": 1296,
+      "total_tokens": 5811,
+      "violations": [],
+      "notes": [
+        "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
+        "No external remediation execution is part of the agent workflow."
+      ]
+    },
+    {
+      "scenario_name": "feature_drift",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "execution_mode": "live",
+      "completed": true,
+      "used_fallback": false,
+      "triage_parse_success": true,
+      "recommendation_parse_success": true,
+      "first_pass_verification": true,
+      "final_verification_passed": true,
+      "revision_count": 0,
+      "incident_type": "mixed_incident",
+      "expected_incident_types": [
+        "mixed_incident",
+        "feature_drift"
+      ],
+      "incident_compatible": true,
+      "diagnostic_route": "mixed_diagnostics",
+      "expected_routes": [
+        "mixed_diagnostics",
+        "drift_diagnostics"
+      ],
+      "route_compatible": true,
+      "all_cited_evidence_valid": true,
+      "all_claims_cited": true,
+      "all_actions_cited": true,
+      "policy_compliant": true,
+      "approval_required": true,
+      "approval_completed": true,
+      "final_status": "approved",
+      "latency_ms": 4457.58,
+      "input_tokens": 5861,
+      "output_tokens": 2098,
+      "total_tokens": 7959,
+      "violations": [],
+      "notes": [
+        "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
+        "No external remediation execution is part of the agent workflow."
+      ]
+    },
+    {
+      "scenario_name": "data_quality_failure",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "execution_mode": "live",
+      "completed": true,
+      "used_fallback": false,
+      "triage_parse_success": true,
+      "recommendation_parse_success": true,
+      "first_pass_verification": false,
+      "final_verification_passed": true,
+      "revision_count": 1,
+      "incident_type": "data_quality_failure",
+      "expected_incident_types": [
+        "data_quality_failure"
+      ],
+      "incident_compatible": true,
+      "diagnostic_route": "data_quality_diagnostics",
+      "expected_routes": [
+        "data_quality_diagnostics"
+      ],
+      "route_compatible": true,
+      "all_cited_evidence_valid": true,
+      "all_claims_cited": true,
+      "all_actions_cited": true,
+      "policy_compliant": true,
+      "approval_required": true,
+      "approval_completed": true,
+      "final_status": "approved",
+      "latency_ms": 4418.93,
+      "input_tokens": 4563,
+      "output_tokens": 2661,
+      "total_tokens": 7224,
+      "violations": [],
+      "notes": [
+        "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
+        "No external remediation execution is part of the agent workflow."
+      ]
+    },
+    {
+      "scenario_name": "performance_degradation",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "execution_mode": "live",
+      "completed": true,
+      "used_fallback": false,
+      "triage_parse_success": true,
+      "recommendation_parse_success": true,
+      "first_pass_verification": true,
+      "final_verification_passed": true,
+      "revision_count": 0,
+      "incident_type": "performance_degradation",
+      "expected_incident_types": [
+        "performance_degradation"
+      ],
+      "incident_compatible": true,
+      "diagnostic_route": "performance_diagnostics",
+      "expected_routes": [
+        "performance_diagnostics"
+      ],
+      "route_compatible": true,
+      "all_cited_evidence_valid": true,
+      "all_claims_cited": true,
+      "all_actions_cited": true,
+      "policy_compliant": true,
+      "approval_required": true,
+      "approval_completed": true,
+      "final_status": "approved",
+      "latency_ms": 2604.25,
+      "input_tokens": 3332,
+      "output_tokens": 1491,
+      "total_tokens": 4823,
+      "violations": [],
+      "notes": [
+        "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
+        "No external remediation execution is part of the agent workflow."
+      ]
+    }
+  ],
+  "limitations": [
+    "The evaluation contains four controlled replay scenarios, not production traffic.",
+    "Monitoring thresholds and synthetic transformations are not production-validated.",
+    "Deterministic checks assess schema, evidence, routing, and policy, not prose quality.",
+    "A successful replay evaluation does not establish production readiness."
+  ],
+  "created_at_utc": "2026-07-25T03:12:17.784751Z"
+}

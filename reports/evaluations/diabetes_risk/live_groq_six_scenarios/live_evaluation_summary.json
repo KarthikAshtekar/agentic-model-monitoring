@@ -1,0 +1,291 @@
+{
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "model_id": "diabetes_risk",
+  "domain_id": "diabetes_screening",
+  "scenario_count": 6,
+  "completed_count": 6,
+  "structured_output_success_rate": 0.6667,
+  "incident_compatibility_rate": 1.0,
+  "route_compatibility_rate": 1.0,
+  "evidence_grounding_rate": 1.0,
+  "policy_compliance_rate": 1.0,
+  "first_pass_verification_rate": 0.6667,
+  "fallback_rate": 0.3333,
+  "approval_completion_rate": 1.0,
+  "mean_latency_ms": 14532.31,
+  "median_latency_ms": 10074.59,
+  "total_input_tokens": 25496,
+  "total_output_tokens": 6999,
+  "total_tokens": 32495,
+  "scenario_results": [
+    {
+      "scenario_name": "normal_operation",
+      "model_id": "diabetes_risk",
+      "domain_id": "diabetes_screening",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "execution_mode": "live",
+      "completed": true,
+      "used_fallback": false,
+      "triage_parse_success": true,
+      "recommendation_parse_success": true,
+      "first_pass_verification": true,
+      "final_verification_passed": true,
+      "revision_count": 0,
+      "incident_type": "normal_operation",
+      "expected_incident_types": [
+        "normal_operation"
+      ],
+      "incident_compatible": true,
+      "diagnostic_route": "no_additional_diagnostics",
+      "expected_routes": [
+        "no_additional_diagnostics"
+      ],
+      "route_compatible": true,
+      "all_cited_evidence_valid": true,
+      "all_claims_cited": true,
+      "all_actions_cited": true,
+      "policy_compliant": true,
+      "approval_required": false,
+      "approval_completed": true,
+      "final_status": "completed_no_approval_required",
+      "latency_ms": 3922.12,
+      "input_tokens": 6282,
+      "output_tokens": 1619,
+      "total_tokens": 7901,
+      "violations": [],
+      "notes": [
+        "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
+        "No external remediation execution is part of the agent workflow."
+      ]
+    },
+    {
+      "scenario_name": "feature_drift",
+      "model_id": "diabetes_risk",
+      "domain_id": "diabetes_screening",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "execution_mode": "live",
+      "completed": true,
+      "used_fallback": true,
+      "triage_parse_success": true,
+      "recommendation_parse_success": false,
+      "first_pass_verification": false,
+      "final_verification_passed": false,
+      "revision_count": 0,
+      "incident_type": "mixed_incident",
+      "expected_incident_types": [
+        "mixed_incident",
+        "feature_drift"
+      ],
+      "incident_compatible": true,
+      "diagnostic_route": "mixed_diagnostics",
+      "expected_routes": [
+        "mixed_diagnostics",
+        "drift_diagnostics"
+      ],
+      "route_compatible": true,
+      "all_cited_evidence_valid": true,
+      "all_claims_cited": true,
+      "all_actions_cited": true,
+      "policy_compliant": true,
+      "approval_required": true,
+      "approval_completed": true,
+      "final_status": "approved",
+      "latency_ms": 31281.17,
+      "input_tokens": 3520,
+      "output_tokens": 679,
+      "total_tokens": 4199,
+      "violations": [
+        "Live recommendation structured output did not parse successfully."
+      ],
+      "notes": [
+        "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
+        "No external remediation execution is part of the agent workflow.",
+        "Live execution error preserved at recommendation: RateLimitError — Groq request was rate-limited (HTTP 429)."
+      ]
+    },
+    {
+      "scenario_name": "data_quality_failure",
+      "model_id": "diabetes_risk",
+      "domain_id": "diabetes_screening",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "execution_mode": "live",
+      "completed": true,
+      "used_fallback": false,
+      "triage_parse_success": true,
+      "recommendation_parse_success": true,
+      "first_pass_verification": true,
+      "final_verification_passed": true,
+      "revision_count": 0,
+      "incident_type": "data_quality_failure",
+      "expected_incident_types": [
+        "data_quality_failure"
+      ],
+      "incident_compatible": true,
+      "diagnostic_route": "data_quality_diagnostics",
+      "expected_routes": [
+        "data_quality_diagnostics"
+      ],
+      "route_compatible": true,
+      "all_cited_evidence_valid": true,
+      "all_claims_cited": true,
+      "all_actions_cited": true,
+      "policy_compliant": true,
+      "approval_required": true,
+      "approval_completed": true,
+      "final_status": "approved",
+      "latency_ms": 3068.92,
+      "input_tokens": 4406,
+      "output_tokens": 1549,
+      "total_tokens": 5955,
+      "violations": [],
+      "notes": [
+        "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
+        "No external remediation execution is part of the agent workflow."
+      ]
+    },
+    {
+      "scenario_name": "performance_degradation",
+      "model_id": "diabetes_risk",
+      "domain_id": "diabetes_screening",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "execution_mode": "live",
+      "completed": true,
+      "used_fallback": false,
+      "triage_parse_success": true,
+      "recommendation_parse_success": true,
+      "first_pass_verification": true,
+      "final_verification_passed": true,
+      "revision_count": 0,
+      "incident_type": "performance_degradation",
+      "expected_incident_types": [
+        "performance_degradation"
+      ],
+      "incident_compatible": true,
+      "diagnostic_route": "performance_diagnostics",
+      "expected_routes": [
+        "performance_diagnostics"
+      ],
+      "route_compatible": true,
+      "all_cited_evidence_valid": true,
+      "all_claims_cited": true,
+      "all_actions_cited": true,
+      "policy_compliant": true,
+      "approval_required": true,
+      "approval_completed": true,
+      "final_status": "approved",
+      "latency_ms": 16227.06,
+      "input_tokens": 4883,
+      "output_tokens": 1347,
+      "total_tokens": 6230,
+      "violations": [],
+      "notes": [
+        "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
+        "No external remediation execution is part of the agent workflow."
+      ]
+    },
+    {
+      "scenario_name": "unlabelled_drift",
+      "model_id": "diabetes_risk",
+      "domain_id": "diabetes_screening",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "execution_mode": "live",
+      "completed": true,
+      "used_fallback": true,
+      "triage_parse_success": true,
+      "recommendation_parse_success": false,
+      "first_pass_verification": false,
+      "final_verification_passed": false,
+      "revision_count": 0,
+      "incident_type": "feature_drift",
+      "expected_incident_types": [
+        "feature_drift",
+        "prediction_drift",
+        "mixed_incident",
+        "insufficient_evidence"
+      ],
+      "incident_compatible": true,
+      "diagnostic_route": "drift_diagnostics",
+      "expected_routes": [
+        "drift_diagnostics",
+        "mixed_diagnostics",
+        "evidence_sufficiency_review"
+      ],
+      "route_compatible": true,
+      "all_cited_evidence_valid": true,
+      "all_claims_cited": true,
+      "all_actions_cited": true,
+      "policy_compliant": true,
+      "approval_required": true,
+      "approval_completed": true,
+      "final_status": "approved",
+      "latency_ms": 29900.07,
+      "input_tokens": 2868,
+      "output_tokens": 867,
+      "total_tokens": 3735,
+      "violations": [
+        "Live recommendation structured output did not parse successfully."
+      ],
+      "notes": [
+        "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
+        "No external remediation execution is part of the agent workflow.",
+        "Live execution error preserved at triage: TriageVerificationError — Triage incident type is incompatible with deterministic candidates.",
+        "Live execution error preserved at recommendation: RateLimitError — Groq request was rate-limited (HTTP 429)."
+      ]
+    },
+    {
+      "scenario_name": "insufficient_labels",
+      "model_id": "diabetes_risk",
+      "domain_id": "diabetes_screening",
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "execution_mode": "live",
+      "completed": true,
+      "used_fallback": false,
+      "triage_parse_success": true,
+      "recommendation_parse_success": true,
+      "first_pass_verification": true,
+      "final_verification_passed": true,
+      "revision_count": 0,
+      "incident_type": "insufficient_evidence",
+      "expected_incident_types": [
+        "insufficient_evidence"
+      ],
+      "incident_compatible": true,
+      "diagnostic_route": "evidence_sufficiency_review",
+      "expected_routes": [
+        "evidence_sufficiency_review"
+      ],
+      "route_compatible": true,
+      "all_cited_evidence_valid": true,
+      "all_claims_cited": true,
+      "all_actions_cited": true,
+      "policy_compliant": true,
+      "approval_required": true,
+      "approval_completed": true,
+      "final_status": "approved",
+      "latency_ms": 2794.49,
+      "input_tokens": 3537,
+      "output_tokens": 938,
+      "total_tokens": 4475,
+      "violations": [],
+      "notes": [
+        "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
+        "No external remediation execution is part of the agent workflow."
+      ]
+    }
+  ],
+  "limitations": [
+    "The evaluation contains 6 controlled replay scenarios, not production traffic.",
+    "Monitoring thresholds and synthetic transformations are not production-validated.",
+    "Deterministic checks assess schema, evidence, routing, and policy, not prose quality.",
+    "Provider or verifier failures may enter the deterministic fallback; fallbacks are excluded from live structured-output success.",
+    "A successful replay evaluation does not establish production readiness."
+  ],
+  "created_at_utc": "2026-07-25T08:52:47.273108Z"
+}

@@ -37,6 +37,8 @@ class EvidenceItem(MonitoringSchema):
     """One traceable deterministic monitoring conclusion."""
 
     evidence_id: str = Field(min_length=1)
+    model_id: str = "credit_default"
+    domain_id: str = "credit_risk"
     domain: EvidenceDomain
     metric: str
     status: EvidenceStatus
@@ -100,8 +102,36 @@ class MonitoringRunResult(MonitoringSchema):
     run_id: str
     scenario_name: str
     created_at_utc: datetime
+    model_id: str = "credit_default"
+    display_name: str = "Credit Default XGBoost"
     model_name: str
     model_version: str
+    task_type: str = "binary_classification"
+    domain_id: str = "credit_risk"
+    bundle_mode: str = "live_inference"
+    reference_sample_count: int = Field(default=6002, ge=1)
+    feature_count: int = Field(default=36, ge=1)
+    use_case: str | None = "Academic next-month credit-default risk monitoring"
+    positive_outcome: str | None = "next-month credit default"
+    prediction_unit: str | None = "credit-card account record"
+    allowed_action_types: list[str] = Field(
+        default_factory=lambda: [
+            "no_action",
+            "continue_monitoring",
+            "quarantine_batch",
+            "investigate_data_pipeline",
+            "investigate_feature_drift",
+            "collect_more_labels",
+            "evaluate_threshold",
+            "evaluate_recalibration",
+            "evaluate_retraining",
+            "run_challenger_in_shadow",
+            "escalate_model_governance",
+        ]
+    )
+    prohibited_claims: list[str] = Field(default_factory=list)
+    safe_business_terminology: list[str] = Field(default_factory=list)
+    domain_limitations: list[str] = Field(default_factory=list)
     operating_threshold: float = Field(ge=0.0, le=1.0)
     batch_valid: bool
     batch_blocked: bool

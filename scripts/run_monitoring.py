@@ -20,6 +20,7 @@ def _parser() -> argparse.ArgumentParser:
     selection = parser.add_mutually_exclusive_group(required=True)
     selection.add_argument("--all", action="store_true", help="Monitor all MVP scenarios.")
     selection.add_argument("--scenario", choices=SUPPORTED_SCENARIOS)
+    parser.add_argument("--model-id", default="credit_default")
     return parser
 
 
@@ -27,10 +28,11 @@ def main() -> int:
     """Run monitoring and report execution status without failing on intended incidents."""
     args = _parser().parse_args()
     scenario_names = list(SUPPORTED_SCENARIOS) if args.all else [args.scenario]
-    engine = MonitoringEngine()
+    engine = MonitoringEngine(model_id=args.model_id)
     table = Table(show_header=True, header_style="bold")
     for column in (
         "scenario",
+        "model_id",
         "batch_valid",
         "batch_blocked",
         "overall_severity",
@@ -48,6 +50,7 @@ def main() -> int:
         json_path = write_json_report(result)
         table.add_row(
             scenario_name,
+            result.model_id,
             str(result.batch_valid),
             str(result.batch_blocked),
             result.overall_severity,

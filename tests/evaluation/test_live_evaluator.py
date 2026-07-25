@@ -261,6 +261,24 @@ def test_missing_token_metadata_remains_nullable() -> None:
     assert evaluated.total_tokens is None
 
 
+def test_safe_live_execution_error_is_preserved_in_notes() -> None:
+    result = load_result("feature_drift")
+    agent = _fixture(result)
+    agent["execution_errors"] = [
+        {
+            "stage": "recommendation",
+            "error_type": "RateLimitError",
+            "error_message": "Groq request was rate-limited (HTTP 429).",
+        }
+    ]
+
+    evaluated = evaluate_scenario(agent, result)
+
+    assert any(
+        "recommendation: RateLimitError" in note for note in evaluated.notes
+    )
+
+
 def test_insufficient_labels_fixture_requires_collection_action() -> None:
     result = load_result("normal_operation").model_copy(deep=True)
     result.scenario_name = "insufficient_labels"

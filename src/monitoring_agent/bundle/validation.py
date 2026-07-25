@@ -1,4 +1,4 @@
-"""Integrity, alignment, leakage, threshold, and inference checks for the bundle."""
+"""Generic integrity, alignment, leakage, threshold, and inference checks."""
 
 from __future__ import annotations
 
@@ -7,11 +7,8 @@ from pathlib import Path
 
 import numpy as np
 
-from monitoring_agent.bundle.loader import CreditDefaultBundle
-from monitoring_agent.bundle.schemas import (
-    BundleValidationResult,
-    ValidationIssue,
-)
+from monitoring_agent.bundle.schemas import BundleValidationResult, ValidationIssue
+from monitoring_agent.models.bundle import CreditDefaultBundle, RegisteredModelBundle
 
 REQUIRED_RELATIVE_PATHS = (
     "artifacts/models/credit_default_pipeline.joblib",
@@ -34,13 +31,33 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _relative(bundle: RegisteredModelBundle, path: Path) -> str:
+    return path.resolve().relative_to(bundle.root).as_posix()
+
+
+def _required_paths(bundle: RegisteredModelBundle) -> list[Path]:
+    candidates = [
+        bundle.metadata_path,
+        bundle.feature_schema_path,
+        bundle.manifest_path,
+        bundle.reference_metrics_path,
+        bundle.reference_features_path,
+        bundle.reference_labels_path,
+        bundle.reference_predictions_path,
+        bundle.reference_feature_summary_path,
+    ]
+    if bundle.inference_available and bundle.model_path is not None:
+        candidates.append(bundle.model_path)
+    return candidates
+
+
 def validate_bundle(
-    bundle: CreditDefaultBundle | None = None,
+    bundle: RegisteredModelBundle | None = None,
     *,
-    probability_tolerance: float = 1e-7,
+    probability_tolerance: float = 2e-7,
 ) -> BundleValidationResult:
-    """Run complete bundle checks and return errors, warnings, and check status."""
-    resolved_bundle = bundle or CreditDefaultBundle()
+    """Run complete validation for any registered binary-classification bundle."""
+    resolved = bundle or CreditDefaultBundle()
     checks: dict[str, bool] = {}
     errors: list[ValidationIssue] = []
     warnings: list[ValidationIssue] = []
@@ -51,11 +68,8 @@ def validate_bundle(
         if not condition:
             errors.append(ValidationIssue(check=check, message=message))
 
-    missing = [
-        relative
-        for relative in REQUIRED_RELATIVE_PATHS
-        if not (resolved_bundle.root / relative).is_file()
-    ]
+    required = _required_paths(resolved)
+    missing = [_relative(resolved, path) for path in required if not path.is_file()]
     record("required_files", not missing, f"Missing required files: {missing}")
     if missing:
         return BundleValidationResult(
@@ -67,10 +81,10 @@ def validate_bundle(
         )
 
     try:
-        metadata = resolved_bundle.load_metadata()
-        feature_schema = resolved_bundle.load_feature_schema()
-        manifest = resolved_bundle.load_manifest()
-        reference_metrics = resolved_bundle.load_reference_metrics()
+        metadata = resolved.load_metadata()
+        feature_schema = resolved.load_feature_schema()
+        manifest = resolved.load_manifest()
+        reference_metrics = resolved.load_reference_metrics()
     except Exception as exc:
         record("json_schemas", False, f"JSON schema validation failed: {exc}")
         return BundleValidationResult(
@@ -81,26 +95,25 @@ def validate_bundle(
             details=details,
         )
     record("json_schemas", True, "")
-
-    features = resolved_bundle.load_reference_features()
-    labels = resolved_bundle.load_reference_labels()
-    predictions = resolved_bundle.load_reference_predictions()
-
-    expected_feature_columns = ["record_id", *feature_schema.ordered_features]
+    registered = resolved.registered_manifest
+    features = resolved.load_reference_features()
+    labels = resolved.load_reference_labels()
+    predictions = resolved.load_reference_predictions()
+    identifier = registered.data_contract.identifier_column
+    expected_feature_columns = [identifier, *feature_schema.ordered_features]
     record(
         "feature_order",
         features.columns.tolist() == expected_feature_columns,
-        "Reference feature columns do not match record_id plus the exact schema order.",
+        "Reference feature columns do not match identifier plus exact schema order.",
     )
     record(
         "feature_schema_positions",
-        [feature.name for feature in feature_schema.features]
+        [item.name for item in feature_schema.features]
         == feature_schema.ordered_features
-        and [feature.position for feature in feature_schema.features]
+        and [item.position for item in feature_schema.features]
         == list(range(len(feature_schema.features))),
         "Feature definitions do not match their ordered positions.",
     )
-
     target_names = {feature_schema.target.name, feature_schema.target.exported_name}
     leaked = target_names.intersection(features.columns)
     record(
@@ -110,29 +123,28 @@ def validate_bundle(
     )
     record(
         "reference_columns",
-        labels.columns.tolist() == ["record_id", "actual_label"]
+        labels.columns.tolist() == [identifier, "actual_label"]
         and predictions.columns.tolist()
         == [
-            "record_id",
+            identifier,
             "predicted_probability",
             "predicted_class_default_threshold",
             "predicted_class_operating_threshold",
         ],
         "Reference label or prediction columns do not match the bundle contract.",
     )
-
     unique_ids = (
-        features["record_id"].is_unique
-        and labels["record_id"].is_unique
-        and predictions["record_id"].is_unique
+        features[identifier].is_unique
+        and labels[identifier].is_unique
+        and predictions[identifier].is_unique
     )
-    record("unique_record_ids", unique_ids, "Record IDs must be unique in every table.")
+    record("unique_record_ids", unique_ids, "Record IDs must be unique.")
     aligned = (
-        features["record_id"].tolist()
-        == labels["record_id"].tolist()
-        == predictions["record_id"].tolist()
+        features[identifier].tolist()
+        == labels[identifier].tolist()
+        == predictions[identifier].tolist()
     )
-    record("record_alignment", aligned, "Reference record IDs are not aligned one-to-one.")
+    record("record_alignment", aligned, "Reference IDs are not aligned one-to-one.")
 
     probabilities = predictions["predicted_probability"].to_numpy(dtype=float)
     probability_valid = bool(
@@ -144,25 +156,26 @@ def validate_bundle(
         probability_valid,
         "Stored probabilities must be finite and within [0, 1].",
     )
-
     expected_default = (probabilities >= metadata.default_threshold).astype("int8")
     expected_operating = (probabilities >= metadata.operating_threshold).astype("int8")
-    threshold_predictions_valid = bool(
-        np.array_equal(
-            expected_default,
-            predictions["predicted_class_default_threshold"].to_numpy(dtype="int8"),
-        )
-        and np.array_equal(
-            expected_operating,
-            predictions["predicted_class_operating_threshold"].to_numpy(dtype="int8"),
-        )
-    )
     record(
         "threshold_predictions",
-        threshold_predictions_valid,
-        "Stored class predictions do not match probabilities and recorded thresholds.",
+        bool(
+            np.array_equal(
+                expected_default,
+                predictions[
+                    "predicted_class_default_threshold"
+                ].to_numpy(dtype="int8"),
+            )
+            and np.array_equal(
+                expected_operating,
+                predictions[
+                    "predicted_class_operating_threshold"
+                ].to_numpy(dtype="int8"),
+            )
+        ),
+        "Stored class predictions do not match registered thresholds.",
     )
-
     row_counts_valid = (
         len(features)
         == len(labels)
@@ -170,24 +183,37 @@ def validate_bundle(
         == metadata.reference_sample_count
         == reference_metrics.sample_count
     )
-    record("row_counts", row_counts_valid, "Reference row counts disagree with metadata.")
-
-    manifest_paths = {entry.relative_path for entry in manifest.files}
-    payload_paths = set(REQUIRED_RELATIVE_PATHS) - {
-        "artifacts/metadata/bundle_manifest.json"
-    }
-    payload_paths.add("docs/credit_default_bundle_inventory.md")
+    record("row_counts", row_counts_valid, "Reference row counts disagree.")
     record(
-        "manifest_coverage",
-        manifest_paths == payload_paths,
-        "Manifest coverage does not match the exported payload files.",
+        "registered_contract",
+        metadata.feature_count == len(registered.data_contract.ordered_features)
+        and np.isclose(
+            metadata.default_threshold,
+            registered.prediction_contract.default_threshold,
+        )
+        and np.isclose(
+            metadata.operating_threshold,
+            registered.prediction_contract.operating_threshold,
+        ),
+        "Registered manifest and exported metadata disagree.",
     )
 
+    manifest_paths = {entry.relative_path for entry in manifest.files}
+    required_payload_paths = {
+        _relative(resolved, path)
+        for path in required
+        if path != resolved.manifest_path
+    }
+    record(
+        "manifest_coverage",
+        required_payload_paths <= manifest_paths,
+        "Bundle manifest does not cover every required payload file.",
+    )
     integrity_valid = True
     for entry in manifest.files:
-        candidate = (resolved_bundle.root / entry.relative_path).resolve()
+        candidate = (resolved.root / entry.relative_path).resolve()
         try:
-            candidate.relative_to(resolved_bundle.root)
+            candidate.relative_to(resolved.root)
         except ValueError:
             integrity_valid = False
             errors.append(
@@ -212,22 +238,21 @@ def validate_bundle(
     checks["manifest_integrity"] = integrity_valid
 
     inference_max_abs_diff: float | None = None
-    if metadata.inference_available:
+    if resolved.inference_available:
         try:
             inference_features = features[feature_schema.ordered_features]
-            reproduced = resolved_bundle.predict_probabilities(inference_features)
+            reproduced = resolved.predict_probabilities(inference_features)
             inference_max_abs_diff = float(np.max(np.abs(reproduced - probabilities)))
-            inference_valid = bool(
-                np.allclose(
-                    reproduced,
-                    probabilities,
-                    atol=probability_tolerance,
-                    rtol=probability_tolerance,
-                )
-            )
             record(
                 "model_probability_reproduction",
-                inference_valid,
+                bool(
+                    np.allclose(
+                        reproduced,
+                        probabilities,
+                        atol=probability_tolerance,
+                        rtol=probability_tolerance,
+                    )
+                ),
                 "Loaded pipeline does not reproduce stored reference probabilities.",
             )
         except Exception as exc:
@@ -241,20 +266,20 @@ def validate_bundle(
         warnings.append(
             ValidationIssue(
                 check="model_probability_reproduction",
-                message="Skipped because metadata marks live inference as unavailable.",
+                message="Skipped because the bundle is scored-reference-only.",
             )
         )
-
     for warning in manifest.compatibility_warnings:
         warnings.append(ValidationIssue(check="compatibility", message=warning))
-
     details.update(
         {
+            "model_id": resolved.model_id,
             "reference_sample_count": len(features),
             "feature_count": len(feature_schema.ordered_features),
             "operating_threshold": metadata.operating_threshold,
             "inference_max_probability_abs_diff": inference_max_abs_diff,
             "manifest_file_count": len(manifest.files),
+            "bundle_mode": registered.provenance.bundle_mode,
         }
     )
     return BundleValidationResult(

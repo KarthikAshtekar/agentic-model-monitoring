@@ -48,7 +48,10 @@ def evaluate_data_quality(
     registry = EvidenceRegistry()
     row_count = len(batch)
     column_count = len(batch.columns)
-    expected_columns = ["record_id", *schema.ordered_features]
+    if len(schema.identifier_columns) != 1:
+        raise ValueError("Binary monitoring requires exactly one identifier column.")
+    identifier_column = schema.identifier_columns[0]
+    expected_columns = [identifier_column, *schema.ordered_features]
     target_columns = {schema.target.name, schema.target.exported_name}
 
     missing_required = [column for column in expected_columns if column not in batch.columns]
@@ -160,8 +163,8 @@ def evaluate_data_quality(
 
     duplicate_count = 0
     duplicate_rate = 0.0
-    if "record_id" in batch.columns and row_count:
-        duplicate_count = int(batch["record_id"].duplicated().sum())
+    if identifier_column in batch.columns and row_count:
+        duplicate_count = int(batch[identifier_column].duplicated().sum())
         duplicate_rate = duplicate_count / row_count
         status, severity = _status(
             duplicate_rate,
@@ -181,7 +184,7 @@ def evaluate_data_quality(
                     "warning": config["duplicate_rate_warning"],
                     "critical": config["duplicate_rate_critical"],
                 },
-                feature="record_id",
+                feature=identifier_column,
                 message=(
                     f"Duplicate record rate is {duplicate_rate:.4f} "
                     f"({duplicate_count} duplicate IDs)."

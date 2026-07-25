@@ -276,6 +276,15 @@ def evaluate_scenario(
         "Evaluation used deterministic schemas, evidence IDs, and policy rules; no judge LLM.",
         "No external remediation execution is part of the agent workflow.",
     ]
+    for error in agentic_result.get("execution_errors", []):
+        if not isinstance(error, dict):
+            continue
+        notes.append(
+            "Live execution error preserved at "
+            f"{error.get('stage', 'unknown')}: "
+            f"{error.get('error_type', 'unknown')} — "
+            f"{error.get('error_message', 'No safe error message available.')}"
+        )
 
     deterministic_evidence = {
         item.evidence_id: item.model_dump(mode="json")
@@ -388,6 +397,8 @@ def evaluate_scenario(
 
     return ScenarioEvaluation(
         scenario_name=scenario_name,
+        model_id=deterministic.model_id,
+        domain_id=deterministic.domain_id,
         provider=str(agentic_result.get("provider", "")),
         model=str(agentic_result.get("model", "")),
         execution_mode=str(agentic_result.get("execution_mode", "")),
@@ -438,6 +449,8 @@ def evaluate_live_runs(
     results = [evaluate_scenario(agent, monitoring) for agent, monitoring in runs]
     providers = {item.provider for item in results}
     models = {item.model for item in results}
+    model_ids = {item.model_id for item in results}
+    domain_ids = {item.domain_id for item in results}
     provider = next(iter(providers)) if len(providers) == 1 else "mixed"
     model = next(iter(models)) if len(models) == 1 else "mixed"
     latency_values = [
@@ -446,6 +459,8 @@ def evaluate_live_runs(
     return LiveEvaluationSummary(
         provider=provider,
         model=model,
+        model_id=next(iter(model_ids)) if len(model_ids) == 1 else "mixed",
+        domain_id=next(iter(domain_ids)) if len(domain_ids) == 1 else "mixed",
         scenario_count=len(results),
         completed_count=sum(item.completed for item in results),
         structured_output_success_rate=_rate(
@@ -500,6 +515,10 @@ def evaluate_live_runs(
             ),
             "Monitoring thresholds and synthetic transformations are not production-validated.",
             "Deterministic checks assess schema, evidence, routing, and policy, not prose quality.",
+            (
+                "Provider or verifier failures may enter the deterministic fallback; "
+                "fallbacks are excluded from live structured-output success."
+            ),
             "A successful replay evaluation does not establish production readiness.",
         ],
         created_at_utc=datetime.now(UTC),

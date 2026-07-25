@@ -25,18 +25,25 @@ def _execution_identity(
 
 
 def _locations(
+    model_id: str,
     scenario_name: str,
     execution_mode: str,
     *,
     checkpoint_backend: str = "memory",
     thread_id: str | None = None,
+    run_label: str | None = None,
 ) -> tuple[Path, Path]:
     mode_directory = "fake" if execution_mode == "fake" else "live_groq"
-    report_dir = GENERATED_REPORTS_DIR / scenario_name / mode_directory
-    if checkpoint_backend == "sqlite":
+    report_dir = (
+        GENERATED_REPORTS_DIR / model_id / run_label / scenario_name
+        if run_label
+        else GENERATED_REPORTS_DIR / model_id / scenario_name / mode_directory
+    )
+    if checkpoint_backend == "sqlite" and not run_label:
         safe_thread_id = re.sub(r"[^A-Za-z0-9._-]", "_", thread_id or "unknown-thread")
         report_dir = (
             GENERATED_REPORTS_DIR
+            / model_id
             / scenario_name
             / f"{mode_directory}_persistent"
             / safe_thread_id
@@ -77,6 +84,8 @@ def _llm_summary(metadata: list[dict[str, Any]]) -> str:
 def write_agentic_reports(state: dict[str, Any]) -> list[str]:
     """Write agentic artifacts without altering deterministic reports."""
     scenario_name = state["scenario_name"]
+    monitoring = state["monitoring_result"]
+    model_id = monitoring.get("model_id", "credit_default")
     metadata = state.get("llm_call_metadata", [])
     provider, model, execution_mode, is_fake_llm = _execution_identity(metadata)
     created_at_utc = datetime.now(UTC).isoformat()
@@ -85,11 +94,39 @@ def write_agentic_reports(state: dict[str, Any]) -> list[str]:
     resumed_from_checkpoint = bool(state.get("resumed_from_checkpoint", False))
     pause_count = int(state.get("pause_count", 0))
     resume_count = int(state.get("resume_count", 0))
+    run_label = state.get("run_label")
     json_path, markdown_path = _locations(
+        model_id,
         scenario_name,
         execution_mode,
         checkpoint_backend=checkpoint_backend,
         thread_id=state["thread_id"],
+        run_label=run_label,
+    )
+    original_json_path = (
+        GENERATED_REPORTS_DIR
+        / model_id
+        / scenario_name
+        / ("fake" if execution_mode == "fake" else "live_groq")
+        / "agentic_result.json"
+    )
+    reliability_metadata = (
+        {
+            "evaluation_type": "repeat_reliability_run",
+            "replaces_original_evaluation": False,
+            "original_result_preserved": True,
+            "model_id": model_id,
+            "scenario": scenario_name,
+            "provider": provider,
+            "provider_model": model,
+            "execution_timestamp": created_at_utc,
+            "original_result_path": original_json_path.relative_to(
+                PROJECT_ROOT
+            ).as_posix(),
+            "repeat_result_path": json_path.relative_to(PROJECT_ROOT).as_posix(),
+        }
+        if run_label
+        else {}
     )
     payload = {
         "provider": provider,
@@ -105,6 +142,11 @@ def write_agentic_reports(state: dict[str, Any]) -> list[str]:
         "pause_count": pause_count,
         "resume_count": resume_count,
         "scenario_name": scenario_name,
+        "model_id": model_id,
+        "display_name": monitoring.get("display_name"),
+        "domain_id": monitoring.get("domain_id"),
+        "task_type": monitoring.get("task_type"),
+        "bundle_mode": monitoring.get("bundle_mode"),
         "deterministic_incident_candidates": state["monitoring_result"][
             "incident_candidates"
         ],
@@ -120,6 +162,7 @@ def write_agentic_reports(state: dict[str, Any]) -> list[str]:
         "llm_call_metadata": metadata,
         "execution_errors": state.get("execution_errors", []),
         "final_status": state["final_status"],
+        **reliability_metadata,
     }
     json_path.write_text(
         json.dumps(payload, indent=2, default=str) + "\n",
@@ -165,6 +208,33 @@ def write_agentic_reports(state: dict[str, Any]) -> list[str]:
         recommendation["root_cause_hypothesis"]
         or "No detailed root-cause hypothesis was asserted."
     )
+    reliability_markdown = (
+        "\n".join(
+            [
+                "## Repeat reliability provenance",
+                "",
+                "- Evaluation type: `repeat_reliability_run`",
+                "- Replaces original evaluation: `false`",
+                "- Original result preserved: `true`",
+                f"- Model ID: `{model_id}`",
+                f"- Scenario: `{scenario_name}`",
+                f"- Provider: `{provider}`",
+                f"- Provider model: `{model}`",
+                f"- Execution timestamp: `{created_at_utc}`",
+                (
+                    "- Original result path: "
+                    f"`{reliability_metadata['original_result_path']}`"
+                ),
+                (
+                    "- Repeat result path: "
+                    f"`{reliability_metadata['repeat_result_path']}`"
+                ),
+                "",
+            ]
+        )
+        if run_label
+        else ""
+    )
     content = f"""# Agentic monitoring report: {scenario_name}
 
 ## Execution provenance
@@ -176,7 +246,13 @@ def write_agentic_reports(state: dict[str, Any]) -> list[str]:
 - Run ID: `{state["run_id"]}`
 - Thread ID: `{state["thread_id"]}`
 - Created at UTC: `{created_at_utc}`
+- Registered model: `{model_id}`
+- Model: `{monitoring.get("display_name")}`
+- Domain: `{monitoring.get("domain_id")}`
+- Task: `{monitoring.get("task_type")}`
+- Bundle mode: `{monitoring.get("bundle_mode")}`
 
+{reliability_markdown}
 ## Scenario and run
 
 - Run ID: `{state["run_id"]}`
@@ -312,6 +388,7 @@ def migrate_legacy_fake_reports() -> list[str]:
             },
         }
         target_json, target_markdown = _locations(
+            payload.get("model_id", "credit_default"),
             payload["scenario_name"],
             execution_mode,
         )

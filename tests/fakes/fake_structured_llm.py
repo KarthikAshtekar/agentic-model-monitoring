@@ -117,13 +117,20 @@ class FakeStructuredMonitoringLLM:
 
         incident = payload["triage"]["incident_type"]
         severity = payload["triage"]["severity"]
+        policy = payload["policy_context"]
+        diabetes_screening = policy.get("domain_id") == "diabetes_screening"
         approval = incident != "normal_operation"
         evidence_ids = self._material_ids(payload)
         if not evidence_ids:
             evidence_ids = payload["triage"]["selected_evidence_ids"][:4]
 
         if incident == "normal_operation":
-            claim_text = "Deterministic checks support normal operation."
+            claim_text = (
+                "Deterministic checks support normal operation for the survey-based "
+                "diabetes-risk screening model."
+                if diabetes_screening
+                else "Deterministic checks support normal operation for the credit-risk model."
+            )
             action_type = "continue_monitoring"
             action_text = "Continue scheduled deterministic monitoring."
             priority = "low"
@@ -131,7 +138,11 @@ class FakeStructuredMonitoringLLM:
             hypothesis_ids: list[str] = []
             uncertainties: list[str] = []
         elif incident == "data_quality_failure":
-            claim_text = "The deterministic data-quality gate blocked this batch."
+            claim_text = (
+                "The deterministic data-quality gate blocked these screening records."
+                if diabetes_screening
+                else "The deterministic data-quality gate blocked this credit-risk batch."
+            )
             action_type = "quarantine_batch"
             action_text = "Keep the blocked batch quarantined pending pipeline investigation."
             priority = "urgent"
@@ -144,7 +155,12 @@ class FakeStructuredMonitoringLLM:
                 "The replay evidence does not establish the upstream implementation cause."
             ]
         elif incident == "performance_degradation":
-            claim_text = "Labelled evaluation found material performance degradation."
+            claim_text = (
+                "Confirmed outcome labels found material screening-model performance "
+                "degradation."
+                if diabetes_screening
+                else "Labelled evaluation found material credit-risk performance degradation."
+            )
             action_type = "evaluate_retraining"
             action_text = "Evaluate retraining under governed offline validation."
             priority = "high"
@@ -169,7 +185,11 @@ class FakeStructuredMonitoringLLM:
                 "Conclusions are limited by insufficient label coverage."
             ]
         else:
-            claim_text = "Deterministic monitoring found material drift-related signals."
+            claim_text = (
+                "Deterministic screening-model monitoring found material drift signals."
+                if diabetes_screening
+                else "Deterministic credit-risk monitoring found material drift signals."
+            )
             action_type = "investigate_feature_drift"
             action_text = "Investigate the observed feature and prediction shifts."
             priority = "high"

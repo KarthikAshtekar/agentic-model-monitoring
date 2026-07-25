@@ -81,21 +81,31 @@ gets at most one additional recommendation call. If that result still fails—or
 provider/parsing path fails—the graph replaces it with a conservative deterministic
 fallback.
 
-## 12. Why did one scenario require revision?
+## 12. What failures did live evaluation expose?
 
-The data-quality scenario's first structured recommendation did not pass the deterministic
-verifier, so the graph used its single allowed revision. The corrected recommendation
-preserved batch blocking, cited critical data-quality evidence, used safe actions, and
-passed verification. The final artifact retains the revision count but not the rejected
-payload, so I do not claim a more specific first-pass violation than the stored evidence
-supports.
+The preserved credit data-quality case used one bounded revision. In the diabetes run,
+feature drift and unlabelled drift hit Groq recommendation rate limits; the unlabelled
+triage was also incompatible with deterministic candidates. Verification and fallback
+contained those failures, preserved approvals, and executed nothing. Those first-run
+diabetes outcomes remain byte-identical and were not prompt-tuned.
 
-## 13. What does 83.33% first-pass verification mean?
+## 12a. What happened in the repeat reliability check?
 
-Five of six final live scenarios passed verification on their first recommendation.
-The remaining data-quality case passed after one bounded revision. This rate therefore
-shows both first-pass quality and that the verifier/revision control worked; it is not a
-failure rate because all six final results passed.
+I repeated only the two affected diabetes cases in isolated output directories with the
+same inputs, prompts, evidence, schemas, and policies. Feature drift passed first-pass
+without another HTTP 429. Unlabelled drift did not repeat its original triage rejection or
+HTTP 429, but a different recommendation-verification issue needed the one allowed
+revision before passing. Neither repeat used fallback.
+
+That is a limited two-case comparison, not proof of universal reliability. It does not
+erase the original failures or change the original 12-case headline metrics. The fallback
+remains an intentional safety path rather than a result to hide.
+
+## 13. What do the cross-model rates mean?
+
+Across 12 controlled live replays, structured output was 83.33%, incident/routing/
+grounding/policy/approval were 100%, first-pass verification was 75%, and fallback was
+16.66%. Those are transparent benchmark rates, not estimates of long-run reliability.
 
 ## 14. What happens if the LLM API fails?
 
@@ -147,19 +157,17 @@ Training, validation, approval, and deployment remain outside this workflow.
 
 ## 20. How was the project evaluated?
 
-The final agent ran through the real Groq API on all six controlled scenarios. The
-extension reused the original four results and called Groq only for the two delayed-label
-cases. A
+Each registered model ran through the real Groq API on six controlled scenarios. A
 deterministic evaluator compared incidents and routes with fixed expectations, checked
 every citation against monitoring evidence, reran hard policy, and measured revision,
 fallback, approval, latency, and tokens. No second LLM judged the answers.
 
 ## 21. What do the 100% evaluation rates mean?
 
-In these six final runs, all incidents and routes were compatible, every claim/action
+In these 12 final runs, all incidents and routes were compatible, every final claim/action
 was grounded, hard policy passed, and approval behavior completed correctly. They do not
 mean the LLM is universally accurate or the system covers every possible incident. The
-denominator is six deliberately constructed replay cases.
+denominator is 12 deliberately constructed replay cases, six per model.
 
 ## 22. Why are six scenarios not enough for production readiness?
 
@@ -186,8 +194,8 @@ main orchestrator would still enforce shared evidence and approval contracts.
 
 ## 25. What are the largest limitations?
 
-The largest limitations are the six synthetic replays, provisional thresholds, one
-public dataset/model, one live provider/model, and a small evaluation sample. Operationally
+The largest limitations are six synthetic replays per model, provisional thresholds, two
+public academic datasets, one live provider/model, and a small evaluation sample. Operationally
 SQLite is only a local checkpoint backend; there is no production-grade database,
 streaming ingestion, authentication, or external incident system. The project demonstrates
 architecture and controls rather than production behavior.

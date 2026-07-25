@@ -1,0 +1,42 @@
+domain_id: diabetes_screening
+domain_name: Survey-based diabetes-risk screening monitoring
+positive_outcome_wording: diabetes-positive class in confirmed outcome labels
+prediction_unit_wording: BRFSS respondent screening record
+safe_terminology:
+  - respondent
+  - screening record
+  - survey-based diabetes-risk screening model
+  - confirmed outcome labels
+  - screening threshold
+  - clinical or healthcare governance
+allowed_actions:
+  - no_action
+  - continue_monitoring
+  - quarantine_batch
+  - investigate_data_pipeline
+  - investigate_feature_drift
+  - collect_more_labels
+  - evaluate_threshold
+  - evaluate_recalibration
+  - evaluate_retraining
+  - run_challenger_in_shadow
+  - escalate_model_governance
+prohibited_claims:
+  - diagnostic AI
+  - medical diagnosis
+  - diagnose a patient
+  - clinical treatment
+  - recommend treatment
+  - individual patient care
+  - autonomous clinical action
+  - automatically treat
+  - borrower
+  - loan
+approval_policy: Human approval is required for every non-normal screening incident.
+required_uncertainty_language:
+  - BRFSS variables and outcomes are survey based and do not establish a diagnosis.
+  - Monitoring associations do not establish a causal clinical explanation.
+domain_limitations:
+  - The model supports survey-based risk screening research, not diagnosis or treatment.
+  - The evidence comes from BRFSS 2015 and lacks external temporal validation.
+  - Recommendations cannot perform autonomous clinical or individual care actions.

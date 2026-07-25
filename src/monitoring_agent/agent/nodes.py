@@ -107,10 +107,12 @@ class AgentNodes:
         return {
             "run_id": result.run_id,
             "scenario_name": result.scenario_name,
+            "model_id": result.model_id,
             "monitoring_result": result.model_dump(mode="json"),
             "revision_count": int(state.get("revision_count", 0)),
             "checkpoint_backend": state.get("checkpoint_backend", "memory"),
             "checkpoint_database": state.get("checkpoint_database"),
+            "run_label": state.get("run_label"),
             "resumed_from_checkpoint": bool(
                 state.get("resumed_from_checkpoint", False)
             ),
@@ -324,6 +326,7 @@ class AgentNodes:
         response = interrupt(
             {
                 "scenario": state["scenario_name"],
+                "model_id": state["model_id"],
                 "incident_type": recommendation.incident_type,
                 "severity": recommendation.severity,
                 "executive_summary": recommendation.executive_summary,

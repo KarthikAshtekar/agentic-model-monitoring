@@ -1,0 +1,7 @@
+scenario_name,completed,incident_type,incident_compatible,diagnostic_route,route_compatible,triage_parse_success,recommendation_parse_success,first_pass_verification,revision_count,used_fallback,all_cited_evidence_valid,all_claims_cited,all_actions_cited,policy_compliant,approval_completed,final_status,latency_ms,input_tokens,output_tokens,total_tokens,violations
+normal_operation,True,normal_operation,True,no_additional_diagnostics,True,True,True,True,0,False,True,True,True,True,True,completed_no_approval_required,3922.12,6282,1619,7901,
+feature_drift,True,mixed_incident,True,mixed_diagnostics,True,True,False,False,0,True,True,True,True,True,True,approved,31281.17,3520,679,4199,Live recommendation structured output did not parse successfully.
+data_quality_failure,True,data_quality_failure,True,data_quality_diagnostics,True,True,True,True,0,False,True,True,True,True,True,approved,3068.92,4406,1549,5955,
+performance_degradation,True,performance_degradation,True,performance_diagnostics,True,True,True,True,0,False,True,True,True,True,True,approved,16227.06,4883,1347,6230,
+unlabelled_drift,True,feature_drift,True,drift_diagnostics,True,True,False,False,0,True,True,True,True,True,True,approved,29900.07,2868,867,3735,Live recommendation structured output did not parse successfully.
+insufficient_labels,True,insufficient_evidence,True,evidence_sufficiency_review,True,True,True,True,0,False,True,True,True,True,True,approved,2794.49,3537,938,4475,

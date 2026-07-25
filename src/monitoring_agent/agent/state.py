@@ -12,8 +12,10 @@ class AgentState(TypedDict, total=False):
     run_id: str
     thread_id: str
     scenario_name: str
+    model_id: str
     checkpoint_backend: str
     checkpoint_database: str | None
+    run_label: str | None
     resumed_from_checkpoint: bool
     pause_count: int
     resume_count: int

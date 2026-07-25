@@ -2,20 +2,21 @@
 
 ## 1. Executive summary
 
-The project packages a validated credit-default model and its reference contract into a
-local replay-based monitoring system. Deterministic Python components calculate
+The project registers validated credit-default and BRFSS diabetes-risk classifiers behind
+one binary-classification adapter and local replay-based monitoring system. Deterministic Python components calculate
 data-quality, feature/prediction-drift, and labelled-performance evidence; one LangGraph
 orchestrator asks Groq `openai/gpt-oss-20b` for structured triage and recommendations. A
 deterministic verifier rejects unsupported citations and policy violations, permits one
 revision, and requires approval for non-normal actions.
 
-Six controlled live-provider evaluations completed with compatible incident and route
-selection, `100%` evidence grounding, `100%` policy compliance, `83.33%` first-pass
-verification, and `0%` fallback. This is a validated portfolio MVP for controlled replay,
-not a production deployment or production-readiness result. The authoritative evaluation
-is
-[`evaluations/live_groq_six_scenarios/live_evaluation_report.md`](evaluations/live_groq_six_scenarios/live_evaluation_report.md).
-The original four-scenario evaluation remains preserved under `evaluations/live_groq/`.
+Twelve controlled live-provider evaluations completed across two models with `100%`
+incident/routing compatibility, evidence grounding, policy compliance, and approval
+completion. Structured output was `83.33%`, first-pass verification `75%`, and fallback
+`16.66%`; revision was `8.33%`. The diabetes verdict is `live_agent_requires_revision`, and the combined verdict
+is `cross_model_agent_requires_revision`. This is a portfolio controlled-replay result,
+not a production deployment or production-readiness claim. See the
+[`cross-model report`](evaluations/cross_model/cross_model_report.md) and
+[`diabetes report`](evaluations/diabetes_risk/live_groq_six_scenarios/live_evaluation_report.md).
 
 ## 2. Business and technical objective
 
@@ -51,6 +52,13 @@ The local source-repository path in
 [`../artifacts/metadata/model_metadata.json`](../artifacts/metadata/model_metadata.json)
 is machine-specific provenance, not a universal installation requirement. Runtime
 monitoring consumes only the exported bundle and does not import source-model code.
+
+The second registered bundle reuses the existing fitted BRFSS binary XGBoost pipeline and
+fitted sigmoid calibrator without retraining. It contains 21 ordered raw features, a
+52-feature transformed representation, a 50,736-row stratified held-out reference, and
+the source threshold `0.25`. ROC-AUC `0.828593`, PR-AUC `0.429353`, recall `0.589900`,
+precision `0.386469`, F1 `0.466991`, and Brier score `0.096986` reproduce within explicit
+tolerances. It is survey-based screening research, not diagnosis or treatment.
 
 ## 5. Monitoring methodology
 
@@ -176,6 +184,8 @@ Supporting artifacts are under [`generated/`](generated/), with deterministic
 
 ## 13. Live Groq evaluation
 
+### Preserved credit result
+
 | Scenario | Incident | Route | Revisions | Fallback | Latency | Tokens |
 |---|---|---|---:|---:|---:|---:|
 | Normal operation | `normal_operation` | `no_additional_diagnostics` | 0 | No | 2,673.26 ms | 5,811 |
@@ -191,9 +201,54 @@ one revision. Aggregate mean/median scenario LLM latency was 3,420.24/3,405.13 m
 37,036 recorded tokens (25,316 input and 11,720 output). The deterministic evaluator
 uses no second LLM.
 
+### Diabetes and cross-model result
+
+All six diabetes runs completed. Four completed both strict live schemas and passed the
+verifier first-pass. Feature drift and unlabelled drift used deterministic fallback after
+Groq recommendation rate limits; unlabelled drift also had an incompatible live triage
+caught by deterministic verification. Both first-run outcomes were preserved and were
+not overwritten or prompt-tuned.
+
+Diabetes rates were `66.67%` structured output, `100%`
+incident/routing/grounding/policy/approval, `66.67%` first-pass verification, and `33.33%`
+fallback. Mean/median scenario latency was `14,532.31 / 10,074.59 ms`, with `32,495`
+recorded tokens. Across both models, the 12-run rates were `83.33%` structured output,
+`100%` incident/routing/grounding/policy/approval, `75%` first-pass verification, and
+`8.33%` revision and `16.66%` fallback. Predictive metrics are not averaged across domains.
+
+### Repeat reliability check
+
+Only `diabetes_risk/feature_drift` and `diabetes_risk/unlabelled_drift` were repeated in
+separate output directories with unchanged model assets, scenario data, monitoring
+evidence, prompts, structured schemas, routing, verification, revision, and approval
+policies.
+
+| Scenario | Repeat classification | Structured | First pass | Revisions | Fallback | Original failures repeated |
+|---|---|---:|---:|---:|---:|---|
+| Feature drift | `provider_failure_not_reproduced` | Yes | Yes | 0 | No | HTTP 429: No |
+| Unlabelled drift | `mixed_repeat_outcome` | Yes | No | 1 | No | Incompatible triage: No; HTTP 429: No |
+
+The unlabelled repeat encountered a different recommendation-verification issue and used
+the one allowed revision before the final verifier passed. Across the two repeats,
+structured output, incident/route compatibility, grounding, policy, and approval were
+`100%`; first-pass verification was `50%` and fallback was `0%`. Mean repeat LLM latency
+was `43,820.71 ms`, with `24,020` recorded tokens.
+
+These are supplementary two-case observations, not a reliability estimate. The original
+12-case evaluation remains authoritative and its headline/CV metrics are unchanged. A
+successful repeat does not erase an original provider failure; deterministic fallback is
+an intended safety control. See the
+[repeat reliability report](evaluations/diabetes_risk/reliability_rerun/reliability_report.md).
+
 ## 14. Defects found during live evaluation
 
 Live validation exposed implementation defects that were fixed and regression-tested:
+
+- **Onboarding import cycle:** eager model/onboarding package exports were made lazy after
+  read-only inspection exposed a circular import.
+- **Probability reproduction gate:** widened from `1e-7` to an explicit `2e-7` after the
+  observed maximum was `1.0664e-7`; threshold outputs and reproduced metrics were
+  unchanged.
 
 - **Synthetic citable system IDs:** removed; system facts remain context while citations
   resolve only to authoritative evidence.
@@ -214,16 +269,15 @@ Live validation exposed implementation defects that were fixed and regression-te
 - **Unlabelled manifest provenance:** replaced a reused hard-coded `PAY_0` description
   with the actual `PAY_2` link; scenario data and monitoring evidence were unchanged.
 
-The two new live Groq runs exposed no live implementation defect; both passed structured
-parsing, grounding, policy, and first-pass verification without fallback.
-
-The final outputs contain no fallback. Initial provider/parse failures remain documented
-in the [evaluation report](evaluations/live_groq/live_evaluation_report.md).
+The six diabetes live runs exposed no implementation defect. Provider/verification
+failures and both safe fallbacks remain documented in the
+[diabetes evaluation report](evaluations/diabetes_risk/live_groq_six_scenarios/live_evaluation_report.md).
 
 ## 15. Safety and governance controls
 
 - Project-root `.env` loading with a secret field excluded from representations
-- `.env`, generated data, model binaries, and generated reports ignored by Git
+- `.env`, generated scenario data, and generated reports ignored by Git
+- Registered bundle payloads covered by file size and SHA-256 manifest entries
 - Safe provider error categories without request details or credentials
 - No raw LLM reasoning stored
 - Strict controlled schemas and exact evidence-ID checks
@@ -235,8 +289,8 @@ in the [evaluation report](evaluations/live_groq/live_evaluation_report.md).
 
 ## 16. Limitations
 
-The evidence comes from one public academic model, a random held-out reference split, and
-six controlled replays. Scenario transformations and thresholds are demonstrations, not
+The evidence comes from two public academic models, internal random held-out reference
+splits, and six controlled replays per model. Scenario transformations and thresholds are demonstrations, not
 estimates of production incident frequency or business risk. The evaluation does not
 measure rare provider failures, repeated-run variance, prose quality, fairness, production
 latency, or operational recovery.
@@ -249,8 +303,9 @@ are documented in [`../docs/limitations.md`](../docs/limitations.md).
 ## 17. Conclusion
 
 The project demonstrates a defensible boundary between deterministic model monitoring and
-LLM-assisted operational synthesis. Within six controlled replays, the live agent was
-compatible, grounded, policy-compliant, and approval-controlled, and its revision path
-corrected one recommendation without fallback. The appropriate verdict is
-`live_agent_validated_with_limitations`: strong portfolio evidence for the architecture,
+LLM-assisted operational synthesis. Across 12 controlled replays, final outputs were
+compatible, grounded, policy-compliant, and approval-controlled. The diabetes run also
+demonstrated that provider and triage failures enter conservative fallback without
+authorizing remediation. The appropriate combined verdict is
+`cross_model_agent_requires_revision`: useful portfolio evidence for the architecture,
 not a claim of production readiness.

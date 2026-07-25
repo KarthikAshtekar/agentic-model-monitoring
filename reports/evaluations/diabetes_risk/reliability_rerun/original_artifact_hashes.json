@@ -1,0 +1,55 @@
+{
+  "algorithm": "sha256",
+  "recorded_at_utc": "2026-07-25T11:24:50.5943492+00:00",
+  "evaluation_type": "repeat_reliability_run",
+  "replaces_original_evaluation": false,
+  "original_result_preserved": true,
+  "model_id": "diabetes_risk",
+  "scenario": [
+    "feature_drift",
+    "unlabelled_drift"
+  ],
+  "provider": "groq",
+  "provider_model": "openai/gpt-oss-20b",
+  "execution_timestamp": "2026-07-25T11:24:50.5943492+00:00",
+  "original_result_path": [
+    "reports/generated/diabetes_risk/feature_drift/live_groq/agentic_result.json",
+    "reports/generated/diabetes_risk/unlabelled_drift/live_groq/agentic_result.json"
+  ],
+  "repeat_result_path": [
+    "reports/generated/diabetes_risk/reliability_rerun_01/feature_drift/agentic_result.json",
+    "reports/generated/diabetes_risk/reliability_rerun_01/unlabelled_drift/agentic_result.json"
+  ],
+  "artifacts": [
+    {
+      "path": "reports/evaluations/diabetes_risk/live_groq_six_scenarios/live_evaluation_summary.json",
+      "sha256": "573e97437297972e4ed1a37717895dc0103cc0643c2a52c060ff98fc7b16ef02",
+      "size_bytes": 10084
+    },
+    {
+      "path": "reports/evaluations/diabetes_risk/live_groq_six_scenarios/live_evaluation_report.md",
+      "sha256": "3bb5fe7ad8bd7044fe1a56f34bfa1df0700392592313b09f9cbd28898b7aa860",
+      "size_bytes": 5441
+    },
+    {
+      "path": "reports/evaluations/cross_model/cross_model_summary.json",
+      "sha256": "1cd244d9167fe3ca1013678cea9704fd4d2ac5012b6800b9f6b196b487bc8685",
+      "size_bytes": 2376
+    },
+    {
+      "path": "reports/evaluations/cross_model/cross_model_report.md",
+      "sha256": "55fac9e3b7563271219d8430984c6795c010fd7894922e5e28aee9403430d7d1",
+      "size_bytes": 1375
+    },
+    {
+      "path": "reports/generated/diabetes_risk/feature_drift/live_groq/agentic_result.json",
+      "sha256": "5cb802b1bde543c07b4e79d60edf8e867b087d44b4f102f358fde678160201f1",
+      "size_bytes": 24991
+    },
+    {
+      "path": "reports/generated/diabetes_risk/unlabelled_drift/live_groq/agentic_result.json",
+      "sha256": "46d588b17f87753443e143f9d03ba87ccf81b6033aa6fc6c2f2af1a42f73197e",
+      "size_bytes": 19985
+    }
+  ]
+}

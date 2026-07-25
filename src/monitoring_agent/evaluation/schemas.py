@@ -17,6 +17,8 @@ class ScenarioEvaluation(EvaluationSchema):
     """Transparent checks and metadata for one completed scenario run."""
 
     scenario_name: str
+    model_id: str = "credit_default"
+    domain_id: str = "credit_risk"
     provider: str
     model: str
     execution_mode: str
@@ -53,6 +55,8 @@ class LiveEvaluationSummary(EvaluationSchema):
 
     provider: str
     model: str
+    model_id: str = "credit_default"
+    domain_id: str = "credit_risk"
     scenario_count: int = Field(ge=0)
     completed_count: int = Field(ge=0)
     structured_output_success_rate: float = Field(ge=0.0, le=1.0)

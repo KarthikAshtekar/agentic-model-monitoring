@@ -12,6 +12,10 @@ LIVE_EVALUATION_DIR = EVALUATIONS_DIR / "live_groq"
 EXTENDED_LIVE_EVALUATION_DIR = EVALUATIONS_DIR / "live_groq_six_scenarios"
 
 
+def registered_live_evaluation_dir(model_id: str) -> Path:
+    return EVALUATIONS_DIR / model_id / "live_groq_six_scenarios"
+
+
 def readiness_verdict(summary: LiveEvaluationSummary) -> str:
     """Return a factual non-production verdict from deterministic metrics."""
     if summary.scenario_count < 4 or summary.completed_count < summary.scenario_count:
@@ -125,6 +129,19 @@ def write_live_evaluation_outputs(
         f"`{item.total_tokens}` total."
         for item in summary.scenario_results
     )
+    scenario_note_lines = "\n".join(
+        f"- `{item.scenario_name}`: "
+        + " ".join(
+            note
+            for note in item.notes
+            if note.startswith("Live execution error preserved")
+        )
+        for item in summary.scenario_results
+        if any(
+            note.startswith("Live execution error preserved")
+            for note in item.notes
+        )
+    ) or "- No live execution errors were recorded."
     defect_lines = "\n".join(f"- {item}" for item in defects) or "- None."
     limitation_lines = "\n".join(f"- {item}" for item in summary.limitations)
     verdict = readiness_verdict(summary)
@@ -137,7 +154,7 @@ def write_live_evaluation_outputs(
         "\n- Original core evaluation: `4` scenarios, preserved under "
         "`reports/evaluations/live_groq/`.\n"
         "- Extended robustness evaluation: `6` scenarios."
-        if summary.scenario_count == 6
+        if summary.scenario_count == 6 and summary.model_id == "credit_default"
         else ""
     )
     content = f"""# {evaluation_label}
@@ -153,6 +170,8 @@ fallback, approval, latency, and token checks. No LLM-as-judge was used.
 
 - Provider: `{summary.provider}`
 - Model: `{summary.model}`
+- Registered model: `{summary.model_id}`
+- Domain: `{summary.domain_id}`
 - Execution date: `{summary.created_at_utc.isoformat()}`
 - Scenarios completed: `{summary.completed_count}/{summary.scenario_count}`
 {preservation_note}
@@ -191,6 +210,10 @@ scenario-specific policies.
 ## Fallback usage
 
 Fallback rate: `{_percentage(summary.fallback_rate)}`.
+
+### Preserved execution errors
+
+{scenario_note_lines}
 
 ## Approval behaviour
 

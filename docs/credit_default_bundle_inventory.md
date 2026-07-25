@@ -2,7 +2,7 @@
 
 ## Source inspected
 
-- Repository: `D:\PGDBA\Projects\Credit Default Risk\credit-default-xai`
+- Repository: external `credit-default-xai` source project at the preserved source commit
 - Dataset: UCI Default of Credit Card Clients / Taiwan credit-card default (UCI ID 350)
 - Target: `Default_Flag`; positive class `1` means next-month default
 - Selected model: `xgboost_public`
@@ -12,13 +12,13 @@
 
 ## Authoritative source artifacts
 
-- `model`: `D:\PGDBA\Projects\Credit Default Risk\credit-default-xai\models\xgboost_public.pkl`
-- `processed_dataset`: `D:\PGDBA\Projects\Credit Default Risk\credit-default-xai\data\processed\uci_taiwan_credit_default_processed.csv`
-- `stored_predictions`: `D:\PGDBA\Projects\Credit Default Risk\credit-default-xai\reports\model_validation\xgboost_test_predictions.csv`
-- `model_metrics`: `D:\PGDBA\Projects\Credit Default Risk\credit-default-xai\reports\model_validation\xgboost_public_model_metrics.json`
-- `selected_policy`: `D:\PGDBA\Projects\Credit Default Risk\credit-default-xai\reports\model_validation\selected_recall_policy.json`
-- `training_summary`: `D:\PGDBA\Projects\Credit Default Risk\credit-default-xai\reports\model_validation\xgboost_training_summary.json`
-- `model_card`: `D:\PGDBA\Projects\Credit Default Risk\credit-default-xai\docs\model_card.md`
+- `model`: `models/xgboost_public.pkl`
+- `processed_dataset`: `data/processed/uci_taiwan_credit_default_processed.csv`
+- `stored_predictions`: `reports/model_validation/xgboost_test_predictions.csv`
+- `model_metrics`: `reports/model_validation/xgboost_public_model_metrics.json`
+- `selected_policy`: `reports/model_validation/selected_recall_policy.json`
+- `training_summary`: `reports/model_validation/xgboost_training_summary.json`
+- `model_card`: `docs/model_card.md`
 
 The training summary selects `models/xgboost_public.pkl`; the selected-policy JSON is
 authoritative for the operating threshold; the processed UCI table and source split code

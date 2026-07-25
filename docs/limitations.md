@@ -3,10 +3,19 @@
 The project demonstrates a controlled model-monitoring and recommendation architecture.
 These limitations define what the generated evidence does—and does not—support.
 
+The registry contains two academic binary classifiers and two domain packs. The credit
+six-run evaluation is preserved; the diabetes six-run evaluation has the factual verdict
+`live_agent_requires_revision` because two recommendation calls used fallback. The
+combined 12-run verdict is `cross_model_agent_requires_revision`.
+
 ## Data limitations
 
 - The model uses the public UCI Default of Credit Card Clients / Taiwan credit-card
   default dataset, not bank production data.
+- The diabetes model uses self-reported CDC BRFSS 2015 indicators and outcomes. It is
+  neither current clinical data nor external medical validation.
+- Both references are internal random held-out splits rather than temporal, prospective,
+  or externally governed production baselines.
 - The 6,002-row reference is a group-aware stratified random held-out split because the
   processed source has no trustworthy application timestamp.
 - `record_id` is the processed CSV row position, not an original customer identifier.
@@ -51,16 +60,33 @@ These limitations define what the generated evidence does—and does not—suppo
 
 ## Evaluation limitations
 
-- All `100%` rates use a denominator of six final controlled live runs.
-- First-pass verification of `83.33%` means five passed immediately and one passed after a
-  bounded revision; it does not estimate a population rate.
-- The final fallback rate was `0%`, although fallback behavior is covered by focused fake
-  tests rather than needed by the six final live outputs.
+- Model-specific percentages use six controlled live runs; cross-model percentages use
+  12. Neither is a repeated-run reliability estimate.
+- The diabetes run recorded two Groq recommendation rate limits and one triage rejected
+  by deterministic compatibility checks. Fallback kept the workflow safe but is excluded
+  from structured-output and first-pass success.
+- Credit first-pass verification was `83.33%`; diabetes first-pass verification was
+  `66.67%`; combined first-pass verification was `75%`.
+- Credit fallback was `0%`; diabetes fallback was `33.33%`; combined fallback was
+  `16.66%`.
 - One successful run per final scenario does not measure repeated-run stability or rare
   provider failures.
 - Deterministic evaluation checks contracts, citations, routing, and policy; it does not
   prove causal correctness, usefulness to reviewers, or regulatory sufficiency.
 - The benchmark was not run on production traffic.
+
+### Repeat reliability check
+
+The two diabetes fallback cases were repeated once in isolation without changing prompts,
+evidence, schemas, or policies. Neither original HTTP 429 recurred, and the unlabelled
+case did not repeat its incompatible triage. Feature drift passed first-pass; unlabelled
+drift required one bounded recommendation revision before passing. Both completed without
+fallback.
+
+This supplementary two-case check does not replace the first-run evaluation, erase its
+failures, establish `100%` LLM availability, or provide a repeated-run reliability
+estimate. The original 12-case headline metrics remain authoritative. See the
+[repeat reliability report](../reports/evaluations/diabetes_risk/reliability_rerun/reliability_report.md).
 
 ## Operational limitations
 
@@ -70,7 +96,8 @@ These limitations define what the generated evidence does—and does not—suppo
   audit-log service, secrets manager, or retention policy.
 - There is no streaming ingestion, scheduled execution, alerting, ticketing, email, or
   production observability integration.
-- The CLI can replace the same scenario/mode report; it is not an immutable incident
+- Default CLI paths can replace the same scenario/mode report. A unique `--run-label`
+  isolates a controlled repeat, but the CLI is still not a general immutable incident
   archive.
 - Runtime artifacts are Git-ignored and must be reproduced or transferred through a
   governed artifact process.
@@ -79,6 +106,8 @@ These limitations define what the generated evidence does—and does not—suppo
 ## Ethical and governance limitations
 
 - Recommendations are decision support, not credit decisions or customer-level actions.
+- Diabetes recommendations are monitoring decision support, not diagnosis, treatment,
+  individual patient care, or autonomous clinical action.
 - Approval records a reviewer decision but does not establish that an organization has
   completed its required model-risk governance.
 - The source model and public dataset may contain historical or sampling biases that this
@@ -91,6 +120,6 @@ These limitations define what the generated evidence does—and does not—suppo
 
 ## Appropriate readiness statement
 
-The defensible conclusion is `live_agent_validated_with_limitations` for six controlled
-replay scenarios. It is not “production-ready,” “validated on production traffic,”
+The defensible combined conclusion is `cross_model_agent_requires_revision` for 12
+controlled replay scenarios. It is not “production-ready,” “validated on production traffic,”
 “real-time,” “autonomously remediating,” or a deployed multi-agent system.

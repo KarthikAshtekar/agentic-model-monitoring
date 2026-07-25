@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -35,6 +36,7 @@ def _parser() -> argparse.ArgumentParser:
     selection = parser.add_mutually_exclusive_group()
     selection.add_argument("--all", action="store_true", help="Run all replay scenarios.")
     selection.add_argument("--scenario", choices=SUPPORTED_SCENARIOS)
+    parser.add_argument("--model-id", default="credit_default")
     parser.add_argument(
         "--decision",
         choices=["approve", "reject", "request_revision"],
@@ -59,6 +61,14 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--thread-id", help="Stable thread ID for a new single run.")
     parser.add_argument(
+        "--run-label",
+        type=_valid_run_label,
+        help=(
+            "Write agentic reports under an isolated model/run-label/scenario "
+            "directory without changing default report locations."
+        ),
+    )
+    parser.add_argument(
         "--pause-only",
         action="store_true",
         help="Stop normally after persisting the human-approval interrupt.",
@@ -68,6 +78,14 @@ def _parser() -> argparse.ArgumentParser:
         help="Resume an approval interrupt stored by the SQLite backend.",
     )
     return parser
+
+
+def _valid_run_label(value: str) -> str:
+    if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", value) is None:
+        raise argparse.ArgumentTypeError(
+            "run label must be 1-64 letters, digits, dots, underscores, or hyphens"
+        )
+    return value
 
 
 def _load_fake_llm() -> Any:
@@ -149,6 +167,8 @@ def _validate_options(args: argparse.Namespace, backend: str) -> None:
             raise ValueError("--thread-id is only valid when starting a new run.")
         if args.pause_only:
             raise ValueError("--pause-only cannot be combined with --resume-thread.")
+        if args.run_label:
+            raise ValueError("--run-label cannot be combined with --resume-thread.")
         if backend != "sqlite":
             raise ValueError("Cross-process resume requires --checkpoint-backend sqlite.")
         if args.decision is None:
@@ -288,7 +308,7 @@ def main() -> int:
                 scenario_names = (
                     list(SUPPORTED_SCENARIOS) if args.all else [args.scenario]
                 )
-                engine = MonitoringEngine()
+                engine = MonitoringEngine(model_id=args.model_id)
                 for scenario_name in scenario_names:
                     try:
                         monitoring_result = engine.run_scenario(scenario_name)
@@ -311,6 +331,7 @@ def main() -> int:
                             backend,
                             checkpoint_path,
                         ),
+                        "run_label": args.run_label,
                         "resumed_from_checkpoint": False,
                         "pause_count": 0,
                         "resume_count": 0,

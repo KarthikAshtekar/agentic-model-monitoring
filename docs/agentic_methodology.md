@@ -27,6 +27,12 @@ The structured LLM performs only bounded synthesis:
 Evidence messages are passed as JSON data and prompts explicitly say they are not
 instructions.
 
+Before the evidence packet is built, the selected registered manifest and domain pack add
+model identity, use case, positive-outcome wording, prediction unit, threshold, allowed
+actions, prohibited claims, safe terminology, uncertainty wording, and limitations. The
+same graph therefore handles credit and diabetes evidence without embedding either
+domain's language in the adapter.
+
 ## State, nodes, and conditional edges
 
 The serializable state contains the run and thread IDs, scenario, deterministic monitoring
@@ -138,12 +144,11 @@ finished approved. SQLite is a local-development backend, not production-grade d
 
 ## Live evaluation methodology
 
-The extended live evaluation uses the real Groq provider with `openai/gpt-oss-20b` across
-six controlled replay scenarios. It reuses the preserved four core results and adds only
-`unlabelled_drift` and `insufficient_labels`. It does not use an LLM-as-judge. A second model would
-introduce another source of stochastic interpretation and would not be authoritative for
-evidence IDs or hard governance rules. Instead, the evaluator reuses Pydantic contracts,
-the deterministic monitoring result, the evidence registry, and the hard policy.
+Each registered model is evaluated with the real Groq provider
+`openai/gpt-oss-20b` across six controlled replay scenarios. The evaluator does not use
+an LLM-as-judge because a second model would add stochastic interpretation and would not
+be authoritative for evidence IDs or hard governance rules. Instead, it reuses Pydantic
+contracts, deterministic monitoring results, evidence registries, and hard policy.
 
 Scenario expectations are fixed before evaluation:
 
@@ -166,18 +171,30 @@ Structured-output success requires both live structured calls to parse; fallback
 counted as structured-output success. Evidence-grounding success requires valid citations
 for the overall result, every claim, and every action.
 
-The preserved core evaluation contains four scenarios. The 2026-07-25 robustness
-extension completed all six scenarios. Structured output, incident and
-route compatibility, evidence grounding, policy compliance, and approval completion were
-all `100%`. First-pass verification was `83.33%` because the preserved data-quality result
-required one bounded revision; the other five passed immediately. Fallback usage was
-`0%`. Mean and median scenario LLM latency were `3,420.24 ms` and `3,405.13 ms`;
-recorded usage was `25,316` input, `11,720` output, and `37,036` total tokens.
+The preserved credit evaluation completed six scenarios with `100%` structured output,
+incident/routing compatibility, grounding, policy compliance, and approval completion;
+first-pass verification was `83.33%` and fallback was `0%`.
 
-These rates describe only six deliberately constructed examples. They do not estimate
+The diabetes evaluation completed six scenarios. Structured-output and first-pass rates
+were `66.67%`; incident/routing compatibility, grounding, policy, and approval were
+`100%`; fallback was `33.33%`. One feature-drift recommendation and one unlabelled-drift
+recommendation were rate-limited. The unlabelled case also produced an incompatible live
+triage that deterministic verification replaced. These first-run outcomes were preserved,
+not rerun. Mean/median diabetes scenario LLM latency was
+`14,532.31 / 10,074.59 ms`, with `25,496 / 6,999 / 32,495`
+input/output/total tokens.
+
+Across both models, 12 controlled replays completed with `83.33%` structured output,
+`100%` incident/routing/grounding/policy/approval, `75%` first-pass verification, and
+`8.33%` revision and `16.66%` fallback. Predictive metrics are not averaged across domains. The current
+cross-model verdict is `cross_model_agent_requires_revision`, driven by the preserved
+diabetes structured-output/fallback results.
+
+These rates describe only 12 deliberately constructed examples (six per model). They do not estimate
 rare failure frequency, prose quality, long-run reliability, threshold validity,
-provider availability, or production behavior. The factual verdict is
-`live_agent_validated_with_limitations`, not production readiness.
+provider availability, or production behavior. The diabetes factual verdict is
+`live_agent_requires_revision`; neither the credit nor cross-model result is a
+production-readiness claim.
 
 ## Current limitations and later extension
 

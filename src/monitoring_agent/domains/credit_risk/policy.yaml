@@ -1,0 +1,31 @@
+domain_id: credit_risk
+domain_name: Credit-risk model monitoring
+positive_outcome_wording: next-period credit default
+prediction_unit_wording: credit-card account record
+safe_terminology:
+  - borrower
+  - default risk
+  - credit decision threshold
+  - model-risk review
+allowed_actions:
+  - no_action
+  - continue_monitoring
+  - quarantine_batch
+  - investigate_data_pipeline
+  - investigate_feature_drift
+  - collect_more_labels
+  - evaluate_threshold
+  - evaluate_recalibration
+  - evaluate_retraining
+  - run_challenger_in_shadow
+  - escalate_model_governance
+prohibited_claims:
+  - medical diagnosis
+  - clinical treatment
+  - patient care
+approval_policy: Human approval is required for every non-normal incident.
+required_uncertainty_language:
+  - Monitoring associations do not establish a causal reason for default risk.
+domain_limitations:
+  - The academic credit dataset is not live bank production data.
+  - Monitoring recommendations do not make or execute lending decisions.

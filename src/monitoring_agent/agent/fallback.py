@@ -100,7 +100,8 @@ def build_fallback_recommendation(
         severity=result.overall_severity,
         executive_summary=(
             "The LLM recommendation was unavailable or rejected; this deterministic "
-            "fallback preserves the authoritative monitoring outcome."
+            f"fallback preserves the authoritative {result.display_name} monitoring "
+            "outcome."
         ),
         claims=[
             EvidenceBackedClaim(

@@ -41,9 +41,18 @@ artifacts/metadata/*
 !artifacts/metadata/.gitkeep
 artifacts/checkpoints/*
 !artifacts/checkpoints/.gitkeep
+registered_models/**/*.joblib
+registered_models/**/*.parquet
+!registered_models/**/.gitkeep
 reports/generated/*
 !reports/generated/.gitkeep
-reports/evaluations/*
-!reports/evaluations/.gitkeep
 reports/figures/*
 !reports/figures/.gitkeep
+reports/onboarding/*
+!reports/onboarding/.gitkeep
+
+# Preserve only the parsed, isolated reliability rerun reports for review.
+!reports/generated/diabetes_risk/
+reports/generated/diabetes_risk/*
+!reports/generated/diabetes_risk/reliability_rerun_01/
+!reports/generated/diabetes_risk/reliability_rerun_01/**

@@ -1,0 +1,220 @@
+identity:
+  model_id: credit_default
+  display_name: Credit Default XGBoost
+  model_version: 1.0.0
+  task_type: binary_classification
+  adapter_type: sklearn_binary_classifier
+  domain_id: credit_risk
+
+business_context:
+  use_case: Academic next-month credit-default risk monitoring
+  prediction_unit: credit-card account record
+  positive_outcome: next-month credit default
+  prediction_horizon: next month
+  decision_context: governed model-risk review of threshold-based risk scores
+  business_owner: null
+
+bundle_paths:
+  model_artifact: artifacts/models/credit_default_pipeline.joblib
+  feature_schema: artifacts/metadata/feature_schema.json
+  reference_features: data/reference/reference_features.parquet
+  reference_labels: data/reference/reference_labels.parquet
+  reference_predictions: data/reference/reference_predictions.parquet
+  reference_metrics: artifacts/baselines/reference_metrics.json
+  reference_feature_summary: artifacts/baselines/reference_feature_summary.parquet
+  bundle_manifest: artifacts/metadata/bundle_manifest.json
+
+prediction_contract:
+  score_method: predict_proba
+  positive_class: 1
+  positive_class_index: 1
+  default_threshold: 0.50
+  operating_threshold: 0.25
+
+data_contract:
+  identifier_column: record_id
+  target_column: Default_Flag
+  ordered_features:
+    - LIMIT_BAL
+    - EDUCATION
+    - MARRIAGE
+    - AGE
+    - PAY_0
+    - PAY_2
+    - PAY_3
+    - PAY_4
+    - PAY_5
+    - PAY_6
+    - BILL_AMT1
+    - BILL_AMT2
+    - BILL_AMT3
+    - BILL_AMT4
+    - BILL_AMT5
+    - BILL_AMT6
+    - PAY_AMT1
+    - PAY_AMT2
+    - PAY_AMT3
+    - PAY_AMT4
+    - PAY_AMT5
+    - PAY_AMT6
+    - BillToLimitRatio_1
+    - BillToLimitRatio_2
+    - BillToLimitRatio_3
+    - BillToLimitRatio_4
+    - BillToLimitRatio_5
+    - BillToLimitRatio_6
+    - AvgBillToLimitRatio
+    - AvgPaymentToBillRatio
+    - RecentPaymentDelay
+    - MaxPaymentDelay
+    - NumDelayedMonths
+    - AvgBillAmount
+    - AvgPaymentAmount
+    - PaymentToLimitRatio
+  numeric_features:
+    - LIMIT_BAL
+    - AGE
+    - PAY_0
+    - PAY_2
+    - PAY_3
+    - PAY_4
+    - PAY_5
+    - PAY_6
+    - BILL_AMT1
+    - BILL_AMT2
+    - BILL_AMT3
+    - BILL_AMT4
+    - BILL_AMT5
+    - BILL_AMT6
+    - PAY_AMT1
+    - PAY_AMT2
+    - PAY_AMT3
+    - PAY_AMT4
+    - PAY_AMT5
+    - PAY_AMT6
+    - BillToLimitRatio_1
+    - BillToLimitRatio_2
+    - BillToLimitRatio_3
+    - BillToLimitRatio_4
+    - BillToLimitRatio_5
+    - BillToLimitRatio_6
+    - AvgBillToLimitRatio
+    - AvgPaymentToBillRatio
+    - RecentPaymentDelay
+    - MaxPaymentDelay
+    - NumDelayedMonths
+    - AvgBillAmount
+    - AvgPaymentAmount
+    - PaymentToLimitRatio
+  categorical_features:
+    - EDUCATION
+    - MARRIAGE
+  integer_constrained_features:
+    - LIMIT_BAL
+    - EDUCATION
+    - MARRIAGE
+    - AGE
+    - PAY_0
+    - PAY_2
+    - PAY_3
+    - PAY_4
+    - PAY_5
+    - PAY_6
+    - BILL_AMT1
+    - BILL_AMT2
+    - BILL_AMT3
+    - BILL_AMT4
+    - BILL_AMT5
+    - BILL_AMT6
+    - PAY_AMT1
+    - PAY_AMT2
+    - PAY_AMT3
+    - PAY_AMT4
+    - PAY_AMT5
+    - PAY_AMT6
+    - RecentPaymentDelay
+    - MaxPaymentDelay
+    - NumDelayedMonths
+  nullable_features: []
+  preprocessed_feature_count: 36
+  preprocessing_representation: 36-feature fitted credit pipeline input
+
+monitoring_policy:
+  minimum_batch_size: 200
+  minimum_labelled_samples: 200
+  primary_metrics:
+    - recall
+    - precision
+    - f1
+    - roc_auc
+    - pr_auc
+    - brier_score
+  feature_drift_thresholds:
+    discrete_unique_count_max: 20
+    psi_warning: 0.10
+    psi_critical: 0.25
+    js_warning: 0.10
+    js_critical: 0.20
+    unseen_category_rate_warning: 0.01
+    unseen_category_rate_critical: 0.05
+    ks_statistic_warning: 0.10
+    ks_statistic_critical: 0.20
+  prediction_drift_thresholds:
+    probability_psi_warning: 0.10
+    probability_psi_critical: 0.25
+    positive_rate_absolute_change_warning: 0.05
+    positive_rate_absolute_change_critical: 0.10
+    ks_statistic_warning: 0.10
+  performance_thresholds:
+    recall_drop_warning: 0.08
+    recall_drop_critical: 0.15
+    precision_drop_warning: 0.08
+    precision_drop_critical: 0.15
+    f1_drop_warning: 0.06
+    f1_drop_critical: 0.12
+    pr_auc_drop_warning: 0.05
+    pr_auc_drop_critical: 0.10
+    roc_auc_drop_warning: 0.05
+    roc_auc_drop_critical: 0.10
+    brier_increase_warning: 0.03
+    brier_increase_critical: 0.06
+
+governance:
+  require_human_approval: true
+  protected_attributes:
+    - AGE
+    - MARRIAGE
+  allowed_action_types:
+    - no_action
+    - continue_monitoring
+    - quarantine_batch
+    - investigate_data_pipeline
+    - investigate_feature_drift
+    - collect_more_labels
+    - evaluate_threshold
+    - evaluate_recalibration
+    - evaluate_retraining
+    - run_challenger_in_shadow
+    - escalate_model_governance
+  prohibited_automatic_actions:
+    - automatic deployment
+    - automatic rollback
+    - automatic retraining
+    - automatic credit decision
+
+provenance:
+  source_project: credit-default-xai (source path documented in bundle inventory)
+  source_commit: 64de186366c55ee46800e9223adfe3fbd813f4a6
+  source_worktree_clean: true
+  source_artifact_paths:
+    - models/xgboost_public.pkl
+    - data/processed/uci_taiwan_credit_default_processed.csv
+    - reports/model_validation/xgboost_test_predictions.csv
+    - reports/model_validation/xgboost_public_model_metrics.json
+    - reports/model_validation/selected_recall_policy.json
+  bundle_created_at_utc: "2026-07-25T01:26:44.487124Z"
+  bundle_mode: live_inference
+  limitations:
+    - Public academic dataset; not live bank production data.
+    - Reference split is group-aware stratified random because no true timestamp exists.
+    - No automated lending decision or remediation is enabled.

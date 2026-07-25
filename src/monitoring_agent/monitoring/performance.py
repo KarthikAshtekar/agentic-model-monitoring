@@ -118,6 +118,8 @@ def evaluate_performance(
     metadata: ModelMetadata,
     reference_metrics: ReferenceMetrics,
     config: dict[str, Any],
+    *,
+    identifier_column: str = "record_id",
 ) -> PerformanceResult:
     """Evaluate labelled batch performance only when all preconditions hold."""
     feature_row_count = len(features)
@@ -130,15 +132,15 @@ def evaluate_performance(
             minimum_required_sample_size=minimum_samples,
         )
     labelled_row_count = len(labels_frame)
-    if labels_frame.columns.tolist() != ["record_id", "actual_label"]:
+    if labels_frame.columns.tolist() != [identifier_column, "actual_label"]:
         return _not_evaluated(
-            "Label columns do not match record_id and actual_label.",
+            f"Label columns do not match {identifier_column} and actual_label.",
             "SYSTEM-INVALID-LABEL-SCHEMA",
             sample_count=labelled_row_count,
             feature_row_count=feature_row_count,
             minimum_required_sample_size=minimum_samples,
         )
-    if not labels_frame["record_id"].is_unique:
+    if not labels_frame[identifier_column].is_unique:
         return _not_evaluated(
             "Label record IDs must be unique.",
             "SYSTEM-LABEL-ALIGNMENT",
@@ -146,10 +148,10 @@ def evaluate_performance(
             feature_row_count=feature_row_count,
             minimum_required_sample_size=minimum_samples,
         )
-    feature_ids = set(features["record_id"].tolist())
+    feature_ids = set(features[identifier_column].tolist())
     unknown_label_ids = [
         record_id
-        for record_id in labels_frame["record_id"].tolist()
+        for record_id in labels_frame[identifier_column].tolist()
         if record_id not in feature_ids
     ]
     if unknown_label_ids:
@@ -199,11 +201,11 @@ def evaluate_performance(
 
     probability_by_id = pd.Series(
         probabilities,
-        index=features["record_id"].tolist(),
+        index=features[identifier_column].tolist(),
         dtype=float,
     )
     aligned_probabilities = probability_by_id.loc[
-        labels_frame["record_id"].tolist()
+        labels_frame[identifier_column].tolist()
     ].to_numpy(dtype=float)
     default_metrics = _threshold_metrics(
         labels,
@@ -223,8 +225,24 @@ def evaluate_performance(
     default_metrics.update(ranking_metrics)
     operating_metrics.update(ranking_metrics)
 
-    reference_default = reference_metrics.thresholds["default_0_50"]
-    reference_operating = reference_metrics.thresholds["operating_0_25"]
+    reference_default = next(
+        (
+            item
+            for item in reference_metrics.thresholds.values()
+            if np.isclose(item.threshold, metadata.default_threshold)
+        ),
+        None,
+    )
+    reference_operating = next(
+        (
+            item
+            for item in reference_metrics.thresholds.values()
+            if np.isclose(item.threshold, metadata.operating_threshold)
+        ),
+        None,
+    )
+    if reference_default is None or reference_operating is None:
+        raise ValueError("Reference metrics do not cover both registered thresholds.")
     deltas = {
         "default_threshold": {
             metric: (

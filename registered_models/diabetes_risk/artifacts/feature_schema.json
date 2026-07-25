@@ -1,0 +1,399 @@
+{
+  "schema_version": "1.0.0",
+  "ordered_features": [
+    "HighBP",
+    "HighChol",
+    "CholCheck",
+    "BMI",
+    "Smoker",
+    "Stroke",
+    "HeartDiseaseorAttack",
+    "PhysActivity",
+    "Fruits",
+    "Veggies",
+    "HvyAlcoholConsump",
+    "AnyHealthcare",
+    "NoDocbcCost",
+    "GenHlth",
+    "MentHlth",
+    "PhysHlth",
+    "DiffWalk",
+    "Sex",
+    "Age",
+    "Education",
+    "Income"
+  ],
+  "required_columns": [
+    "HighBP",
+    "HighChol",
+    "CholCheck",
+    "BMI",
+    "Smoker",
+    "Stroke",
+    "HeartDiseaseorAttack",
+    "PhysActivity",
+    "Fruits",
+    "Veggies",
+    "HvyAlcoholConsump",
+    "AnyHealthcare",
+    "NoDocbcCost",
+    "GenHlth",
+    "MentHlth",
+    "PhysHlth",
+    "DiffWalk",
+    "Sex",
+    "Age",
+    "Education",
+    "Income"
+  ],
+  "identifier_columns": [
+    "record_id"
+  ],
+  "categorical_features": [
+    "HighBP",
+    "HighChol",
+    "CholCheck",
+    "Smoker",
+    "Stroke",
+    "HeartDiseaseorAttack",
+    "PhysActivity",
+    "Fruits",
+    "Veggies",
+    "HvyAlcoholConsump",
+    "AnyHealthcare",
+    "NoDocbcCost",
+    "GenHlth",
+    "DiffWalk",
+    "Sex",
+    "Age",
+    "Education",
+    "Income"
+  ],
+  "numeric_features": [
+    "BMI",
+    "MentHlth",
+    "PhysHlth"
+  ],
+  "integer_constrained_features": [
+    "HighBP",
+    "HighChol",
+    "CholCheck",
+    "BMI",
+    "Smoker",
+    "Stroke",
+    "HeartDiseaseorAttack",
+    "PhysActivity",
+    "Fruits",
+    "Veggies",
+    "HvyAlcoholConsump",
+    "AnyHealthcare",
+    "NoDocbcCost",
+    "GenHlth",
+    "MentHlth",
+    "PhysHlth",
+    "DiffWalk",
+    "Sex",
+    "Age",
+    "Education",
+    "Income"
+  ],
+  "target": {
+    "name": "Diabetes_binary",
+    "exported_name": "actual_label",
+    "dtype": "int8",
+    "positive_class": 1,
+    "meaning": "1 identifies the diabetes-positive binary screening outcome."
+  },
+  "features": [
+    {
+      "name": "HighBP",
+      "position": 0,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "observed_min": 0.0,
+      "observed_max": 1.0
+    },
+    {
+      "name": "HighChol",
+      "position": 1,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "observed_min": 0.0,
+      "observed_max": 1.0
+    },
+    {
+      "name": "CholCheck",
+      "position": 2,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "observed_min": 0.0,
+      "observed_max": 1.0
+    },
+    {
+      "name": "BMI",
+      "position": 3,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": null,
+      "observed_min": 12.0,
+      "observed_max": 98.0
+    },
+    {
+      "name": "Smoker",
+      "position": 4,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "observed_min": 0.0,
+      "observed_max": 1.0
+    },
+    {
+      "name": "Stroke",
+      "position": 5,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "observed_min": 0.0,
+      "observed_max": 1.0
+    },
+    {
+      "name": "HeartDiseaseorAttack",
+      "position": 6,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "observed_min": 0.0,
+      "observed_max": 1.0
+    },
+    {
+      "name": "PhysActivity",
+      "position": 7,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "observed_min": 0.0,
+      "observed_max": 1.0
+    },
+    {
+      "name": "Fruits",
+      "position": 8,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "observed_min": 0.0,
+      "observed_max": 1.0
+    },
+    {
+      "name": "Veggies",
+      "position": 9,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "observed_min": 0.0,
+      "observed_max": 1.0
+    },
+    {
+      "name": "HvyAlcoholConsump",
+      "position": 10,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "observed_min": 0.0,
+      "observed_max": 1.0
+    },
+    {
+      "name": "AnyHealthcare",
+      "position": 11,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "observed_min": 0.0,
+      "observed_max": 1.0
+    },
+    {
+      "name": "NoDocbcCost",
+      "position": 12,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "observed_min": 0.0,
+      "observed_max": 1.0
+    },
+    {
+      "name": "GenHlth",
+      "position": 13,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "observed_min": 1.0,
+      "observed_max": 5.0
+    },
+    {
+      "name": "MentHlth",
+      "position": 14,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": null,
+      "observed_min": 0.0,
+      "observed_max": 30.0
+    },
+    {
+      "name": "PhysHlth",
+      "position": 15,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": null,
+      "observed_min": 0.0,
+      "observed_max": 30.0
+    },
+    {
+      "name": "DiffWalk",
+      "position": 16,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "observed_min": 0.0,
+      "observed_max": 1.0
+    },
+    {
+      "name": "Sex",
+      "position": 17,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "observed_min": 0.0,
+      "observed_max": 1.0
+    },
+    {
+      "name": "Age",
+      "position": 18,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "observed_min": 1.0,
+      "observed_max": 13.0
+    },
+    {
+      "name": "Education",
+      "position": 19,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "observed_min": 1.0,
+      "observed_max": 6.0
+    },
+    {
+      "name": "Income",
+      "position": 20,
+      "dtype": "int64",
+      "role": "predictor",
+      "nullable": false,
+      "allowed_values": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "observed_min": 1.0,
+      "observed_max": 8.0
+    }
+  ],
+  "source_reference_split": "stratified held-out test split (test_size=0.20, random_state=42)",
+  "observed_range_policy": "Observed held-out minima and maxima are monitoring baselines, not clinical validity ranges."
+}

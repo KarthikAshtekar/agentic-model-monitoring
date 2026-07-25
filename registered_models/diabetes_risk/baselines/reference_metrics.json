@@ -1,0 +1,75 @@
+{
+  "metrics_version": "1.0.0",
+  "reference_split": "stratified held-out test split (test_size=0.20, random_state=42)",
+  "sample_count": 50736,
+  "positive_count": 7069,
+  "positive_rate": 0.13932907600126143,
+  "thresholds": {
+    "default_0_50": {
+      "threshold": 0.5,
+      "sample_count": 50736,
+      "positive_count": 7069,
+      "positive_rate": 0.13932907600126143,
+      "predicted_positive_count": 1702,
+      "predicted_positive_rate": 0.033546199936928416,
+      "accuracy": 0.8661502680542416,
+      "precision": 0.581668625146886,
+      "recall": 0.1400480973263545,
+      "f1": 0.22574392885645878,
+      "roc_auc": 0.8285926194023938,
+      "pr_auc": 0.4293533033313817,
+      "brier_score": 0.09698639029766047,
+      "confusion_matrix": {
+        "true_negative": 42955,
+        "false_positive": 712,
+        "false_negative": 6079,
+        "true_positive": 990
+      },
+      "undefined_metrics": []
+    },
+    "operating_0_25": {
+      "threshold": 0.25,
+      "sample_count": 50736,
+      "positive_count": 7069,
+      "positive_rate": 0.13932907600126143,
+      "predicted_positive_count": 10790,
+      "predicted_positive_rate": 0.21266950488804792,
+      "accuracy": 0.8123817407757805,
+      "precision": 0.386468952734013,
+      "recall": 0.5898995614655538,
+      "f1": 0.46699143289097933,
+      "roc_auc": 0.8285926194023938,
+      "pr_auc": 0.4293533033313817,
+      "brier_score": 0.09698639029766047,
+      "confusion_matrix": {
+        "true_negative": 37047,
+        "false_positive": 6620,
+        "false_negative": 2899,
+        "true_positive": 4170
+      },
+      "undefined_metrics": []
+    }
+  },
+  "authoritative_source_metrics": {
+    "operating_0_25": {
+      "roc_auc": 0.8285926177826042,
+      "pr_auc": 0.4293533028515068,
+      "recall": 0.5898995614655538,
+      "precision": 0.386468952734013,
+      "f1": 0.46699143289097933,
+      "brier_score": 0.09698639065027237
+    }
+  },
+  "metric_absolute_differences": {
+    "operating_0_25": {
+      "roc_auc": 1.619789635753932e-9,
+      "pr_auc": 4.798749175805028e-10,
+      "recall": 0.0,
+      "precision": 0.0,
+      "f1": 0.0,
+      "brier_score": 3.5261189801349957e-10
+    }
+  },
+  "material_discrepancies": [],
+  "comparison_tolerance": 1e-6
+}

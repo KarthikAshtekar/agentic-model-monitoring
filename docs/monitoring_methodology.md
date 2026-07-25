@@ -2,12 +2,19 @@
 
 ## Scope
 
-The monitoring engine compares replay batches with the validated 6,002-row credit-default
-reference split. All metrics, evidence IDs, incident candidates, and reports are produced
-by deterministic Python functions. No LLM participates in calculation or classification.
+The monitoring engine compares replay batches with the selected registered model's
+reference split. Credit default uses 6,002 rows and 36 features; diabetes risk uses
+50,736 rows and 21 raw BRFSS features. All metrics, evidence IDs, incident candidates,
+and reports are produced by deterministic Python functions. No LLM participates in
+calculation or classification.
 
 Thresholds are initial portfolio-MVP values chosen to distinguish controlled scenarios.
 They are not production-validated limits.
+
+`model_id` selects the strict manifest, bundle, binary adapter, scenario config, and
+domain policy. The monitoring result carries model/domain identity, business context,
+operating threshold, allowed actions, prohibited claims, and domain limitations so the
+agent never has to infer those facts.
 
 ## Data quality
 
@@ -68,6 +75,13 @@ metrics remain undefined rather than being silently converted to zero.
 
 Every scenario uses seed `20260725`, preserves feature/label separation, and records exact
 transformations in `scenario_manifest.json`.
+
+The diabetes replay uses model-specific features: BMI/HighBP/GenHlth for labelled feature
+drift; duplicate IDs, BMI missingness, and PhysHlth range faults for data quality;
+low-score negative label flips for synthetic performance degradation; BMI/DiffWalk/
+GenHlth shifts with no labels; and only 100 aligned labels for evidence insufficiency.
+The same incident expectations and safety boundaries apply, but evidence and wording
+remain screening-specific.
 
 ## Incident candidates and limitations
 

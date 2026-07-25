@@ -12,7 +12,7 @@ from monitoring_agent.paths import GENERATED_REPORTS_DIR, PROJECT_ROOT
 
 
 def _report_locations(result: MonitoringRunResult) -> tuple[Path, Path]:
-    report_dir = GENERATED_REPORTS_DIR / result.scenario_name
+    report_dir = GENERATED_REPORTS_DIR / result.model_id / result.scenario_name
     report_dir.mkdir(parents=True, exist_ok=True)
     json_path = report_dir / "monitoring_result.json"
     markdown_path = report_dir / "monitoring_report.md"
@@ -125,7 +125,15 @@ def write_markdown_report(result: MonitoringRunResult) -> Path:
 
 - Run ID: `{result.run_id}`
 - Created: `{result.created_at_utc.isoformat()}`
-- Model: `{result.model_name}` version `{result.model_version}`
+- Model ID: `{result.model_id}`
+- Model: `{result.display_name}` (`{result.model_name}`) version `{result.model_version}`
+- Domain: `{result.domain_id}`
+- Task: `{result.task_type}`
+- Bundle mode: `{result.bundle_mode}`
+- Provider: `deterministic`
+- Execution mode: `deterministic`
+- Reference rows: `{result.reference_sample_count}`
+- Inference features: `{result.feature_count}`
 - Evidence records: `{len(result.evidence)}` (`{critical_count}` critical,
   `{warning_count}` warning)
 
