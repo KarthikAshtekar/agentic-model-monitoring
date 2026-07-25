@@ -1,0 +1,47 @@
+# Python bytecode and packaging
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Test, lint, type-check, and coverage outputs
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Local environments and credentials
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Editors, notebooks, and operating systems
+.vscode/
+.idea/
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+
+# Generated or sensitive project inputs and outputs
+data/reference/*
+!data/reference/.gitkeep
+data/production/*
+!data/production/.gitkeep
+data/scenarios/*
+!data/scenarios/.gitkeep
+artifacts/models/*
+!artifacts/models/.gitkeep
+artifacts/baselines/*
+!artifacts/baselines/.gitkeep
+artifacts/metadata/*
+!artifacts/metadata/.gitkeep
+reports/generated/*
+!reports/generated/.gitkeep
+reports/evaluations/*
+!reports/evaluations/.gitkeep
+reports/figures/*
+!reports/figures/.gitkeep

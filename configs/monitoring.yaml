@@ -1,0 +1,75 @@
+# Deterministic portfolio-MVP monitoring thresholds.
+# These values distinguish controlled replay scenarios; they are not production-validated
+# limits and must be governed against real operating costs and live data before deployment.
+
+project:
+  name: agentic-model-monitoring
+  environment: development
+  configuration_status: deterministic_replay_mvp
+
+model:
+  bundle_directory: artifacts/models
+  metadata_file: artifacts/metadata/model_metadata.json
+  default_threshold: 0.50
+  operating_threshold: 0.25
+  positive_class_label: 1
+
+data:
+  reference_directory: data/reference
+  scenario_directory: data/scenarios
+  batch_size: 1000
+  label_column: actual_label
+  prediction_column: predicted_probability
+
+monitoring:
+  data_quality:
+    minimum_batch_size: 200
+    missing_rate_warning: 0.01
+    missing_rate_critical: 0.10
+    duplicate_rate_warning: 0.001
+    duplicate_rate_critical: 0.01
+    range_violation_rate_warning: 0.01
+    range_violation_rate_critical: 0.05
+    block_on_missing_required_columns: true
+    block_on_target_leakage: true
+    block_on_duplicate_record_ids: true
+    block_on_unexpected_columns: true
+    block_on_feature_order_mismatch: true
+
+  feature_drift:
+    discrete_unique_count_max: 20
+    psi_warning: 0.10
+    psi_critical: 0.25
+    js_warning: 0.10
+    js_critical: 0.20
+    unseen_category_rate_warning: 0.01
+    unseen_category_rate_critical: 0.05
+    ks_statistic_warning: 0.10
+    ks_statistic_critical: 0.20
+
+  prediction_drift:
+    probability_psi_warning: 0.10
+    probability_psi_critical: 0.25
+    positive_rate_absolute_change_warning: 0.05
+    positive_rate_absolute_change_critical: 0.10
+    ks_statistic_warning: 0.10
+
+  performance:
+    minimum_labelled_samples: 200
+    recall_drop_warning: 0.08
+    recall_drop_critical: 0.15
+    precision_drop_warning: 0.08
+    precision_drop_critical: 0.15
+    f1_drop_warning: 0.06
+    f1_drop_critical: 0.12
+    pr_auc_drop_warning: 0.05
+    pr_auc_drop_critical: 0.10
+    roc_auc_drop_warning: 0.05
+    roc_auc_drop_critical: 0.10
+    brier_increase_warning: 0.03
+    brier_increase_critical: 0.06
+
+logging:
+  level: INFO
+  format: structured
+  output_directory: reports/generated

@@ -1,0 +1,62 @@
+# Reproducible replay scenarios for the deterministic monitoring MVP.
+# Transformations are controlled demonstrations, not claims about real production events.
+
+defaults:
+  random_seed: 20260725
+  sample_size: 1000
+
+scenarios:
+  normal_operation:
+    enabled: true
+    description: Clean stratified replay sample with no deliberate modifications.
+    simulation_type: unchanged_reference_replay
+    expected_incident_candidates:
+      - normal_operation
+    parameters: {}
+    limitations:
+      - Sampling variation may produce small non-material metric differences.
+
+  feature_drift:
+    enabled: true
+    description: Controlled credit-limit and repayment-delay covariate shift.
+    simulation_type: deterministic_covariate_shift
+    expected_incident_candidates:
+      - feature_drift
+    parameters:
+      continuous_feature: LIMIT_BAL
+      continuous_scale_factor: 0.35
+      continuous_affected_fraction: 1.0
+      discrete_feature: PAY_0
+      linked_feature: RecentPaymentDelay
+      discrete_target_value: 2
+      discrete_affected_fraction: 0.75
+    limitations:
+      - Transformations preserve observed storage ranges but not all real-world dependencies.
+
+  data_quality_failure:
+    enabled: true
+    description: Duplicate IDs, critical PAY_AMT1 missingness, and LIMIT_BAL range violations.
+    simulation_type: deterministic_data_corruption
+    expected_incident_candidates:
+      - data_quality_failure
+    parameters:
+      duplicate_record_count: 20
+      missing_feature: PAY_AMT1
+      missing_fraction: 0.15
+      range_violation_feature: LIMIT_BAL
+      range_violation_fraction: 0.08
+      range_violation_multiplier: 1.20
+    limitations:
+      - Faults are intentionally concentrated and should not be treated as organic data errors.
+
+  performance_degradation:
+    enabled: true
+    description: Synthetic outcome shift concentrated among lowest-risk negative predictions.
+    simulation_type: deterministic_concept_and_outcome_shift
+    expected_incident_candidates:
+      - performance_degradation
+    parameters:
+      negative_to_positive_count: 180
+      selector: lowest_probability_observed_negatives
+    limitations:
+      - Labels are deliberately modified; this is not an observed real-world outcome shift.
