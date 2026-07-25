@@ -14,6 +14,8 @@ ARTIFACTS_DIR: Final[Path] = PROJECT_ROOT / "artifacts"
 MODELS_DIR: Final[Path] = ARTIFACTS_DIR / "models"
 BASELINES_DIR: Final[Path] = ARTIFACTS_DIR / "baselines"
 METADATA_DIR: Final[Path] = ARTIFACTS_DIR / "metadata"
+CHECKPOINTS_DIR: Final[Path] = ARTIFACTS_DIR / "checkpoints"
+DEFAULT_CHECKPOINT_DB: Final[Path] = CHECKPOINTS_DIR / "agent_checkpoints.sqlite"
 REPORTS_DIR: Final[Path] = PROJECT_ROOT / "reports"
 GENERATED_REPORTS_DIR: Final[Path] = REPORTS_DIR / "generated"
 EVALUATIONS_DIR: Final[Path] = REPORTS_DIR / "evaluations"
@@ -26,6 +28,7 @@ _RUNTIME_DIRECTORIES: Final[tuple[Path, ...]] = (
     MODELS_DIR,
     BASELINES_DIR,
     METADATA_DIR,
+    CHECKPOINTS_DIR,
     GENERATED_REPORTS_DIR,
     EVALUATIONS_DIR,
     FIGURES_DIR,
@@ -41,6 +44,7 @@ _DISPLAY_PATHS: Final[tuple[tuple[str, Path], ...]] = (
     ("Models", MODELS_DIR),
     ("Baselines", BASELINES_DIR),
     ("Metadata", METADATA_DIR),
+    ("Checkpoints", CHECKPOINTS_DIR),
     ("Generated reports", GENERATED_REPORTS_DIR),
     ("Evaluations", EVALUATIONS_DIR),
     ("Figures", FIGURES_DIR),

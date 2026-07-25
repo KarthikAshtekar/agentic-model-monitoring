@@ -136,6 +136,12 @@ def write_markdown_report(result: MonitoringRunResult) -> Path:
 - Rows: `{result.data_quality.row_count}`
 - Columns: `{result.data_quality.column_count}`
 - Labels available: `{str(result.labels_available).lower()}`
+- Feature row count: `{result.feature_row_count}`
+- Labelled row count: `{result.labelled_row_count}`
+- Label coverage rate: `{result.label_coverage_rate:.1%}`
+- Minimum labelled sample size: `{result.minimum_labelled_sample_size}`
+- Performance evaluation: `{"evaluated" if result.performance.evaluated else "not evaluated"}`
+- Reason not evaluated: `{result.performance.reason_not_evaluated or "not applicable"}`
 
 ## Incident candidates
 

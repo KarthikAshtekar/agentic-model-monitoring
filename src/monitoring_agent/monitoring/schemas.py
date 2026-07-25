@@ -84,6 +84,10 @@ class PerformanceResult(MonitoringSchema):
     sample_count: int = Field(ge=0)
     positive_count: int = Field(ge=0)
     negative_count: int = Field(ge=0)
+    feature_row_count: int = Field(default=0, ge=0)
+    labelled_row_count: int = Field(default=0, ge=0)
+    label_coverage_rate: float = Field(default=0.0, ge=0.0, le=1.0)
+    minimum_required_sample_size: int = Field(default=0, ge=0)
     metrics_at_default_threshold: dict[str, Any]
     metrics_at_operating_threshold: dict[str, Any]
     metric_deltas: dict[str, Any]
@@ -102,6 +106,10 @@ class MonitoringRunResult(MonitoringSchema):
     batch_valid: bool
     batch_blocked: bool
     labels_available: bool
+    feature_row_count: int = Field(default=0, ge=0)
+    labelled_row_count: int = Field(default=0, ge=0)
+    label_coverage_rate: float = Field(default=0.0, ge=0.0, le=1.0)
+    minimum_labelled_sample_size: int = Field(default=0, ge=0)
     data_quality: DataQualityResult
     drift: DriftResult
     performance: PerformanceResult

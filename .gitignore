@@ -39,6 +39,8 @@ artifacts/baselines/*
 !artifacts/baselines/.gitkeep
 artifacts/metadata/*
 !artifacts/metadata/.gitkeep
+artifacts/checkpoints/*
+!artifacts/checkpoints/.gitkeep
 reports/generated/*
 !reports/generated/.gitkeep
 reports/evaluations/*

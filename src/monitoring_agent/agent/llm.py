@@ -47,13 +47,18 @@ def create_groq_llm(settings: AgentSettings) -> Any:
     """Construct the configured live ChatGroq model after checking the key."""
     from langchain_groq import ChatGroq
 
-    return ChatGroq(
-        model=settings.model,
-        api_key=settings.require_groq_api_key(),
-        temperature=settings.temperature,
-        timeout=settings.timeout_seconds,
-        max_retries=settings.max_retries,
-    )
+    api_key = settings.require_groq_api_key()
+    try:
+        return ChatGroq(
+            model=settings.model,
+            api_key=api_key,
+            temperature=settings.temperature,
+            timeout=settings.timeout_seconds,
+            max_retries=settings.max_retries,
+        )
+    except Exception as exc:
+        message = str(exc).replace(api_key, "[REDACTED]")[:500]
+        raise RuntimeError(f"Unable to construct Groq client: {message}") from None
 
 
 def _token_usage(raw: Any) -> dict[str, Any] | None:
@@ -63,6 +68,18 @@ def _token_usage(raw: Any) -> dict[str, Any] | None:
     response_metadata = getattr(raw, "response_metadata", {}) or {}
     token_usage = response_metadata.get("token_usage") or response_metadata.get("usage")
     return dict(token_usage) if isinstance(token_usage, dict) else None
+
+
+def _safe_provider_error_message(exc: Exception) -> str:
+    """Return useful provider failure categories without persisting request details."""
+    error_type = type(exc).__name__
+    if error_type == "RateLimitError":
+        return "Groq request was rate-limited (HTTP 429)."
+    if error_type in {"APITimeoutError", "TimeoutError"}:
+        return "Groq request timed out."
+    if error_type in {"APIConnectionError", "ConnectError"}:
+        return "Groq connection failed."
+    return "Groq provider request failed; see the error type."
 
 
 class GroqStructuredMonitoringLLM:
@@ -124,7 +141,7 @@ class GroqStructuredMonitoringLLM:
                     metadata=metadata,
                     error={
                         "error_type": type(error).__name__,
-                        "error_message": str(error),
+                        "error_message": "Structured output parsing failed.",
                     },
                 )
             return StructuredCallResult(parsed=parsed, metadata=metadata, error=None)
@@ -143,7 +160,7 @@ class GroqStructuredMonitoringLLM:
                 },
                 error={
                     "error_type": type(exc).__name__,
-                    "error_message": str(exc),
+                    "error_message": _safe_provider_error_message(exc),
                 },
             )
 

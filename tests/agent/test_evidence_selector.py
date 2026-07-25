@@ -26,6 +26,10 @@ def test_evidence_ids_remain_exact_and_unique() -> None:
     packet = build_evidence_packet(result)
     ids = [item["evidence_id"] for item in packet["evidence"]]
     original_ids = {item.evidence_id for item in result.evidence}
-    selected_original_ids = {item for item in ids if not item.startswith("SYSTEM-")}
     assert len(ids) == len(set(ids))
-    assert selected_original_ids <= original_ids
+    assert set(ids) <= original_ids
+
+
+def test_non_normal_packet_does_not_add_pass_padding() -> None:
+    packet = build_evidence_packet(load_result("feature_drift"))
+    assert all(item["status"] != "pass" for item in packet["evidence"])

@@ -1,4 +1,4 @@
-"""Generate four reproducible replay scenarios from the validated bundle."""
+"""Generate reproducible replay scenarios from the validated bundle."""
 
 from __future__ import annotations
 
@@ -13,11 +13,16 @@ from monitoring_agent.bundle.loader import CreditDefaultBundle
 from monitoring_agent.paths import CONFIG_DIR, PROJECT_ROOT
 from monitoring_agent.scenarios.schemas import ScenarioManifest
 
-SUPPORTED_SCENARIOS = (
+CORE_SCENARIOS = (
     "normal_operation",
     "feature_drift",
     "data_quality_failure",
     "performance_degradation",
+)
+SUPPORTED_SCENARIOS = (
+    *CORE_SCENARIOS,
+    "unlabelled_drift",
+    "insufficient_labels",
 )
 
 
@@ -208,10 +213,28 @@ def _performance_degradation(
     return modified_labels, modifications
 
 
+def _unlabelled_drift(
+    features: pd.DataFrame,
+    parameters: dict[str, Any],
+    seed: int,
+    observed_ranges: dict[str, tuple[float, float]],
+) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
+    """Create valid drift using a different repayment feature and milder limit shift."""
+    modified, modifications = _feature_drift(
+        features,
+        parameters,
+        seed + 17,
+        observed_ranges,
+    )
+    modifications[-1]["transformation"] = "synchronise_linked_delay_feature"
+    modifications[-1]["linked_to"] = str(parameters["discrete_feature"])
+    return modified, modifications
+
+
 def _write_scenario(
     scenario_name: str,
     features: pd.DataFrame,
-    labels: pd.DataFrame,
+    labels: pd.DataFrame | None,
     manifest: ScenarioManifest,
     *,
     overwrite: bool,
@@ -228,7 +251,11 @@ def _write_scenario(
         )
     scenario_dir.mkdir(parents=True, exist_ok=True)
     features.to_parquet(feature_path, index=False)
-    labels.to_parquet(label_path, index=False)
+    if labels is None:
+        if label_path.is_file():
+            label_path.unlink()
+    else:
+        labels.to_parquet(label_path, index=False)
     manifest_path.write_text(
         manifest.model_dump_json(indent=2) + "\n",
         encoding="utf-8",
@@ -301,6 +328,30 @@ def generate_scenario(
             parameters,
             bundle,
         )
+    elif scenario_name == "unlabelled_drift":
+        features, feature_modifications = _unlabelled_drift(
+            features,
+            parameters,
+            seed,
+            observed_ranges,
+        )
+        labels = None
+    elif scenario_name == "insufficient_labels":
+        labelled_sample_count = int(parameters["labelled_sample_count"])
+        if labelled_sample_count >= len(labels):
+            raise ValueError(
+                "insufficient_labels must retain fewer labels than feature rows."
+            )
+        labels = labels.iloc[:labelled_sample_count].reset_index(drop=True)
+        label_modifications = [
+            {
+                "target": "actual_label",
+                "transformation": "retain_deterministic_aligned_subset",
+                "retained_row_count": labelled_sample_count,
+                "feature_row_count": len(features),
+                "label_coverage_rate": labelled_sample_count / len(features),
+            }
+        ]
 
     configured_features = {
         modification["feature"]
@@ -319,6 +370,9 @@ def generate_scenario(
         random_seed=seed,
         source_reference_sample_count=metadata.reference_sample_count,
         generated_sample_count=len(features),
+        labels_available=labels is not None,
+        labelled_sample_count=0 if labels is None else len(labels),
+        labels_complete=labels is not None and len(labels) == len(features),
         expected_incident_candidates=scenario_config["expected_incident_candidates"],
         feature_modifications=feature_modifications,
         label_modifications=label_modifications,

@@ -111,9 +111,16 @@ def build_fallback_recommendation(
         root_cause_hypothesis=None,
         root_cause_evidence_ids=[],
         recommended_actions=[action],
-        uncertainties=[
-            "The fallback does not infer a detailed root cause or replace human review."
-        ]
+        uncertainties=(
+            [
+                "Performance conclusions are limited by insufficient label coverage; "
+                "the fallback does not replace human review."
+            ]
+            if incident == "insufficient_evidence"
+            else [
+                "The fallback does not infer a detailed root cause or replace human review."
+            ]
+        )
         if approval
         else [],
         overall_evidence_ids=material,

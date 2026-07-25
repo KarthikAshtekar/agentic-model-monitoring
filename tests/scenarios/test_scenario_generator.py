@@ -5,10 +5,11 @@ from pathlib import Path
 
 import pandas as pd
 
+import monitoring_agent.scenarios.generator as generator
 from monitoring_agent.bundle.loader import CreditDefaultBundle
 from monitoring_agent.paths import PROJECT_ROOT
 from monitoring_agent.scenarios.generator import (
-    SUPPORTED_SCENARIOS,
+    CORE_SCENARIOS,
     generate_scenario,
 )
 from monitoring_agent.scenarios.schemas import ScenarioManifest
@@ -24,7 +25,7 @@ def test_generated_manifests_and_feature_order() -> None:
         "record_id",
         *CreditDefaultBundle().ordered_inference_features(),
     ]
-    for scenario in SUPPORTED_SCENARIOS:
+    for scenario in CORE_SCENARIOS:
         scenario_dir = PROJECT_ROOT / "data/scenarios" / scenario
         manifest = ScenarioManifest.model_validate_json(
             (scenario_dir / "scenario_manifest.json").read_text(encoding="utf-8")
@@ -37,11 +38,13 @@ def test_generated_manifests_and_feature_order() -> None:
         assert features.columns.tolist() == expected_columns
 
 
-def test_normal_scenario_generation_is_reproducible() -> None:
+def test_normal_scenario_generation_is_reproducible(tmp_path, monkeypatch) -> None:
     """The fixed seed regenerates byte-identical feature and label Parquet files."""
-    scenario_dir = PROJECT_ROOT / "data/scenarios/normal_operation"
+    monkeypatch.setattr(generator, "PROJECT_ROOT", tmp_path)
+    scenario_dir = tmp_path / "data/scenarios/normal_operation"
     feature_path = scenario_dir / "features.parquet"
     label_path = scenario_dir / "labels.parquet"
+    generate_scenario("normal_operation")
     before = (_sha256(feature_path), _sha256(label_path))
 
     manifest = generate_scenario("normal_operation", overwrite=True)

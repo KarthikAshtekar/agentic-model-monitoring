@@ -109,6 +109,13 @@ class AgentNodes:
             "scenario_name": result.scenario_name,
             "monitoring_result": result.model_dump(mode="json"),
             "revision_count": int(state.get("revision_count", 0)),
+            "checkpoint_backend": state.get("checkpoint_backend", "memory"),
+            "checkpoint_database": state.get("checkpoint_database"),
+            "resumed_from_checkpoint": bool(
+                state.get("resumed_from_checkpoint", False)
+            ),
+            "pause_count": int(state.get("pause_count", 0)),
+            "resume_count": int(state.get("resume_count", 0)),
             "approval_required": False,
             "approval_decision": None,
             "final_report_paths": [],
@@ -303,6 +310,14 @@ class AgentNodes:
         }
 
     @staticmethod
+    def prepare_human_approval(state: AgentState) -> dict[str, Any]:
+        """Commit pause provenance before entering the interrupting node."""
+        return {
+            "approval_required": True,
+            "pause_count": int(state.get("pause_count", 0)) + 1,
+        }
+
+    @staticmethod
     def human_approval(state: AgentState) -> dict[str, Any]:
         """Pause non-normal runs and validate the reviewer response on resume."""
         recommendation = AgentRecommendation.model_validate(state["recommendation"])
@@ -320,8 +335,21 @@ class AgentNodes:
                 "allowed_decisions": ["approve", "reject", "request_revision"],
             }
         )
-        decision = ApprovalDecision.model_validate(response)
-        return {"approval_decision": decision.model_dump(mode="json")}
+        resume_context: dict[str, Any] = {}
+        decision_payload = response
+        if isinstance(response, dict) and "approval_decision" in response:
+            decision_payload = response["approval_decision"]
+            context_payload = response.get("resume_context", {})
+            if isinstance(context_payload, dict):
+                resume_context = context_payload
+        decision = ApprovalDecision.model_validate(decision_payload)
+        return {
+            "approval_decision": decision.model_dump(mode="json"),
+            "resumed_from_checkpoint": bool(
+                resume_context.get("resumed_from_checkpoint", False)
+            ),
+            "resume_count": int(state.get("resume_count", 0)) + 1,
+        }
 
     @staticmethod
     def finalize(state: AgentState) -> dict[str, Any]:
@@ -353,4 +381,18 @@ def utc_approval_payload(
         "comment": comment,
         "reviewer": reviewer,
         "reviewed_at_utc": datetime.now(UTC).isoformat(),
+    }
+
+
+def approval_resume_payload(
+    approval: dict[str, Any],
+    *,
+    resumed_from_checkpoint: bool,
+) -> dict[str, Any]:
+    """Wrap reviewer data with non-user workflow provenance for the interrupt node."""
+    return {
+        "approval_decision": approval,
+        "resume_context": {
+            "resumed_from_checkpoint": resumed_from_checkpoint,
+        },
     }

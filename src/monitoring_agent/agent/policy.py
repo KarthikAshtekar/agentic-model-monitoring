@@ -42,7 +42,16 @@ def build_policy_context(
         "labels_available": monitoring_result.labels_available,
         "performance_evaluated": monitoring_result.performance.evaluated,
         "labelled_sample_size": monitoring_result.performance.sample_count,
-        "minimum_labelled_samples": MINIMUM_LABELLED_SAMPLES,
+        "feature_row_count": monitoring_result.feature_row_count,
+        "labelled_row_count": monitoring_result.labelled_row_count,
+        "label_coverage_rate": monitoring_result.label_coverage_rate,
+        "minimum_labelled_samples": (
+            monitoring_result.minimum_labelled_sample_size
+            or MINIMUM_LABELLED_SAMPLES
+        ),
+        "performance_reason_not_evaluated": (
+            monitoring_result.performance.reason_not_evaluated
+        ),
         "material_performance_evidence_ids": material_performance_ids,
         "normal_allowed_actions": sorted(NORMAL_ALLOWED_ACTIONS),
         "blocked_allowed_actions": sorted(BLOCKED_ALLOWED_ACTIONS),
@@ -122,6 +131,22 @@ def _contains_any(text: str, phrases: set[str]) -> bool:
     return any(phrase in lowered for phrase in phrases)
 
 
+def _claims_metric_degradation_without_evaluation(text: str) -> bool:
+    lowered = text.lower()
+    metric_terms = {"recall", "precision", "pr-auc", "pr_auc", "roc-auc", "roc_auc"}
+    degradation_terms = {
+        "degrad",
+        "declin",
+        "drop",
+        "deteriorat",
+        "worsen",
+        "lower",
+    }
+    return any(metric in lowered for metric in metric_terms) and any(
+        term in lowered for term in degradation_terms
+    )
+
+
 def evaluate_hard_policy(
     recommendation: AgentRecommendation,
     result: MonitoringRunResult,
@@ -187,9 +212,36 @@ def evaluate_hard_policy(
         if _contains_any(
             claim_text,
             {"performance degradation", "model performance degraded", "concept drift"},
+        ) or _claims_metric_degradation_without_evaluation(claim_text):
+            violations.append(
+                "Unevaluated performance must not be described as degradation, metric "
+                "deterioration, or concept drift."
+            )
+
+    insufficient_label_evidence = (
+        result.labels_available
+        and not result.performance.evaluated
+        and result.performance.sample_count
+        < (
+            result.minimum_labelled_sample_size
+            or MINIMUM_LABELLED_SAMPLES
+        )
+        and "insufficient_evidence" in result.incident_candidates
+    )
+    if insufficient_label_evidence:
+        if not recommendation.recommended_actions or (
+            recommendation.recommended_actions[0].action_type != "collect_more_labels"
         ):
             violations.append(
-                "Unevaluated performance must not be described as degradation or concept drift."
+                "Insufficient labels require collect_more_labels as the primary action."
+            )
+        uncertainty_text = " ".join(recommendation.uncertainties).lower()
+        if not any(
+            term in uncertainty_text
+            for term in {"label", "coverage", "sample", "insufficient", "evidence"}
+        ):
+            violations.append(
+                "Insufficient labels require an explicit evidence-sufficiency uncertainty."
             )
 
     if result.incident_candidates == ["normal_operation"]:

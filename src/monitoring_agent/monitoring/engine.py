@@ -59,7 +59,13 @@ class MonitoringEngine:
         )
 
     @staticmethod
-    def _blocked_performance(reason: str) -> PerformanceResult:
+    def _blocked_performance(
+        reason: str,
+        *,
+        feature_row_count: int,
+        labelled_row_count: int,
+        minimum_required_sample_size: int,
+    ) -> PerformanceResult:
         evidence = EvidenceItem(
             evidence_id="SYSTEM-BATCH-BLOCKED",
             domain="system",
@@ -79,6 +85,12 @@ class MonitoringEngine:
             sample_count=0,
             positive_count=0,
             negative_count=0,
+            feature_row_count=feature_row_count,
+            labelled_row_count=labelled_row_count,
+            label_coverage_rate=(
+                labelled_row_count / feature_row_count if feature_row_count else 0.0
+            ),
+            minimum_required_sample_size=minimum_required_sample_size,
             metrics_at_default_threshold={},
             metrics_at_operating_threshold={},
             metric_deltas={},
@@ -127,14 +139,8 @@ class MonitoringEngine:
         if critical_prediction:
             candidates.append("prediction_drift")
 
-        if not candidates and not performance.evaluated:
-            warning_signal = any(
-                item.domain in {"feature_drift", "prediction_drift"}
-                and item.status == "warning"
-                for item in evidence
-            )
-            if warning_signal:
-                candidates.append("insufficient_evidence")
+        if not performance.evaluated:
+            candidates.append("insufficient_evidence")
         return candidates or ["normal_operation"]
 
     def run_batch(
@@ -149,11 +155,22 @@ class MonitoringEngine:
             self.schema,
             self.config["data_quality"],
         )
+        feature_row_count = len(features)
+        labelled_row_count = 0 if labels is None else len(labels)
+        label_coverage_rate = (
+            labelled_row_count / feature_row_count if feature_row_count else 0.0
+        )
+        minimum_labelled_sample_size = int(
+            self.config["performance"]["minimum_labelled_samples"]
+        )
 
         if data_quality.batch_blocked:
             drift = self._empty_drift()
             performance = self._blocked_performance(
-                "Performance and drift were not evaluated because data quality blocked inference."
+                "Performance and drift were not evaluated because data quality blocked inference.",
+                feature_row_count=feature_row_count,
+                labelled_row_count=labelled_row_count,
+                minimum_required_sample_size=minimum_labelled_sample_size,
             )
         else:
             inference_frame = features.drop(columns=["record_id"])
@@ -197,7 +214,11 @@ class MonitoringEngine:
             operating_threshold=self.metadata.operating_threshold,
             batch_valid=data_quality.batch_valid,
             batch_blocked=data_quality.batch_blocked,
-            labels_available=labels is not None,
+            labels_available=labels is not None and labelled_row_count > 0,
+            feature_row_count=feature_row_count,
+            labelled_row_count=labelled_row_count,
+            label_coverage_rate=label_coverage_rate,
+            minimum_labelled_sample_size=minimum_labelled_sample_size,
             data_quality=data_quality,
             drift=drift,
             performance=performance,

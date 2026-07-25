@@ -64,6 +64,8 @@ def _not_evaluated(
     sample_count: int = 0,
     positive_count: int = 0,
     negative_count: int = 0,
+    feature_row_count: int = 0,
+    minimum_required_sample_size: int = 0,
 ) -> PerformanceResult:
     evidence = EvidenceItem(
         evidence_id=evidence_id,
@@ -84,6 +86,12 @@ def _not_evaluated(
         sample_count=sample_count,
         positive_count=positive_count,
         negative_count=negative_count,
+        feature_row_count=feature_row_count,
+        labelled_row_count=sample_count,
+        label_coverage_rate=(
+            sample_count / feature_row_count if feature_row_count else 0.0
+        ),
+        minimum_required_sample_size=minimum_required_sample_size,
         metrics_at_default_threshold={},
         metrics_at_operating_threshold={},
         metric_deltas={},
@@ -112,25 +120,45 @@ def evaluate_performance(
     config: dict[str, Any],
 ) -> PerformanceResult:
     """Evaluate labelled batch performance only when all preconditions hold."""
+    feature_row_count = len(features)
+    minimum_samples = int(config["minimum_labelled_samples"])
     if labels_frame is None:
         return _not_evaluated(
             "Labels are not available for this batch.",
             "SYSTEM-LABELS-UNAVAILABLE",
+            feature_row_count=feature_row_count,
+            minimum_required_sample_size=minimum_samples,
         )
+    labelled_row_count = len(labels_frame)
     if labels_frame.columns.tolist() != ["record_id", "actual_label"]:
         return _not_evaluated(
             "Label columns do not match record_id and actual_label.",
             "SYSTEM-INVALID-LABEL-SCHEMA",
-            sample_count=len(labels_frame),
+            sample_count=labelled_row_count,
+            feature_row_count=feature_row_count,
+            minimum_required_sample_size=minimum_samples,
         )
-    if (
-        not labels_frame["record_id"].is_unique
-        or features["record_id"].tolist() != labels_frame["record_id"].tolist()
-    ):
+    if not labels_frame["record_id"].is_unique:
         return _not_evaluated(
-            "Labels do not align one-to-one with feature record IDs.",
+            "Label record IDs must be unique.",
             "SYSTEM-LABEL-ALIGNMENT",
-            sample_count=len(labels_frame),
+            sample_count=labelled_row_count,
+            feature_row_count=feature_row_count,
+            minimum_required_sample_size=minimum_samples,
+        )
+    feature_ids = set(features["record_id"].tolist())
+    unknown_label_ids = [
+        record_id
+        for record_id in labels_frame["record_id"].tolist()
+        if record_id not in feature_ids
+    ]
+    if unknown_label_ids:
+        return _not_evaluated(
+            "One or more label record IDs are not present in the feature batch.",
+            "SYSTEM-LABEL-ALIGNMENT",
+            sample_count=labelled_row_count,
+            feature_row_count=feature_row_count,
+            minimum_required_sample_size=minimum_samples,
         )
 
     raw_labels = labels_frame["actual_label"]
@@ -140,13 +168,14 @@ def evaluate_performance(
             "Labels must be non-null binary values 0 or 1.",
             "SYSTEM-INVALID-LABELS",
             sample_count=len(raw_labels),
+            feature_row_count=feature_row_count,
+            minimum_required_sample_size=minimum_samples,
         )
 
     labels = raw_labels.to_numpy(dtype="int8")
     sample_count = len(labels)
     positive_count = int(labels.sum())
     negative_count = sample_count - positive_count
-    minimum_samples = int(config["minimum_labelled_samples"])
     if sample_count < minimum_samples:
         return _not_evaluated(
             f"Only {sample_count} labels are available; at least {minimum_samples} are required.",
@@ -154,6 +183,8 @@ def evaluate_performance(
             sample_count=sample_count,
             positive_count=positive_count,
             negative_count=negative_count,
+            feature_row_count=feature_row_count,
+            minimum_required_sample_size=minimum_samples,
         )
     if positive_count == 0 or negative_count == 0:
         return _not_evaluated(
@@ -162,22 +193,32 @@ def evaluate_performance(
             sample_count=sample_count,
             positive_count=positive_count,
             negative_count=negative_count,
+            feature_row_count=feature_row_count,
+            minimum_required_sample_size=minimum_samples,
         )
 
+    probability_by_id = pd.Series(
+        probabilities,
+        index=features["record_id"].tolist(),
+        dtype=float,
+    )
+    aligned_probabilities = probability_by_id.loc[
+        labels_frame["record_id"].tolist()
+    ].to_numpy(dtype=float)
     default_metrics = _threshold_metrics(
         labels,
-        probabilities,
+        aligned_probabilities,
         metadata.default_threshold,
     )
     operating_metrics = _threshold_metrics(
         labels,
-        probabilities,
+        aligned_probabilities,
         metadata.operating_threshold,
     )
     ranking_metrics = {
-        "roc_auc": float(roc_auc_score(labels, probabilities)),
-        "pr_auc": float(average_precision_score(labels, probabilities)),
-        "brier_score": float(brier_score_loss(labels, probabilities)),
+        "roc_auc": float(roc_auc_score(labels, aligned_probabilities)),
+        "pr_auc": float(average_precision_score(labels, aligned_probabilities)),
+        "brier_score": float(brier_score_loss(labels, aligned_probabilities)),
     }
     default_metrics.update(ranking_metrics)
     operating_metrics.update(ranking_metrics)
@@ -311,6 +352,10 @@ def evaluate_performance(
         sample_count=sample_count,
         positive_count=positive_count,
         negative_count=negative_count,
+        feature_row_count=feature_row_count,
+        labelled_row_count=sample_count,
+        label_coverage_rate=sample_count / feature_row_count,
+        minimum_required_sample_size=minimum_samples,
         metrics_at_default_threshold=default_metrics,
         metrics_at_operating_threshold=operating_metrics,
         metric_deltas=deltas,

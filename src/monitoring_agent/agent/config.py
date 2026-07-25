@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Literal
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from monitoring_agent.paths import DEFAULT_CHECKPOINT_DB, PROJECT_ROOT
 
 
 class AgentSettings(BaseSettings):
@@ -13,7 +16,7 @@ class AgentSettings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_prefix="LLM_",
-        env_file=".env",
+        env_file=PROJECT_ROOT / ".env",
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -24,6 +27,14 @@ class AgentSettings(BaseSettings):
     timeout_seconds: float = Field(default=30.0, gt=0.0)
     max_retries: int = Field(default=1, ge=0, le=5)
     max_revision_attempts: int = Field(default=1, ge=0, le=2)
+    checkpoint_backend: Literal["memory", "sqlite"] = Field(
+        default="memory",
+        validation_alias="AGENT_CHECKPOINT_BACKEND",
+    )
+    checkpoint_db: Path = Field(
+        default=DEFAULT_CHECKPOINT_DB,
+        validation_alias="AGENT_CHECKPOINT_DB",
+    )
     groq_api_key: SecretStr | None = Field(
         default=None,
         validation_alias="GROQ_API_KEY",

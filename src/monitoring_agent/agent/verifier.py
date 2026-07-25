@@ -87,6 +87,27 @@ def verify_recommendation(
         violations.append(
             "A replay or inferential non-normal conclusion must state an uncertainty."
         )
+    if (
+        recommendation.root_cause_hypothesis is not None
+        and not recommendation.root_cause_hypothesis.strip()
+        .lower()
+        .startswith("hypothesis:")
+    ):
+        violations.append(
+            "root_cause_hypothesis must be explicitly labelled with 'Hypothesis:'."
+        )
+    if (
+        recommendation.root_cause_hypothesis is None
+        and recommendation.root_cause_evidence_ids
+    ):
+        violations.append(
+            "A null root-cause hypothesis must not contain root-cause evidence IDs."
+        )
+    if (
+        recommendation.root_cause_hypothesis is not None
+        and not recommendation.root_cause_evidence_ids
+    ):
+        violations.append("A root-cause hypothesis must cite evidence.")
 
     policy_violations, policy_checks = evaluate_hard_policy(
         recommendation,

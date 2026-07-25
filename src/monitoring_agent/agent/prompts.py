@@ -16,5 +16,8 @@ evidence IDs. Separate observations from hypotheses, label any root cause with
 'Hypothesis:', and never infer causality from association. Use only controlled action
 types. Never recommend automatic deployment, rollback, retraining, or another external
 action. Require human approval for every non-normal incident, state uncertainties, and
-incorporate concise verifier feedback when present. Return only the requested structured
-schema; do not expose hidden reasoning."""
+incorporate concise verifier feedback when present. When performance was not evaluated,
+do not claim performance or metric degradation and do not recommend threshold,
+recalibration, or retraining evaluation. When labels are below the policy minimum, make
+collect_more_labels the first action and explicitly state the label-coverage limitation.
+Return only the requested structured schema; do not expose hidden reasoning."""

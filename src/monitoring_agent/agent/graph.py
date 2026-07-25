@@ -19,11 +19,19 @@ def _after_verification(state: AgentState) -> str:
         return "revise_recommendation"
     if status == "fallback":
         return "deterministic_fallback"
-    return "human_approval" if state["recommendation"]["requires_human_approval"] else "finalize"
+    return (
+        "prepare_human_approval"
+        if state["recommendation"]["requires_human_approval"]
+        else "finalize"
+    )
 
 
 def _after_fallback(state: AgentState) -> str:
-    return "human_approval" if state["recommendation"]["requires_human_approval"] else "finalize"
+    return (
+        "prepare_human_approval"
+        if state["recommendation"]["requires_human_approval"]
+        else "finalize"
+    )
 
 
 def build_monitoring_graph(
@@ -47,6 +55,7 @@ def build_monitoring_graph(
     builder.add_node("verify_recommendation", nodes.verify_recommendation)
     builder.add_node("revise_recommendation", nodes.revise_recommendation)
     builder.add_node("deterministic_fallback", nodes.deterministic_fallback)
+    builder.add_node("prepare_human_approval", nodes.prepare_human_approval)
     builder.add_node("human_approval", nodes.human_approval)
     builder.add_node("finalize", nodes.finalize)
 
@@ -63,7 +72,7 @@ def build_monitoring_graph(
         {
             "revise_recommendation": "revise_recommendation",
             "deterministic_fallback": "deterministic_fallback",
-            "human_approval": "human_approval",
+            "prepare_human_approval": "prepare_human_approval",
             "finalize": "finalize",
         },
     )
@@ -72,10 +81,11 @@ def build_monitoring_graph(
         "deterministic_fallback",
         _after_fallback,
         {
-            "human_approval": "human_approval",
+            "prepare_human_approval": "prepare_human_approval",
             "finalize": "finalize",
         },
     )
+    builder.add_edge("prepare_human_approval", "human_approval")
     builder.add_edge("human_approval", "finalize")
     builder.add_edge("finalize", END)
     return builder.compile(checkpointer=checkpointer or InMemorySaver())

@@ -1,121 +1,112 @@
 # Agentic Model Risk & Monitoring Copilot
 
-`agentic-model-monitoring` is a production-oriented replay MVP that monitors an existing
-credit-default model, investigates model-risk incidents with one bounded LangGraph
-orchestrator, and proposes evidence-backed actions for human approval.
+This project replays a validated credit-default model bundle through six controlled
+monitoring scenarios. Deterministic Python components calculate data-quality, drift, and
+label-availability/performance evidence, while one LangGraph orchestrator routes the investigation
+and Groq GPT-OSS produces strict structured recommendations. A deterministic verifier
+checks every cited evidence ID and policy constraint, permits one bounded revision, and
+routes non-normal recommendations through human approval. The result is a reviewable
+replay-based monitoring workflow—not an autonomous remediation or production deployment.
 
-## Why this is a separate repository
+## Key capabilities
 
-Model monitoring has a different lifecycle and operational boundary from model training.
-This project will consume a stable, versioned model-monitoring bundle exported by the
-existing `credit-default-xai` project. It must not directly import source code from that
-sibling repository. This separation makes the monitoring contract explicit and avoids
-coupling runtime checks to model-development internals.
+- Self-contained XGBoost credit-default bundle with 36 predictors and a 6,002-row
+  held-out reference set
+- Data-quality, feature-drift, prediction-drift, and labelled-performance monitoring
+- Stable evidence IDs, deterministic incident candidates, and deterministic severity
+- One LangGraph orchestrator with conditional diagnostic routing
+- Strict Groq `json_schema` triage and recommendation outputs
+- Deterministic evidence and policy verification
+- One bounded LLM revision followed by a deterministic fallback if still invalid
+- LangGraph human-approval interrupt for every non-normal recommendation
+- Optional local SQLite checkpointing for cross-process approval resume
+- Safe abstention when outcomes are absent or below the labelled-sample minimum
+- JSON and Markdown monitoring and agentic reports
+- Separate fake and live execution provenance
+- Deterministic evaluation without an LLM-as-judge
 
-## One-agent architecture
+## Architecture
 
-The implemented flow is:
-
-```text
-validated model bundle
-        ↓
-deterministic monitoring and evidence IDs
-        ↓
-bounded structured evidence packet
-        ↓
-one LangGraph triage and diagnostic route
-        ↓
-structured Groq recommendation
-        ↓
-deterministic evidence and policy verifier
-        ↓
-one revision at most, or deterministic fallback
-        ↓
-human approval interrupt for non-normal incidents
-        ↓
-agentic JSON and Markdown report
+```mermaid
+flowchart TD
+    A[Validated model bundle] --> B[Controlled replay scenario]
+    B --> C[Deterministic monitoring engine]
+    C --> D[Structured evidence packet]
+    D --> E[LangGraph triage]
+    E --> F{Diagnostic route}
+    F --> G[Structured Groq recommendation]
+    G --> H[Deterministic evidence and policy verifier]
+    H -->|Revise once| G
+    H -->|Invalid after limit or provider failure| I[Deterministic fallback]
+    H -->|Pass| J{Approval required?}
+    I --> J
+    J -->|No: normal operation| K[Final report]
+    J -->|Yes: non-normal| L[Human approval interrupt]
+    L --> K
 ```
 
-Python remains authoritative for data quality, drift, performance, incident candidates,
-severity, and evidence values. The LLM does not recalculate metrics or execute an action.
-See [`docs/architecture.md`](docs/architecture.md) and
-[`docs/agentic_methodology.md`](docs/agentic_methodology.md).
+Data-quality, drift, and performance functions are deterministic analytical components,
+not separate agents. The LLM synthesizes evidence into a controlled recommendation; it
+does not calculate monitoring metrics or execute remediation.
 
-## Repository structure
+## Controlled scenarios
 
-```text
-artifacts/               Model bundles, metadata, and monitoring baselines
-configs/                 Initial monitoring and scenario configuration
-data/                    Reference, replayed production, and scenario batches
-docs/                    Architecture and contract documentation
-notebooks/               Future reviewable exploration
-reports/                 Generated reports, evaluations, and figures
-scripts/                 Monitoring, agent, bundle-export, and validation utilities
-src/monitoring_agent/    Bundle, monitoring, scenario, and agent packages
-tests/                   Focused deterministic and agent workflow tests
-```
+| Scenario | Controlled change | Intended monitoring behavior |
+|---|---|---|
+| Normal operation | Unchanged stratified reference replay | Stable evidence and no approval |
+| Feature drift | Credit-limit and repayment-delay covariate shifts | Drift/prediction/performance investigation |
+| Data-quality failure | Duplicate IDs, missing payments, and range violations | Block inference and quarantine/investigate |
+| Synthetic performance degradation | Flip 180 low-risk negative labels to positive | Detect labelled performance degradation |
+| Unlabelled drift | Valid `LIMIT_BAL`, `PAY_2`, and `MaxPaymentDelay` shifts with no labels | Investigate drift without a performance claim |
+| Insufficient labels | Stable 1,000-row batch with only 100 aligned labels | Abstain and collect labels before performance evaluation |
 
-Generated and potentially sensitive contents under `data/`, `artifacts/`, and `reports/`
-are ignored by Git; only their `.gitkeep` placeholders are versionable.
+The performance-degradation case deliberately modifies labels to simulate
+outcome/concept drift. It is not an observed real-world incident.
 
-## Current status
+## Live Groq evaluation
 
-The stable model-bundle integration phase is complete. The exported bundle contains:
+The final evaluation used Groq `openai/gpt-oss-20b`, temperature `0`, strict
+`json_schema`, and at most one LLM revision.
 
-- The selected `xgboost_public` complete fitted inference pipeline.
-- The 36 ordered `application_public` predictors.
-- The UCI Default of Credit Card Clients / Taiwan credit-card default held-out reference
-  split with 6,002 samples.
-- Separate reference features, `Default_Flag` labels, probabilities, and decisions.
-- The validation-selected operating threshold `0.25` and default threshold `0.50`.
-- Reproduced metrics, feature summaries, provenance, checksums, and compatibility notes.
+| Scenario | Live incident | Route | Revisions | Fallback | Final status |
+|---|---|---|---:|---:|---|
+| Normal operation | `normal_operation` | `no_additional_diagnostics` | 0 | No | `completed_no_approval_required` |
+| Feature drift | `mixed_incident` | `mixed_diagnostics` | 0 | No | `approved` |
+| Data-quality failure | `data_quality_failure` | `data_quality_diagnostics` | 1 | No | `approved` |
+| Performance degradation | `performance_degradation` | `performance_diagnostics` | 0 | No | `approved` |
+| Unlabelled drift | `feature_drift` | `drift_diagnostics` | 0 | No | `approved` |
+| Insufficient labels | `insufficient_evidence` | `evidence_sufficiency_review` | 0 | No | `approved` |
 
-The monitoring package loads this bundle without importing sibling-repository code during
-normal runtime. The export script alone uses the source split function to reconstruct the
-authoritative held-out rows.
+Measured over the six-scenario robustness evaluation:
 
-The deterministic monitoring phase is also complete. It provides:
+- `6/6` compatible incident classifications
+- `6/6` compatible diagnostic routes
+- `100%` evidence grounding and `100%` policy compliance
+- `83.33%` first-pass verification and `0%` fallback
+- `100%` approval completion
 
-- Data-quality checks covering schema, identifiers, order, dtype, missingness, finite
-  values, observed reference ranges, integer constraints, and batch size.
-- Numeric and categorical feature drift using PSI, KS, Jensen-Shannon divergence, unseen
-  categories, location shifts, and missing-rate changes.
-- Prediction drift using probability PSI and KS, decision-rate changes, and risk deciles.
-- Labelled performance at thresholds `0.50` and `0.25`, including ranking and calibration
-  metrics compared with exported reference baselines.
-- Structured evidence IDs, deterministic incident candidates, and JSON/Markdown reports.
-- Four reproducible 1,000-row replay scenarios: `normal_operation`, `feature_drift`,
-  `data_quality_failure`, and `performance_degradation`.
+Five scenarios passed verification immediately. The preserved data-quality recommendation violated
+a hard rule on its first pass, received concise verifier feedback, and passed after the
+single permitted revision. No scenario required fallback; the result demonstrates that
+the verifier/revision control operated as designed within this six-case benchmark.
 
-The bounded agent phase is complete. It provides strict `AgentTriage` and
-`AgentRecommendation` schemas, Groq provider configuration, compact evidence selection,
-conditional diagnostics over already-calculated evidence, deterministic citation and
-policy verification, one optional LLM revision, deterministic fallback, and an in-memory
-human approval interrupt. Agentic reports are written beside—but do not overwrite—the
-deterministic reports.
+The original four-scenario evaluation remains preserved under
+`reports/evaluations/live_groq/`. See the
+[six-scenario live evaluation report](reports/evaluations/live_groq_six_scenarios/live_evaluation_report.md),
+[claim audit](docs/claim_audit.md), and
+[final project report](reports/final_project_report.md).
 
-The environment remains limited to replay-based simulated production batches. The
-performance-degradation scenario deliberately changes labels in a low-predicted-risk
-segment to represent synthetic concept/outcome drift; it is not an observed real-world
-incident. The project is not connected to a live production model, data source, alerting
-service, case-management system, dashboard, or automated retraining system.
+## Quick start
 
-## Local setup
-
-From the repository root in Windows PowerShell:
+Windows PowerShell setup:
 
 ```powershell
-py -3.12 -m venv .venv
+py -3.13 -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -e ".[dev]"
+python -m pip install -e ".[dev]"
 ```
 
-Python 3.11 through 3.13 is supported. If Python 3.12 is unavailable, select another
-installed interpreter within that range explicitly when creating `.venv`.
-
-For live Groq use, copy only the variable names from `.env.example` into your own
-untracked `.env` or export them in the shell:
+Create an untracked `.env` from the documented variable names:
 
 ```env
 LLM_PROVIDER=groq
@@ -125,137 +116,114 @@ LLM_TIMEOUT_SECONDS=30
 LLM_MAX_RETRIES=1
 LLM_MAX_REVISION_ATTEMPTS=1
 GROQ_API_KEY=
+LANGGRAPH_STRICT_MSGPACK=true
+AGENT_CHECKPOINT_BACKEND=memory
+AGENT_CHECKPOINT_DB=artifacts/checkpoints/agent_checkpoints.sqlite
 ```
 
-The live client stops with a concise configuration error when `GROQ_API_KEY` is absent.
-It does not silently select another provider.
+### Existing-artifacts demo
 
-## Verification
-
-With the virtual environment active:
+Use the checked local artifacts without regenerating the bundle or scenarios:
 
 ```powershell
-python scripts\verify_setup.py
-python -m pytest
-python -m ruff check .
-python -m compileall src tests scripts
-python -c "import monitoring_agent; print(monitoring_agent.__version__)"
-monitoring-verify
-```
-
-Export the bundle from the verified source repository and validate it:
-
-```powershell
-python scripts\export_credit_default_bundle.py `
-  --source-repo "D:\PGDBA\Projects\Credit Default Risk\credit-default-xai" `
-  --overwrite
 python scripts\validate_credit_default_bundle.py
-python -m pytest tests\bundle -q
-python -m ruff check src\monitoring_agent\bundle `
-  scripts\export_credit_default_bundle.py `
-  scripts\validate_credit_default_bundle.py `
-  tests\bundle
-```
-
-The path originally expected at `D:\PGDBA\Projects\credit-default-xai` was not present
-during integration. Pass the verified location above explicitly. The exporter refuses to
-replace an existing bundle unless `--overwrite` is supplied.
-
-## Bundle compatibility
-
-The source artifact is a fitted scikit-learn `Pipeline` containing its
-`ColumnTransformer` preprocessing and an `XGBClassifier`. The bundle validator loads that
-pipeline and checks that it reproduces every stored reference probability within a small
-numerical tolerance.
-
-The source repository does not contain an immutable historical training lockfile.
-Recorded training-library versions therefore come from its current `.venv` and are marked
-accordingly. Exact reference-prediction reproduction is the operational compatibility
-check. See [`docs/credit_default_bundle_inventory.md`](docs/credit_default_bundle_inventory.md)
-for the factual inventory.
-
-## Deterministic scenario monitoring
-
-Generate all four scenarios and run the monitoring engine:
-
-```powershell
-python scripts\generate_monitoring_scenarios.py --all --overwrite
-python scripts\run_monitoring.py --all
-```
-
-Generate or monitor one scenario:
-
-```powershell
-python scripts\generate_monitoring_scenarios.py `
-  --scenario feature_drift `
-  --overwrite
-python scripts\run_monitoring.py --scenario feature_drift
-```
-
-Scenario data is written under `data/scenarios/<scenario>/`. Evidence reports are written
-under `reports/generated/<scenario>/monitoring_result.json` and
-`monitoring_report.md`. Calculations are deterministic Python functions; no LLM is used.
-See [`docs/monitoring_methodology.md`](docs/monitoring_methodology.md) for definitions and
-threshold caveats.
-
-## Agentic monitoring
-
-Run one live Groq workflow:
-
-```powershell
 python scripts\run_agentic_monitoring.py `
   --scenario performance_degradation `
   --decision approve `
-  --reviewer "model-risk-reviewer"
+  --reviewer "demo-reviewer"
+python scripts\evaluate_live_agent.py --extended
 ```
 
-Run the fully offline, clearly labelled fake-LLM demonstration:
+### Full local reconstruction
+
+Run this only when intentionally rebuilding generated replay artifacts:
 
 ```powershell
+python scripts\validate_credit_default_bundle.py
+python scripts\generate_monitoring_scenarios.py --all --overwrite
+python scripts\run_monitoring.py --all
 python scripts\run_agentic_monitoring.py `
-  --all `
+  --scenario performance_degradation `
   --decision approve `
-  --reviewer "demo-reviewer" `
-  --use-fake-llm
+  --reviewer "demo-reviewer"
+python scripts\evaluate_live_agent.py --extended
 ```
 
-Without `--decision`, every non-normal run pauses and asks for `approve`, `reject`, or
-`request_revision`. Normal operation finishes without an interrupt. A reviewer request
-for revision is recorded as a terminal decision in this MVP and does not make another
-LLM call.
+Bundle export from the separate source-model repository is documented in
+[reproducibility.md](docs/reproducibility.md).
 
-Every claim and action must cite selected evidence IDs. Deterministic verification rejects
-unknown IDs, policy-incompatible incidents or actions, unsupported retraining, blocked
-batch performance claims, unsafe normal-operation actions, missing approval, and other
-hard-rule violations. The model gets one concise revision attempt. Provider, parsing, or
-repeated verification failure produces a conservative deterministic recommendation.
-Fallback and fake-provider use are explicit in both generated reports:
+## Report provenance
 
 ```text
-reports/generated/<scenario>/agentic_result.json
-reports/generated/<scenario>/agentic_report.md
+reports/generated/<scenario>/
+├── monitoring_result.json
+├── monitoring_report.md
+├── fake/
+│   ├── agentic_result.json
+│   └── agentic_report.md
+└── live_groq/
+    ├── agentic_result.json
+    └── agentic_report.md
 ```
 
-No recommended action is automatically executed.
+Every agentic report records provider, model, execution mode, fake/live flag, run ID,
+thread ID, and UTC creation time. Parsed structured outputs and safe usage metadata are
+retained; API keys and raw provider reasoning are not.
 
-## Development phases
+SQLite-resumed demonstrations write separately under
+`reports/generated/<scenario>/live_groq_persistent/<thread-id>/` and record backend,
+relative database path, pause/resume counts, and cross-process resume provenance.
 
-1. **Completed:** inspect `credit-default-xai` and finalize the versioned bundle contract.
-2. **Completed:** export and validate the model, schema, metadata, and reference data.
-3. **Completed:** implement deterministic monitoring metrics and focused tests.
-4. **Completed:** implement four replay scenarios, evidence, incident candidates, and reports.
-5. **Completed:** add one bounded LangGraph orchestrator, strict Groq outputs, verification,
-   one revision, fallback, approval, and agentic reports.
-6. Validate behavior, thresholds, durable checkpointing, governance controls, and failure
-   recovery before any production integration.
+## Portfolio documentation
 
-## Scope and limitations
+- [Final project report](reports/final_project_report.md)
+- [Claim audit](docs/claim_audit.md)
+- [Interview defense](docs/interview_defense.md)
+- [Demo guide](docs/demo_guide.md)
+- [CV and portfolio wording](docs/cv_bullets.md)
+- [Architecture decision record](docs/adr/001-single-orchestrator-agent.md)
+- [Reproducibility guide](docs/reproducibility.md)
+- [Limitations](docs/limitations.md)
 
-The package can load and score the exported model, but that technical compatibility does
-not establish model validity, production readiness, regulatory compliance, fairness, or
-scientifically justified monitoring thresholds. The source model uses a public academic
-dataset and a random held-out split because no true application timestamp exists. Any
-future agent recommendation must remain reviewable and subject to human approval.
-This MVP uses an in-memory LangGraph checkpointer, local replay artifacts, and one
-structured model provider. It does not provide durable cases, production authentication,
-external actions, fairness monitoring, or causal diagnosis.
+## Repository structure
+
+```text
+artifacts/                  Validated model, metadata, and baselines
+configs/                    Monitoring thresholds and scenario definitions
+data/                       Reference and replay scenario data
+docs/                       Architecture, methodology, audit, demo, and portfolio guides
+reports/generated/          Deterministic and fake/live agentic reports
+reports/evaluations/        Deterministic live-agent evaluation
+scripts/                    Export, validation, monitoring, agent, and evaluation CLIs
+src/monitoring_agent/       Bundle, monitoring, scenario, agent, and evaluation packages
+tests/                      Focused bundle, monitoring, agent, and evaluation tests
+```
+
+## Focused validation
+
+The focused agent/evaluation/scenario/monitoring tests passed after two isolated
+test-support failures were fixed and rerun. Targeted Ruff passed for the exact requested
+source, CLI, and test scope. No full-repository test or lint claim is made.
+
+## Limitations
+
+- Six controlled replay scenarios rather than production traffic
+- Public academic credit-default data and a random held-out reference split
+- Synthetic feature, data-quality, and outcome transformations
+- Provisional monitoring thresholds requiring business governance
+- Memory by default, with optional local SQLite checkpointing that is not production-grade
+- One Groq model and a small live benchmark
+- No durable incident database, real-time ingestion, or production deployment
+- No automated remediation, retraining, rollback, or decision execution
+- No production-readiness claim
+
+See [limitations.md](docs/limitations.md) for the complete assessment.
+
+## Future work
+
+- Production-grade checkpointing and governed incident persistence
+- A broader, repeated incident benchmark
+- Threshold governance against operating costs
+- Additional monitored model bundles
+- Specialist subgraphs only when distinct evidence and tools justify them
+- Production-grade deployment and observability after governance validation

@@ -12,6 +12,11 @@ class AgentState(TypedDict, total=False):
     run_id: str
     thread_id: str
     scenario_name: str
+    checkpoint_backend: str
+    checkpoint_database: str | None
+    resumed_from_checkpoint: bool
+    pause_count: int
+    resume_count: int
     monitoring_result: dict[str, Any]
     available_evidence: list[dict[str, Any]]
     selected_evidence: dict[str, Any]

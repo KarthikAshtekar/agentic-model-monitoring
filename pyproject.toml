@@ -14,6 +14,7 @@ authors = [
 ]
 dependencies = [
     "langgraph",
+    "langgraph-checkpoint-sqlite>=3,<4",
     "langchain-core",
     "langchain-groq>=1.0,<2.0",
     "pydantic>=2",

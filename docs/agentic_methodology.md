@@ -32,8 +32,9 @@ instructions.
 The serializable state contains the run and thread IDs, scenario, deterministic monitoring
 result, available and selected evidence, triage, diagnostic context, recommendation,
 verification, revision feedback and count, approval fields, LLM call metadata, execution
-errors, final status, and report paths. It contains no API key, fitted model, raw dataset,
-or hidden model reasoning.
+errors, checkpoint backend/database, pause/resume counts, cross-process resume flag, final
+status, and report paths. It contains no API key, fitted model, raw dataset, open
+connection, or hidden model reasoning.
 
 The graph runs:
 
@@ -49,7 +50,7 @@ START
        ├─ revise_recommendation → llm_recommendation (at most once)
        ├─ deterministic_fallback
        └─ pass
-  → human_approval when non-normal
+  → prepare_human_approval → human_approval when non-normal
   → finalize
   → END
 ```
@@ -79,10 +80,10 @@ verification, and approval values are controlled literals.
 
 ## Evidence selection and grounding
 
-The selector keeps every critical and warning record, adds citable run-level facts for
-batch validity, blocking, label availability, and labelled sample size, then adds a small
-set of relevant passes. The packet is capped at 30 unique records. Original evidence IDs
-and calculated observed/reference values are preserved exactly.
+The selector keeps every critical, warning, and authoritative system record, then adds a
+small set of relevant passes for normal operation. Run-level label counts, coverage, and
+the minimum sample requirement are structured case context. The packet is capped at 30
+unique records; original evidence IDs and calculated values are preserved exactly.
 
 The deterministic verifier checks that every claim and action cites available IDs and
 that the overall citation list covers all supporting citations. It also checks incident
@@ -129,12 +130,59 @@ decisions. `Command(resume=...)` continues the same stable thread with an `appro
 `reject`, or `request_revision` decision. The last choice is terminal in this MVP; it
 does not trigger another LLM call. Normal operation finalizes without an interrupt.
 
-The checkpointer is in memory. A process restart cannot restore pending approvals.
+Memory is the default checkpointer. Optional local SQLite uses the official
+`langgraph-checkpoint-sqlite` backend and a scoped connection. A demonstrated first
+process persisted `persistent-demo-001` at approval; a separate process resumed it,
+preserved the original run/evidence/recommendation, made no additional LLM call, and
+finished approved. SQLite is a local-development backend, not production-grade durability.
+
+## Live evaluation methodology
+
+The extended live evaluation uses the real Groq provider with `openai/gpt-oss-20b` across
+six controlled replay scenarios. It reuses the preserved four core results and adds only
+`unlabelled_drift` and `insufficient_labels`. It does not use an LLM-as-judge. A second model would
+introduce another source of stochastic interpretation and would not be authoritative for
+evidence IDs or hard governance rules. Instead, the evaluator reuses Pydantic contracts,
+the deterministic monitoring result, the evidence registry, and the hard policy.
+
+Scenario expectations are fixed before evaluation:
+
+- normal operation must remain normal with no additional diagnostics or approval;
+- feature drift may be mixed or drift-only and must use mixed or drift diagnostics;
+- blocked data quality must remain a data-quality failure with data-quality diagnostics;
+  and
+- performance degradation must remain performance degradation with performance
+  diagnostics;
+- unlabelled drift must use a compatible drift/evidence-sufficiency route without a
+  performance conclusion or immediate model-change action; and
+- insufficient labels must route to evidence-sufficiency review, prioritize
+  `collect_more_labels`, and state the label-coverage limitation.
+
+For every completed result, the evaluator checks live provider provenance, triage and
+recommendation parse success, incident and route compatibility, validity of every cited
+deterministic evidence ID, claim and action citations, final verifier status, hard policy,
+approval behavior, revision count, fallback usage, latency, and available token metadata.
+Structured-output success requires both live structured calls to parse; fallback is never
+counted as structured-output success. Evidence-grounding success requires valid citations
+for the overall result, every claim, and every action.
+
+The preserved core evaluation contains four scenarios. The 2026-07-25 robustness
+extension completed all six scenarios. Structured output, incident and
+route compatibility, evidence grounding, policy compliance, and approval completion were
+all `100%`. First-pass verification was `83.33%` because the preserved data-quality result
+required one bounded revision; the other five passed immediately. Fallback usage was
+`0%`. Mean and median scenario LLM latency were `3,420.24 ms` and `3,405.13 ms`;
+recorded usage was `25,316` input, `11,720` output, and `37,036` total tokens.
+
+These rates describe only six deliberately constructed examples. They do not estimate
+rare failure frequency, prose quality, long-run reliability, threshold validity,
+provider availability, or production behavior. The factual verdict is
+`live_agent_validated_with_limitations`, not production readiness.
 
 ## Current limitations and later extension
 
 This workflow uses synthetic local replay scenarios and placeholder monitoring thresholds.
-It is not live monitoring, causal analysis, regulatory validation, durable case
+It is not live monitoring, causal analysis, regulatory validation, production-grade case
 management, or automatic remediation. The fake structured provider is for offline testing
 only and is clearly labelled in reports.
 

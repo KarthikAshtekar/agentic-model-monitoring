@@ -20,6 +20,9 @@ class ScenarioManifest(BaseModel):
     random_seed: int
     source_reference_sample_count: int = Field(ge=1)
     generated_sample_count: int = Field(ge=1)
+    labels_available: bool = True
+    labelled_sample_count: int = Field(default=1000, ge=0)
+    labels_complete: bool = True
     expected_incident_candidates: list[str]
     feature_modifications: list[dict[str, Any]]
     label_modifications: list[dict[str, Any]]

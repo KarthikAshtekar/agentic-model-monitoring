@@ -60,3 +60,34 @@ scenarios:
       selector: lowest_probability_observed_negatives
     limitations:
       - Labels are deliberately modified; this is not an observed real-world outcome shift.
+
+  unlabelled_drift:
+    enabled: true
+    description: Controlled covariate shift before any outcomes are available.
+    simulation_type: deterministic_unlabelled_covariate_shift
+    expected_incident_candidates:
+      - feature_drift
+      - prediction_drift
+      - insufficient_evidence
+    parameters:
+      continuous_feature: LIMIT_BAL
+      continuous_scale_factor: 0.55
+      continuous_affected_fraction: 0.85
+      discrete_feature: PAY_2
+      linked_feature: MaxPaymentDelay
+      discrete_target_value: 3
+      discrete_affected_fraction: 0.65
+    limitations:
+      - Outcomes are intentionally absent, so model performance cannot be evaluated.
+      - Transformations preserve observed ranges but not all real-world dependencies.
+
+  insufficient_labels:
+    enabled: true
+    description: Stable replay features with only 100 aligned outcomes available.
+    simulation_type: deterministic_partial_label_availability
+    expected_incident_candidates:
+      - insufficient_evidence
+    parameters:
+      labelled_sample_count: 100
+    limitations:
+      - Ten-percent label coverage is deliberately below the 200-label policy minimum.

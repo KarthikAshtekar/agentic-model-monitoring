@@ -41,7 +41,7 @@ Data-quality validation
         ↓
 Feature and prediction drift
         ↓
-Labelled performance evaluation
+Label availability gate and labelled performance evaluation
         ↓
 Structured evidence records
         ↓
@@ -130,11 +130,28 @@ recall subject to validation precision of at least `0.50`. Other monitoring thre
 
 ## Runtime boundary
 
-The development environment replays deterministic simulated production batches from
-local files against this bundle. One scenario introduces controlled covariate shift, one
-introduces blocking data faults, and one changes outcomes while leaving features and
-model probabilities unchanged. It is not connected to live scoring, event streaming,
+The development environment replays six deterministic simulated production batches from
+local files against this bundle. They cover stable operation, covariate shift, blocking
+data faults, synthetic outcome shift, absent outcomes, and only 100/1,000 aligned outcomes.
+It is not connected to live scoring, event streaming,
 alerting, case management, or production data stores. The LangGraph workflow can
 synthesise and verify recommendations from the replay evidence, but remediation remains
-external and subject to explicit human approval. The MVP uses an in-memory checkpointer;
-pending interrupts are not durable across process restarts.
+external and subject to explicit human approval.
+
+Checkpoint construction is dependency-injected. Memory remains the default. The optional
+official `SqliteSaver` stores local checkpoints under
+`artifacts/checkpoints/agent_checkpoints.sqlite`, allowing an approval interrupt to be
+resumed by a later Python process. Connections have a scoped lifecycle, and state contains
+only JSON-like monitoring/recommendation values—never keys, raw datasets, fitted models,
+or connections. This local SQLite backend demonstrates process-restart behavior; it is not
+production-grade persistence.
+
+Agentic reports are separated by execution provenance under each scenario:
+`fake/` contains offline test-provider outputs and `live_groq/` contains real-provider
+outputs. The deterministic evaluation layer reads only `live_groq/agentic_result.json`
+plus the corresponding `monitoring_result.json`, then writes JSON, Markdown, and CSV
+artifacts under `reports/evaluations/live_groq/`. The preserved core evaluation remains
+there; the six-scenario extension writes under
+`reports/evaluations/live_groq_six_scenarios/`. SQLite demonstration reports use a
+separate `live_groq_persistent/<thread-id>/` namespace. Evaluation performs no network
+call and uses no LLM judge.

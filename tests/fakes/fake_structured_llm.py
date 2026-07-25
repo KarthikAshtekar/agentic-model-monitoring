@@ -156,6 +156,18 @@ class FakeStructuredMonitoringLLM:
             uncertainties = [
                 "The replayed label shift is synthetic and may not represent production."
             ]
+        elif incident == "insufficient_evidence":
+            claim_text = (
+                "Only a partial labelled sample is available, so performance was not evaluated."
+            )
+            action_type = "collect_more_labels"
+            action_text = "Collect enough aligned outcomes to meet the policy minimum."
+            priority = "medium"
+            hypothesis = None
+            hypothesis_ids = []
+            uncertainties = [
+                "Conclusions are limited by insufficient label coverage."
+            ]
         else:
             claim_text = "Deterministic monitoring found material drift-related signals."
             action_type = "investigate_feature_drift"

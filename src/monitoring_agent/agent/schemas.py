@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 IncidentType = Literal[
     "normal_operation",
@@ -83,31 +83,15 @@ class AgentRecommendation(AgentSchema):
     severity: Severity
     executive_summary: str = Field(min_length=1)
     claims: list[EvidenceBackedClaim] = Field(min_length=1)
-    root_cause_hypothesis: str | None
+    root_cause_hypothesis: str | None = Field(
+        description="Nullable hypothesis; when present, begin with 'Hypothesis:'."
+    )
     root_cause_evidence_ids: list[str]
     recommended_actions: list[RecommendedAction] = Field(min_length=1)
     uncertainties: list[str]
     overall_evidence_ids: list[str] = Field(min_length=1)
     requires_human_approval: bool
     confidence: float = Field(ge=0.0, le=1.0)
-
-    @field_validator("root_cause_hypothesis")
-    @classmethod
-    def root_cause_must_be_labelled_hypothesis(cls, value: str | None) -> str | None:
-        """Prevent an inferred cause from being presented as an observed fact."""
-        if value is not None and not value.strip().lower().startswith("hypothesis:"):
-            raise ValueError("root_cause_hypothesis must begin with 'Hypothesis:'.")
-        return value
-
-    @model_validator(mode="after")
-    def validate_hypothesis_evidence(self) -> AgentRecommendation:
-        """Keep nullable hypotheses and their evidence lists internally consistent."""
-        if self.root_cause_hypothesis is None and self.root_cause_evidence_ids:
-            raise ValueError("A null root-cause hypothesis must have no evidence IDs.")
-        if self.root_cause_hypothesis is not None and not self.root_cause_evidence_ids:
-            raise ValueError("A root-cause hypothesis must cite evidence.")
-        return self
-
 
 class VerificationResult(AgentSchema):
     """Deterministic evidence and policy-verification outcome."""

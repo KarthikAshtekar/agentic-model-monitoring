@@ -32,6 +32,11 @@ def run_until_interrupt_or_end(
     config = {"configurable": {"thread_id": thread_id}}
     initial_state = {
         "thread_id": thread_id,
+        "checkpoint_backend": "memory",
+        "checkpoint_database": None,
+        "resumed_from_checkpoint": False,
+        "pause_count": 0,
+        "resume_count": 0,
         "monitoring_result": result.model_dump(mode="json"),
         "llm_call_metadata": [],
         "execution_errors": [],
