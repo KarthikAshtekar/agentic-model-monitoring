@@ -1,6 +1,6 @@
 # Agentic Model Risk & Monitoring Copilot
 
-This project registers two validated binary classifiers—credit default and BRFSS
+This project registers two validated classifiers—credit default and BRFSS
 diabetes-risk screening—and replays each through six controlled monitoring scenarios.
 Deterministic Python components calculate data-quality, drift, and
 label-availability/performance evidence, while one LangGraph orchestrator routes the

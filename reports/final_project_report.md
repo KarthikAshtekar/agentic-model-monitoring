@@ -3,7 +3,7 @@
 ## 1. Executive summary
 
 The project registers validated credit-default and BRFSS diabetes-risk classifiers behind
-one binary-classification adapter and local replay-based monitoring system. Deterministic Python components calculate
+one classification adapter and local replay-based monitoring system. Deterministic Python components calculate
 data-quality, feature/prediction-drift, and labelled-performance evidence; one LangGraph
 orchestrator asks Groq `openai/gpt-oss-20b` for structured triage and recommendations. A
 deterministic verifier rejects unsupported citations and policy violations, permits one
@@ -42,7 +42,7 @@ its trade-offs are recorded in
 
 ## 4. Source model and monitoring bundle
 
-The source is the selected `xgboost_public` binary classifier packaged as a complete
+The source is the selected `xgboost_public` classifier packaged as a complete
 scikit-learn `Pipeline` with preprocessing and `XGBClassifier`. The monitoring bundle
 contains 36 ordered predictors, model/version metadata, the operating threshold `0.25`,
 and a 6,002-row group-aware stratified held-out reference set. It also stores reference
