@@ -1,0 +1,3323 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Agentic Model Risk & Monitoring Copilot",
+    "description": "Technical, evidence-backed explainer of the complete monitoring repository.",
+    "generatedAt": "2026-08-01T14:52:49.616159+00:00",
+    "cards": [
+      {
+        "id": "validated_models",
+        "description": "Both registered inference bundles passed current generic contract, alignment, threshold, and probability-reproduction validation; the separate preservation gate is reported below.",
+        "dataset": "summary",
+        "sourceId": "current_reproduction",
+        "metrics": [
+          {
+            "label": "Validated bundles",
+            "field": "validated_models",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "bundle_checks",
+        "description": "Fifteen generic checks passed for each bundle in the current environment.",
+        "dataset": "summary",
+        "sourceId": "current_reproduction",
+        "metrics": [
+          {
+            "label": "Bundle checks passed",
+            "field": "bundle_checks_passed",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "deterministic_scenarios",
+        "description": "Six current replay scenarios were reproduced for each model without rewriting historical reports.",
+        "dataset": "summary",
+        "sourceId": "current_reproduction",
+        "metrics": [
+          {
+            "label": "Scenario outcomes reproduced",
+            "field": "deterministic_scenarios",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "live_completed",
+        "description": "All scenarios reached a completed state in the preserved first-run live evaluation.",
+        "dataset": "summary",
+        "sourceId": "cross_model_eval",
+        "metrics": [
+          {
+            "label": "Live scenarios completed",
+            "field": "live_scenarios_completed",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "structured_output",
+        "description": "Both provider calls parsed successfully; deterministic fallback is deliberately excluded.",
+        "dataset": "summary",
+        "sourceId": "cross_model_eval",
+        "metrics": [
+          {
+            "label": "Structured-output success",
+            "field": "structured_output_rate",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "first_pass",
+        "description": "Final verification passed without revision or fallback in nine of twelve live scenarios.",
+        "dataset": "summary",
+        "sourceId": "cross_model_eval",
+        "metrics": [
+          {
+            "label": "First-pass verification",
+            "field": "first_pass_rate",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "fallback",
+        "description": "Two diabetes scenarios used the conservative deterministic fallback after live-provider/output failures.",
+        "dataset": "summary",
+        "sourceId": "cross_model_eval",
+        "metrics": [
+          {
+            "label": "Fallback rate",
+            "field": "fallback_rate",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "known_material_defects",
+        "description": "One protected-file hash mismatch and one unsafe inference-gate behavior remain unresolved.",
+        "dataset": "summary",
+        "sourceId": "current_reproduction",
+        "metrics": [
+          {
+            "label": "Known material defects",
+            "field": "known_material_defects",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "credit_threshold_chart",
+        "title": "Credit-default threshold metrics",
+        "subtitle": "Same 6,002-row held-out population; values are rates from 0 to 1.",
+        "type": "bar",
+        "dataset": "credit_threshold_tradeoff",
+        "sourceId": "credit_metrics",
+        "encodings": {
+          "x": {
+            "field": "metric",
+            "type": "ordinal",
+            "label": "Metric"
+          },
+          "y": {
+            "field": "value",
+            "type": "quantitative",
+            "label": "Rate",
+            "format": "percent"
+          },
+          "color": {
+            "field": "threshold",
+            "type": "nominal",
+            "label": "Threshold"
+          }
+        },
+        "yAxisTitle": "Rate",
+        "valueFormat": "percent",
+        "layout": "full"
+      },
+      {
+        "id": "diabetes_threshold_chart",
+        "title": "Diabetes-risk threshold metrics",
+        "subtitle": "Same 50,736-row held-out population; values are rates from 0 to 1.",
+        "type": "bar",
+        "dataset": "diabetes_threshold_tradeoff",
+        "sourceId": "diabetes_metrics",
+        "encodings": {
+          "x": {
+            "field": "metric",
+            "type": "ordinal",
+            "label": "Metric"
+          },
+          "y": {
+            "field": "value",
+            "type": "quantitative",
+            "label": "Rate",
+            "format": "percent"
+          },
+          "color": {
+            "field": "threshold",
+            "type": "nominal",
+            "label": "Threshold"
+          }
+        },
+        "yAxisTitle": "Rate",
+        "valueFormat": "percent",
+        "layout": "full"
+      },
+      {
+        "id": "agent_rate_chart",
+        "title": "Live-agent evaluation rates by registered model",
+        "subtitle": "Six controlled scenarios per model; fallback is a separate safety outcome.",
+        "type": "bar",
+        "dataset": "agent_rates",
+        "sourceId": "cross_model_eval",
+        "encodings": {
+          "x": {
+            "field": "metric",
+            "type": "ordinal",
+            "label": "Evaluation metric"
+          },
+          "y": {
+            "field": "rate",
+            "type": "quantitative",
+            "label": "Scenario rate",
+            "format": "percent"
+          },
+          "color": {
+            "field": "model_id",
+            "type": "nominal",
+            "label": "Model"
+          }
+        },
+        "yAxisTitle": "Scenario rate",
+        "valueFormat": "percent",
+        "layout": "full"
+      }
+    ],
+    "tables": [
+      {
+        "id": "reference_profiles_table",
+        "title": "Reference data quality and grain",
+        "description": "Current local profiles for each held-out reference bundle.",
+        "dataset": "reference_profiles",
+        "sourceId": "current_reproduction",
+        "defaultSort": {
+          "field": "model_id",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "model_id",
+            "label": "Model",
+            "type": "text"
+          },
+          {
+            "field": "unit",
+            "label": "Unit",
+            "type": "text"
+          },
+          {
+            "field": "target",
+            "label": "Target",
+            "type": "text"
+          },
+          {
+            "field": "rows",
+            "label": "Rows",
+            "format": "number"
+          },
+          {
+            "field": "features",
+            "label": "Raw features",
+            "format": "number"
+          },
+          {
+            "field": "transformed_features",
+            "label": "Transformed",
+            "format": "number"
+          },
+          {
+            "field": "positive_count",
+            "label": "Positive labels",
+            "format": "number"
+          },
+          {
+            "field": "positive_rate",
+            "label": "Positive rate",
+            "format": "percent"
+          },
+          {
+            "field": "duplicate_ids",
+            "label": "Duplicate IDs",
+            "format": "number"
+          },
+          {
+            "field": "missing_cells",
+            "label": "Missing cells",
+            "format": "number"
+          },
+          {
+            "field": "infinite_cells",
+            "label": "Infinite cells",
+            "format": "number"
+          },
+          {
+            "field": "split",
+            "label": "Evaluation split",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "model_specs_table",
+        "title": "Imported fitted-model specifications",
+        "description": "Hyperparameters are introspected from the fitted local artifacts; no fitting occurs here.",
+        "dataset": "model_specifications",
+        "sourceId": "current_reproduction",
+        "defaultSort": {
+          "field": "model_id",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "model_id",
+            "label": "Model",
+            "type": "text"
+          },
+          {
+            "field": "pipeline",
+            "label": "Pipeline",
+            "type": "text"
+          },
+          {
+            "field": "classifier",
+            "label": "Classifier",
+            "type": "text"
+          },
+          {
+            "field": "key_hyperparameters",
+            "label": "Key fitted hyperparameters",
+            "type": "text"
+          },
+          {
+            "field": "calibrator",
+            "label": "Calibrator",
+            "type": "text"
+          },
+          {
+            "field": "fit_location",
+            "label": "Fit boundary",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "metric_dictionary_table",
+        "title": "Metric dictionary and evidence boundary",
+        "description": "Classification, drift, probability, and live-agent metrics actually used by this project.",
+        "dataset": "metric_dictionary",
+        "sourceId": "current_reproduction",
+        "defaultSort": {
+          "field": "metric",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "metric",
+            "label": "Metric",
+            "type": "text"
+          },
+          {
+            "field": "applies_to",
+            "label": "Applies to",
+            "type": "text"
+          },
+          {
+            "field": "definition",
+            "label": "Definition",
+            "type": "text"
+          },
+          {
+            "field": "direction",
+            "label": "Preferred direction",
+            "type": "text"
+          },
+          {
+            "field": "boundary",
+            "label": "Important limitation",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "feature_dictionary_table",
+        "title": "Complete registered feature dictionary",
+        "description": "All 57 raw inference fields across both registered model contracts.",
+        "dataset": "feature_dictionary",
+        "sourceId": "current_reproduction",
+        "defaultSort": {
+          "field": "model_id",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "model_id",
+            "label": "Model",
+            "type": "text"
+          },
+          {
+            "field": "position",
+            "label": "Position",
+            "format": "number"
+          },
+          {
+            "field": "field",
+            "label": "Field",
+            "type": "text"
+          },
+          {
+            "field": "kind",
+            "label": "Kind",
+            "type": "text"
+          },
+          {
+            "field": "dtype",
+            "label": "dtype",
+            "type": "text"
+          },
+          {
+            "field": "integer_constrained",
+            "label": "Integer",
+            "type": "boolean"
+          },
+          {
+            "field": "nullable",
+            "label": "Nullable",
+            "type": "boolean"
+          },
+          {
+            "field": "observed_range",
+            "label": "Observed reference range",
+            "type": "text"
+          },
+          {
+            "field": "allowed_values",
+            "label": "Allowed values",
+            "type": "text"
+          },
+          {
+            "field": "meaning",
+            "label": "Meaning",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "scenario_design_table",
+        "title": "Controlled scenario design",
+        "description": "Two model-specific definitions for each of six replay scenarios.",
+        "dataset": "scenario_design",
+        "sourceId": "scenario_configs",
+        "defaultSort": {
+          "field": "model_id",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "model_id",
+            "label": "Model",
+            "type": "text"
+          },
+          {
+            "field": "scenario",
+            "label": "Scenario",
+            "type": "text"
+          },
+          {
+            "field": "simulation_type",
+            "label": "Simulation",
+            "type": "text"
+          },
+          {
+            "field": "sample_size",
+            "label": "Rows",
+            "format": "number"
+          },
+          {
+            "field": "seed",
+            "label": "Seed",
+            "format": "number"
+          },
+          {
+            "field": "labels",
+            "label": "Labels",
+            "type": "text"
+          },
+          {
+            "field": "configured_change",
+            "label": "Configured change",
+            "type": "text"
+          },
+          {
+            "field": "expected_candidates",
+            "label": "Expected incident",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "scenario_results_table",
+        "title": "Current deterministic replay results",
+        "description": "Recomputed in memory; historical generated reports were not overwritten.",
+        "dataset": "scenario_results",
+        "sourceId": "current_reproduction",
+        "defaultSort": {
+          "field": "model_id",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "model_id",
+            "label": "Model",
+            "type": "text"
+          },
+          {
+            "field": "scenario",
+            "label": "Scenario",
+            "type": "text"
+          },
+          {
+            "field": "batch_blocked",
+            "label": "Blocked",
+            "type": "boolean"
+          },
+          {
+            "field": "performance_evaluated",
+            "label": "Performance evaluated",
+            "type": "boolean"
+          },
+          {
+            "field": "label_coverage",
+            "label": "Label coverage",
+            "format": "percent"
+          },
+          {
+            "field": "critical_features",
+            "label": "Critical drift features",
+            "format": "number"
+          },
+          {
+            "field": "incident_candidates",
+            "label": "Incident candidates",
+            "type": "text"
+          },
+          {
+            "field": "overall_severity",
+            "label": "Severity",
+            "type": "text"
+          },
+          {
+            "field": "operating_recall",
+            "label": "Recall @0.25",
+            "format": "percent"
+          },
+          {
+            "field": "operating_precision",
+            "label": "Precision @0.25",
+            "format": "percent"
+          },
+          {
+            "field": "operating_f1",
+            "label": "F1 @0.25",
+            "format": "percent"
+          },
+          {
+            "field": "pr_auc",
+            "label": "PR-AUC",
+            "format": "number"
+          },
+          {
+            "field": "brier_score",
+            "label": "Brier",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "live_evaluation_table",
+        "title": "Preserved live-agent scenario outcomes",
+        "description": "One authoritative first-run result for each model and scenario.",
+        "dataset": "live_evaluation_rows",
+        "sourceId": "cross_model_rows",
+        "defaultSort": {
+          "field": "model_id",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "model_id",
+            "label": "Model",
+            "type": "text"
+          },
+          {
+            "field": "scenario",
+            "label": "Scenario",
+            "type": "text"
+          },
+          {
+            "field": "incident",
+            "label": "Incident",
+            "type": "text"
+          },
+          {
+            "field": "route",
+            "label": "Route",
+            "type": "text"
+          },
+          {
+            "field": "structured_output",
+            "label": "Structured",
+            "type": "boolean"
+          },
+          {
+            "field": "first_pass",
+            "label": "First pass",
+            "type": "boolean"
+          },
+          {
+            "field": "revisions",
+            "label": "Revisions",
+            "format": "number"
+          },
+          {
+            "field": "fallback",
+            "label": "Fallback",
+            "type": "boolean"
+          },
+          {
+            "field": "approval_complete",
+            "label": "Approval",
+            "type": "boolean"
+          },
+          {
+            "field": "latency_ms",
+            "label": "LLM latency (ms)",
+            "format": "number"
+          },
+          {
+            "field": "tokens",
+            "label": "Tokens",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "module_inventory_table",
+        "title": "Module-by-module implementation map",
+        "description": "No notebook exists; this is the equivalent executable walkthrough.",
+        "dataset": "module_inventory",
+        "sourceId": "current_reproduction",
+        "defaultSort": {
+          "field": "stage",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "stage",
+            "label": "Workflow stage",
+            "type": "text"
+          },
+          {
+            "field": "path",
+            "label": "Module",
+            "type": "text"
+          },
+          {
+            "field": "purpose",
+            "label": "Purpose",
+            "type": "text"
+          },
+          {
+            "field": "key_objects",
+            "label": "Key public objects",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "test_inventory_table",
+        "title": "Test-suite map",
+        "description": "Current static inventory of test functions by suite.",
+        "dataset": "test_inventory",
+        "sourceId": "current_reproduction",
+        "defaultSort": {
+          "field": "suite",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "suite",
+            "label": "Suite",
+            "type": "text"
+          },
+          {
+            "field": "test_count",
+            "label": "Tests",
+            "format": "number"
+          },
+          {
+            "field": "coverage_examples",
+            "label": "Coverage examples",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "preservation_mismatches_table",
+        "title": "Protected evidence mismatches",
+        "description": "Current byte-level comparison against the credit preservation manifest; protected files are never rewritten here.",
+        "dataset": "preservation_mismatches",
+        "sourceId": "current_reproduction",
+        "defaultSort": {
+          "field": "relative_path",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "relative_path",
+            "label": "Protected file",
+            "type": "text"
+          },
+          {
+            "field": "exists",
+            "label": "Exists",
+            "type": "boolean"
+          },
+          {
+            "field": "expected_size",
+            "label": "Expected bytes",
+            "format": "number"
+          },
+          {
+            "field": "actual_size",
+            "label": "Actual bytes",
+            "format": "number"
+          },
+          {
+            "field": "size_matches",
+            "label": "Size matches",
+            "type": "boolean"
+          },
+          {
+            "field": "expected_sha256",
+            "label": "Expected SHA-256",
+            "type": "text"
+          },
+          {
+            "field": "actual_sha256",
+            "label": "Actual SHA-256",
+            "type": "text"
+          },
+          {
+            "field": "sha256_matches",
+            "label": "SHA matches",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "id": "future_scope_table",
+        "title": "Project-specific future scope",
+        "description": "Prioritized from current observed gaps; no future metric is claimed.",
+        "dataset": "future_scope",
+        "sourceId": "current_reproduction",
+        "defaultSort": {
+          "field": "priority",
+          "direction": "asc"
+        },
+        "columns": [
+          {
+            "field": "priority",
+            "label": "Priority",
+            "format": "number"
+          },
+          {
+            "field": "observed_gap",
+            "label": "Observed gap",
+            "type": "text"
+          },
+          {
+            "field": "proposed_work",
+            "label": "Proposed work",
+            "type": "text"
+          },
+          {
+            "field": "acceptance_evidence",
+            "label": "Evidence needed to call it complete",
+            "type": "text"
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "current_reproduction",
+        "label": "Current explainer reproduction snapshot",
+        "path": "reports/project_explainer_evidence.json"
+      },
+      {
+        "id": "credit_metrics",
+        "label": "Credit-default reference metrics",
+        "path": "artifacts/baselines/reference_metrics.json"
+      },
+      {
+        "id": "diabetes_metrics",
+        "label": "Diabetes-risk reference metrics",
+        "path": "registered_models/diabetes_risk/baselines/reference_metrics.json"
+      },
+      {
+        "id": "cross_model_eval",
+        "label": "Preserved cross-model live evaluation",
+        "path": "reports/evaluations/cross_model/cross_model_summary.json"
+      },
+      {
+        "id": "cross_model_rows",
+        "label": "Cross-model scenario comparison",
+        "path": "reports/evaluations/cross_model/scenario_comparison.csv"
+      },
+      {
+        "id": "reliability_rerun",
+        "label": "Isolated diabetes reliability repeat",
+        "path": "reports/evaluations/diabetes_risk/reliability_rerun/reliability_summary.json"
+      },
+      {
+        "id": "registry_contract",
+        "label": "Registered-model contracts",
+        "path": "configs/model_registry.yaml"
+      },
+      {
+        "id": "monitoring_code",
+        "label": "Deterministic monitoring engine",
+        "path": "src/monitoring_agent/monitoring/engine.py"
+      },
+      {
+        "id": "agent_graph",
+        "label": "Bounded LangGraph workflow",
+        "path": "src/monitoring_agent/agent/graph.py"
+      },
+      {
+        "id": "agent_policy",
+        "label": "Deterministic agent policy and verifier",
+        "path": "src/monitoring_agent/agent/policy.py"
+      },
+      {
+        "id": "scenario_configs",
+        "label": "Controlled replay definitions",
+        "path": "configs/scenarios/credit_default.yaml"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# Agentic Model Risk & Monitoring Copilot"
+      },
+      {
+        "id": "technical_summary",
+        "type": "markdown",
+        "sourceId": "current_reproduction",
+        "body": "## Technical summary\n\n**This repository monitors two already-fitted binary classifiers; it does not train a model.** A strict registry loads self-contained credit-default and BRFSS diabetes-risk bundles, validates feature order and probability reproduction, replays six controlled 1,000-row scenarios per model, calculates deterministic data-quality/drift/performance evidence, and passes a bounded evidence packet to one LangGraph orchestrator for recommendation, verification, fallback, and human approval.\n\nCurrent reproduction validates **2/2 bundles**, passes **30/30 generic bundle checks**, and recreates **12/12 deterministic scenario outcomes**. The preserved first live-provider evaluation completed **12/12** scenarios with **83.33% structured-output success**, **75% first-pass verification**, and **16.66% deterministic fallback**. These are controlled replay results, not production reliability or model-quality estimates.\n\n**Two material defects remain.** First, the protected credit `artifacts/metadata/bundle_manifest.json` matches its recorded 6,019-byte size but not its required SHA-256, so only **21/22 preservation checks** pass. Second, a malformed credit feature produces critical `DQ-DTYPE-LIMIT-BAL` evidence while `batch_blocked` remains false, so inference can still be attempted. The explainer therefore assesses the project as technically coherent but **not production-ready**."
+      },
+      {
+        "id": "headline_metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "validated_models",
+          "bundle_checks",
+          "deterministic_scenarios",
+          "live_completed",
+          "structured_output",
+          "first_pass",
+          "fallback",
+          "known_material_defects"
+        ]
+      },
+      {
+        "id": "detected_task",
+        "type": "markdown",
+        "sourceId": "current_reproduction",
+        "body": "## This is diagnostic monitoring plus governed decision support\n\n- **Primary analytical task:** detect data-quality failures, covariate/prediction drift, labelled performance degradation, and insufficient evidence around existing binary classifiers.\n- **Business question:** can the current batch be trusted, what changed relative to a registered held-out baseline, and which non-executing action should a human review?\n- **Unit of analysis:** one registered model and one batch; individual reference units are a credit-card account record or a BRFSS respondent screening record.\n- **Decision moment:** after a feature batch arrives and is scored; labels may be complete, partial, or absent.\n- **Claim type:** descriptive and diagnostic evidence feeds operational recommendations. The fitted classifiers are predictive; the monitoring design is not causal.\n\nRegression, forecasting, clustering, and optimization diagnostics are intentionally omitted. No R², Adjusted R², residual tests, stationarity tests, or random model-training claims belong in this project."
+      },
+      {
+        "id": "architecture",
+        "type": "markdown",
+        "sourceId": "monitoring_code",
+        "body": "## Deterministic evidence remains authoritative throughout the workflow\n\n```text\nstrict registry + bundle manifest\n        |\nreference features, labels, predictions + current batch\n        |\ndata quality gate -> fitted classifier score (if not blocked)\n        |\nfeature/prediction drift + labelled performance (when eligible)\n        |\nstable evidence IDs + deterministic incident candidates\n        |\nbounded evidence packet (maximum 30 records)\n        |\nLLM triage -> controlled diagnostic route -> LLM recommendation\n        |\ndeterministic citation/policy verifier\n     revise once | fallback | pass\n        |\nnon-normal cases pause for explicit human approval\n```\n\nThe LLM never receives raw feature rows, recalculates metrics, executes remediation, retrains models, changes thresholds, or bypasses the deterministic verifier."
+      },
+      {
+        "id": "data_scope",
+        "type": "markdown",
+        "sourceId": "current_reproduction",
+        "body": "## Two clean held-out references support replay, not deployment claims\n\nThe credit bundle contains **6,002 rows**, **36 ordered inference features**, and **1,327 positives (22.11%)** from a group-aware stratified random held-out split. The diabetes bundle contains **50,736 rows**, **21 raw predictors**, **52 post-engineering features**, and **7,069 positives (13.93%)** from a stratified random held-out split. Current profiling finds zero duplicate record IDs, zero exact duplicate rows, zero missing cells, and zero infinite numeric cells in both references.\n\nThose checks establish internal bundle cleanliness and alignment. They do not establish temporal representativeness, external validity, fairness, production freshness, or prospective performance."
+      },
+      {
+        "id": "reference_profiles",
+        "type": "table",
+        "tableId": "reference_profiles_table",
+        "layout": "full"
+      },
+      {
+        "id": "model_boundary",
+        "type": "markdown",
+        "sourceId": "current_reproduction",
+        "body": "## The models are imported fitted artifacts with explicit preprocessing boundaries\n\nThe credit artifact is a scikit-learn `Pipeline` with a `ColumnTransformer` and XGBoost classifier. The diabetes artifact wraps a fitted feature-engineering pipeline and XGBoost classifier with a fitted sigmoid calibrator. The current repository performs **no fitting, feature selection, hyperparameter search, calibration fitting, or threshold selection**; it reproduces source predictions and retains source-authoritative thresholds.\n\nThis boundary prevents the monitoring layer from silently changing model behavior. It also means training provenance, tuning validity, explainability, and source-project leakage controls must be evaluated in the originating model repositories rather than inferred here."
+      },
+      {
+        "id": "model_specs",
+        "type": "table",
+        "tableId": "model_specs_table",
+        "layout": "full"
+      },
+      {
+        "id": "credit_threshold_explanation",
+        "type": "markdown",
+        "sourceId": "credit_metrics",
+        "body": "## Credit threshold 0.25 raises recall at a material precision cost\n\nOn the same 6,002-row held-out credit population, moving from the default **0.50** threshold to the source operating threshold **0.25** increases recall from **34.14% to 58.10%**, while precision falls from **65.84% to 47.77%** and specificity from **94.97% to 81.97%**. F1 rises from **44.96% to 52.43%**.\n\nThis is a threshold trade-off, not a new model fit. ROC-AUC (**0.7748**), PR-AUC (**0.5415**), and Brier score (**0.1371**) are threshold-independent for these stored probabilities. Whether 0.25 is operationally preferable depends on false-negative and false-positive costs that this repository does not validate."
+      },
+      {
+        "id": "credit_threshold_chart_block",
+        "type": "chart",
+        "chartId": "credit_threshold_chart",
+        "layout": "full"
+      },
+      {
+        "id": "diabetes_threshold_explanation",
+        "type": "markdown",
+        "sourceId": "diabetes_metrics",
+        "body": "## Diabetes threshold 0.25 prioritizes screening recall over precision\n\nOn the same 50,736-row BRFSS held-out population, moving from **0.50** to **0.25** raises recall from **14.00% to 58.99%**, while precision moves from **58.17% to 38.65%** and specificity from **98.37% to 84.84%**. F1 rises from **22.57% to 46.70%**.\n\nROC-AUC is **0.8286**, PR-AUC is **0.4294**, and Brier score is **0.0970**. These are internal survey-model results, not diagnosis, treatment validity, external clinical validation, or patient-level benefit."
+      },
+      {
+        "id": "diabetes_threshold_chart_block",
+        "type": "chart",
+        "chartId": "diabetes_threshold_chart",
+        "layout": "full"
+      },
+      {
+        "id": "metric_methods",
+        "type": "markdown",
+        "sourceId": "monitoring_code",
+        "body": "## Metrics are selected for classification monitoring and evidence sufficiency\n\nPerformance is evaluated only when labels have the exact `[record_id, actual_label]` schema, align to feature IDs, contain both binary classes, and meet the **200-label** policy minimum. Threshold metrics include accuracy, precision, recall, F1, positive counts/rates, and the confusion matrix. ROC-AUC and PR-AUC measure ranking; Brier score measures probability error. Specificity is independently recomputed in this explainer to make the threshold cost visible.\n\nDrift uses PSI as the main materiality signal, Jensen-Shannon divergence and unseen-category rate for discrete fields, and KS as supporting evidence. A small KS p-value is not treated as material drift by itself. Missing labels or only 100/1,000 labels produce `insufficient_evidence`; the system does not fabricate performance metrics."
+      },
+      {
+        "id": "metric_dictionary",
+        "type": "table",
+        "tableId": "metric_dictionary_table",
+        "layout": "full"
+      },
+      {
+        "id": "feature_dictionary_intro",
+        "type": "markdown",
+        "sourceId": "registry_contract",
+        "body": "## The feature contracts are explicit, ordered, and target-free\n\nEvery inference input must contain the identifier followed by the exact registered feature order. The target is stored separately; the adapter rejects target leakage, missing/extra columns, and order mismatches. Observed minima and maxima are held-out monitoring baselines, not universal domain-validity rules.\n\nThe table below lists all raw fields. Several credit fields are engineered utilization, payment, and delay summaries. The diabetes pipeline deterministically expands 21 raw BRFSS indicators into 52 features before applying its fitted classifier."
+      },
+      {
+        "id": "feature_dictionary",
+        "type": "table",
+        "tableId": "feature_dictionary_table",
+        "layout": "full"
+      },
+      {
+        "id": "scenario_design_intro",
+        "type": "markdown",
+        "sourceId": "scenario_configs",
+        "body": "## Six scenarios isolate stable, drift, corruption, outcome, and label-availability behavior\n\nEach model uses a fixed seed (`20260725`) and a stratified 1,000-row replay sample. Feature-drift scenarios change model-specific valid-range features; the corruption scenario injects duplicate IDs, missingness, and observed-range violations; performance degradation flips low-score negative labels; unlabelled drift removes outcomes; insufficient labels retains only 100 aligned outcomes.\n\nThese transformations are controlled tests of workflow behavior. They do not estimate incident prevalence, causal mechanisms, or future production performance."
+      },
+      {
+        "id": "scenario_design",
+        "type": "table",
+        "tableId": "scenario_design_table",
+        "layout": "full"
+      },
+      {
+        "id": "deterministic_results_intro",
+        "type": "markdown",
+        "sourceId": "current_reproduction",
+        "body": "## Current deterministic reruns recover the intended evidence boundaries\n\nBoth normal-operation replays remain noncritical. Both corruption scenarios block inference and suppress drift/performance evaluation. Both labelled feature-drift scenarios combine critical drift with performance effects. Both synthetic outcome-shift scenarios produce performance degradation without feature drift. Both unlabelled cases retain drift evidence but abstain from performance claims, and both 100-label cases route to insufficient evidence.\n\nScenario recall, precision, F1, PR-AUC, and Brier values are scenario-specific diagnostics. They must not replace full-reference model metrics or be averaged across the two domains."
+      },
+      {
+        "id": "deterministic_results",
+        "type": "table",
+        "tableId": "scenario_results_table",
+        "layout": "full"
+      },
+      {
+        "id": "agent_workflow",
+        "type": "markdown",
+        "sourceId": "agent_graph",
+        "body": "## One bounded agent adds synthesis without owning the facts\n\nThe graph validates the monitoring result, selects all critical/warning/system evidence within a 30-record cap, requests strict structured triage, filters already-computed evidence by a controlled route, requests a structured recommendation, and then verifies every citation, action, severity, uncertainty, and governance rule. At most one revision is allowed. Provider failure, parsing failure, or a still-invalid recommendation produces a conservative deterministic fallback.\n\nNormal operation can finish without approval. Every non-normal recommendation and each proposed action requires an interrupt/resume approval decision. SQLite checkpointing supports local durable demonstrations but is not a production case store."
+      },
+      {
+        "id": "agent_rate_explanation",
+        "type": "markdown",
+        "sourceId": "cross_model_eval",
+        "body": "## The first live evaluation validates controls but exposes provider sensitivity\n\nAcross six scenarios per model, incident compatibility, route compatibility, evidence grounding, policy compliance, and approval completion are all **100%**. Credit produced **100%** structured output and **0%** fallback; diabetes produced **66.67%** structured output and **33.33%** fallback. Combined first-pass verification is **75%**.\n\nThese rates describe exactly twelve controlled calls. They do not estimate rare provider failures, repeat variance, production availability, prose quality, latency SLOs, or operational usefulness."
+      },
+      {
+        "id": "agent_rate_chart_block",
+        "type": "chart",
+        "chartId": "agent_rate_chart",
+        "layout": "full"
+      },
+      {
+        "id": "live_evaluation",
+        "type": "table",
+        "tableId": "live_evaluation_table",
+        "layout": "full"
+      },
+      {
+        "id": "failure_analysis",
+        "type": "markdown",
+        "sourceId": "reliability_rerun",
+        "body": "## Failure cases remain evidence, even when a repeat succeeds\n\nThe original diabetes feature-drift recommendation hit Groq HTTP 429 and used fallback. The original unlabelled-drift run first rejected an incompatible triage and later hit HTTP 429, also using fallback. A separately labelled two-case repeat did not reproduce either provider error: feature drift passed first try, while unlabelled drift needed one bounded revision.\n\nThe repeat achieved 100% structured output and 0% fallback for only two cases, with 50% first-pass verification. It does **not** replace the original 12-case evaluation, erase the failures, or establish production reliability. Mean repeat LLM latency was 43.82 seconds, which also underscores the absence of an approved latency budget."
+      },
+      {
+        "id": "module_walkthrough_intro",
+        "type": "markdown",
+        "sourceId": "current_reproduction",
+        "body": "## No notebook exists; the executable walkthrough is module-by-module\n\nThe empty `notebooks/` directory contains only `.gitkeep`. The table therefore replaces cell-by-cell commentary with every Python module and script, its workflow stage, module docstring, and public objects. The intended reading path is registry/bundles -> adapters/onboarding -> scenarios -> deterministic monitoring -> evidence packet -> graph/policy/verifier -> evaluation/reporting -> CLI scripts."
+      },
+      {
+        "id": "module_inventory",
+        "type": "table",
+        "tableId": "module_inventory_table",
+        "layout": "full"
+      },
+      {
+        "id": "test_walkthrough",
+        "type": "markdown",
+        "sourceId": "current_reproduction",
+        "body": "## Tests focus on contracts, evidence, policy, and safe interruption\n\nThe suite covers registry integrity, exact feature order, target leakage, probability reproduction, scenario determinism, partial labels, data quality, drift, performance, evidence selection, graph routing, hard policy, revision/fallback, checkpoint resume, onboarding, and live/cross-model evaluation. The static inventory below contains **88 test functions**, which expand through parametrization into **92 collected cases** in the current full run. That run produced **90 passes and 2 failures**. Failed nodes: `tests/models/test_credit_preservation_manifest.py::test_credit_preservation_manifest_matches_every_authoritative_file`, `tests/models/test_registry.py::test_credit_authoritative_artifacts_and_evaluation_are_byte_identical`. In this snapshot both failures trace to the single protected credit bundle-manifest SHA mismatch shown below.\n\nA separate important gap is explicit: existing data-quality tests do not cover malformed dtypes, non-finite values, completely empty features, or non-integer constrained values all the way through the inference gate."
+      },
+      {
+        "id": "test_inventory",
+        "type": "table",
+        "tableId": "test_inventory_table",
+        "layout": "full"
+      },
+      {
+        "id": "preservation_mismatches_intro",
+        "type": "markdown",
+        "sourceId": "current_reproduction",
+        "body": "## Preservation is a failing gate, not a warning to normalize away\n\nThe credit preservation manifest declares 22 files byte-identical. Current direct hashing matches 21. `artifacts/metadata/bundle_manifest.json` still has the expected 6,019 bytes but its actual SHA-256 is `5031263b0d38ba8967b9c883c70d7aca54408ca59da72015d310dd48b1105234`, not the protected `5a8feb5eaff711a86fed179105f0fcd93f507f7faf12abb9fa1f38d1fa42e677`. The file is gitignored and no matching copy was found elsewhere in the local project tree; its intended bytes cannot be reconstructed safely from size alone. The explainer records the mismatch and leaves the evidence untouched."
+      },
+      {
+        "id": "preservation_mismatches",
+        "type": "table",
+        "tableId": "preservation_mismatches_table",
+        "layout": "full"
+      },
+      {
+        "id": "known_limitations",
+        "type": "markdown",
+        "sourceId": "current_reproduction",
+        "body": "## The strongest conclusion is controlled-replay validity with material caveats\n\n**Current validation supports:** two loadable bundles, exact local probability reproduction, deterministic scenario behavior, evidence-ID grounding, bounded structured outputs, one revision, deterministic fallback, and explicit approval controls.\n\n**It does not support:** protected-artifact integrity for all credit files; production readiness; live traffic monitoring; causal diagnosis; automated remediation; model retraining in this repository; external/temporal validation; fairness claims; robust calibration surveillance; authenticated case management; repeated-provider reliability; production latency/cost SLOs; or legal, clinical, or credit-decision use.\n\n**Known defects:** the protected credit bundle-manifest hash fails 2 test assertions, and critical dtype/empty/infinite/integer findings do not consistently set `batch_blocked=true`. The current malformed `LIMIT_BAL` probe returns `batch_valid=false`, `batch_blocked=false`, and `DQ-DTYPE-LIMIT-BAL`; an estimator call can then fail. These are reproducibility and operational-safety gaps, not cosmetic limitations."
+      },
+      {
+        "id": "future_scope_intro",
+        "type": "markdown",
+        "sourceId": "current_reproduction",
+        "body": "## Future work follows directly from observed gaps\n\nPriority begins with governed recovery of the protected manifest and then the inference gate, which can convert an already-detected critical defect into an estimator crash. External validation, governed threshold costs, calibration/fairness monitoring, repeated-provider trials, and production controls follow. Every item below is proposed work; no future metric or readiness state is invented."
+      },
+      {
+        "id": "future_scope",
+        "type": "table",
+        "tableId": "future_scope_table",
+        "layout": "full"
+      },
+      {
+        "id": "reproducibility",
+        "type": "markdown",
+        "sourceId": "current_reproduction",
+        "body": "## Reproduce the evidence without touching historical evaluations\n\nFrom the repository root on Windows:\n\n```powershell\n.\\.venv\\Scripts\\python.exe scripts\\verify_setup.py\n.\\.venv\\Scripts\\python.exe scripts\\validate_credit_default_bundle.py\n.\\.venv\\Scripts\\python.exe -m pytest\n.\\.venv\\Scripts\\python.exe scripts\\build_project_explainer.py\n```\n\nThe explainer generator validates both bundles, profiles reference Parquet files, independently recomputes threshold metrics, reruns all 12 deterministic scenarios in memory, reproduces the malformed-dtype probe, inventories modules/tests, writes `reports/project_explainer_evidence.json`, writes `project_explainer_artifact.json`, and packages `project_explainer.html`. It never calls Groq, reads secrets, retrains, regenerates scenarios, or overwrites historical evaluation evidence. Use `--archive-existing` before a future intentional replacement."
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## Questions that must be answered before operational use\n\n1. Who owns each model, drift threshold, incident decision, and approval SLA?\n2. What are the domain-specific costs of false negatives and false positives at the decision moment?\n3. Which prospective or external population should become the governed baseline, and how often may it change?\n4. Which protected-group definitions and minimum sample sizes are ethically and legally appropriate?\n5. What reliability, latency, token-cost, retention, security, and audit requirements define an acceptable pilot?"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-01T14:52:49.616159+00:00",
+    "status": "ready",
+    "datasets": {
+      "summary": [
+        {
+          "validated_models": 2,
+          "bundle_checks_passed": 30,
+          "deterministic_scenarios": 12,
+          "live_scenarios_completed": 12,
+          "structured_output_rate": 0.8333,
+          "first_pass_rate": 0.75,
+          "fallback_rate": 0.1666,
+          "known_material_defects": 2,
+          "preservation_files_matched": 21,
+          "preservation_files_total": 22
+        }
+      ],
+      "reference_profiles": [
+        {
+          "model_id": "credit_default",
+          "unit": "credit-card account record",
+          "target": "Default_Flag",
+          "rows": 6002,
+          "features": 36,
+          "transformed_features": 36,
+          "positive_count": 1327,
+          "positive_rate": 0.2210929690103299,
+          "duplicate_ids": 0,
+          "duplicate_rows": 0,
+          "missing_cells": 0,
+          "infinite_cells": 0,
+          "split": "group-aware stratified random held-out test split (test_size=0.20, random_state=42)"
+        },
+        {
+          "model_id": "diabetes_risk",
+          "unit": "BRFSS respondent screening record",
+          "target": "Diabetes_binary",
+          "rows": 50736,
+          "features": 21,
+          "transformed_features": 52,
+          "positive_count": 7069,
+          "positive_rate": 0.13932907600126143,
+          "duplicate_ids": 0,
+          "duplicate_rows": 0,
+          "missing_cells": 0,
+          "infinite_cells": 0,
+          "split": "stratified held-out test split (test_size=0.20, random_state=42)"
+        }
+      ],
+      "model_specifications": [
+        {
+          "model_id": "credit_default",
+          "artifact": "sklearn.pipeline.Pipeline",
+          "pipeline": "preprocessor (ColumnTransformer) -> classifier (XGBClassifier)",
+          "classifier": "xgboost.sklearn.XGBClassifier",
+          "key_hyperparameters": "objective=binary:logistic, n_estimators=150, max_depth=4, learning_rate=0.05, subsample=0.9, colsample_bytree=0.9, scale_pos_weight=1.0, random_state=42, eval_metric=logloss, n_jobs=-1",
+          "calibrator": "none",
+          "fit_location": "Imported fitted artifact; no fitting in this repository."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "artifact": "monitoring_agent.adapters.binary_classification.CalibratedBinaryClassifier",
+          "pipeline": "feature_engineering (BRFSSFeatureEngineer) -> preprocessor (ColumnTransformer) -> model (XGBClassifier)",
+          "classifier": "xgboost.sklearn.XGBClassifier",
+          "key_hyperparameters": "objective=binary:logistic, n_estimators=287, max_depth=4, learning_rate=0.029223394319260826, subsample=0.7330061155615993, colsample_bytree=0.9926515452756086, min_child_weight=3, gamma=0.34915701064545634, reg_alpha=0.011400863701127324, reg_lambda=2.584093506411774, scale_pos_weight=6.176998974431517, random_state=42, eval_metric=logloss, n_jobs=1",
+          "calibrator": "sklearn.linear_model._logistic.LogisticRegression",
+          "fit_location": "Imported fitted artifact; no fitting in this repository."
+        }
+      ],
+      "credit_threshold_tradeoff": [
+        {
+          "threshold": "0.50 default",
+          "metric": "Precision",
+          "value": 0.6584302325581395,
+          "sample_count": 6002,
+          "positive_count": 1327,
+          "model_id": "credit_default"
+        },
+        {
+          "threshold": "0.50 default",
+          "metric": "Recall",
+          "value": 0.3413715146948003,
+          "sample_count": 6002,
+          "positive_count": 1327,
+          "model_id": "credit_default"
+        },
+        {
+          "threshold": "0.50 default",
+          "metric": "Specificity",
+          "value": 0.9497326203208556,
+          "sample_count": 6002,
+          "positive_count": 1327,
+          "model_id": "credit_default"
+        },
+        {
+          "threshold": "0.50 default",
+          "metric": "F1",
+          "value": 0.4496277915632754,
+          "sample_count": 6002,
+          "positive_count": 1327,
+          "model_id": "credit_default"
+        },
+        {
+          "threshold": "0.25 operating",
+          "metric": "Precision",
+          "value": 0.47769516728624534,
+          "sample_count": 6002,
+          "positive_count": 1327,
+          "model_id": "credit_default"
+        },
+        {
+          "threshold": "0.25 operating",
+          "metric": "Recall",
+          "value": 0.5810097965335342,
+          "sample_count": 6002,
+          "positive_count": 1327,
+          "model_id": "credit_default"
+        },
+        {
+          "threshold": "0.25 operating",
+          "metric": "Specificity",
+          "value": 0.8196791443850268,
+          "sample_count": 6002,
+          "positive_count": 1327,
+          "model_id": "credit_default"
+        },
+        {
+          "threshold": "0.25 operating",
+          "metric": "F1",
+          "value": 0.5243114586875213,
+          "sample_count": 6002,
+          "positive_count": 1327,
+          "model_id": "credit_default"
+        }
+      ],
+      "diabetes_threshold_tradeoff": [
+        {
+          "threshold": "0.50 default",
+          "metric": "Precision",
+          "value": 0.581668625146886,
+          "sample_count": 50736,
+          "positive_count": 7069,
+          "model_id": "diabetes_risk"
+        },
+        {
+          "threshold": "0.50 default",
+          "metric": "Recall",
+          "value": 0.1400480973263545,
+          "sample_count": 50736,
+          "positive_count": 7069,
+          "model_id": "diabetes_risk"
+        },
+        {
+          "threshold": "0.50 default",
+          "metric": "Specificity",
+          "value": 0.9836947809558706,
+          "sample_count": 50736,
+          "positive_count": 7069,
+          "model_id": "diabetes_risk"
+        },
+        {
+          "threshold": "0.50 default",
+          "metric": "F1",
+          "value": 0.22574392885645878,
+          "sample_count": 50736,
+          "positive_count": 7069,
+          "model_id": "diabetes_risk"
+        },
+        {
+          "threshold": "0.25 operating",
+          "metric": "Precision",
+          "value": 0.386468952734013,
+          "sample_count": 50736,
+          "positive_count": 7069,
+          "model_id": "diabetes_risk"
+        },
+        {
+          "threshold": "0.25 operating",
+          "metric": "Recall",
+          "value": 0.5898995614655538,
+          "sample_count": 50736,
+          "positive_count": 7069,
+          "model_id": "diabetes_risk"
+        },
+        {
+          "threshold": "0.25 operating",
+          "metric": "Specificity",
+          "value": 0.8483981038312685,
+          "sample_count": 50736,
+          "positive_count": 7069,
+          "model_id": "diabetes_risk"
+        },
+        {
+          "threshold": "0.25 operating",
+          "metric": "F1",
+          "value": 0.46699143289097933,
+          "sample_count": 50736,
+          "positive_count": 7069,
+          "model_id": "diabetes_risk"
+        }
+      ],
+      "agent_rates": [
+        {
+          "model_id": "credit_default",
+          "metric": "Structured output",
+          "rate": 1.0,
+          "scenario_count": 6
+        },
+        {
+          "model_id": "credit_default",
+          "metric": "First-pass verification",
+          "rate": 0.8333,
+          "scenario_count": 6
+        },
+        {
+          "model_id": "credit_default",
+          "metric": "Evidence grounding",
+          "rate": 1.0,
+          "scenario_count": 6
+        },
+        {
+          "model_id": "credit_default",
+          "metric": "Policy compliance",
+          "rate": 1.0,
+          "scenario_count": 6
+        },
+        {
+          "model_id": "credit_default",
+          "metric": "Approval completion",
+          "rate": 1.0,
+          "scenario_count": 6
+        },
+        {
+          "model_id": "credit_default",
+          "metric": "Fallback",
+          "rate": 0.0,
+          "scenario_count": 6
+        },
+        {
+          "model_id": "diabetes_risk",
+          "metric": "Structured output",
+          "rate": 0.6667,
+          "scenario_count": 6
+        },
+        {
+          "model_id": "diabetes_risk",
+          "metric": "First-pass verification",
+          "rate": 0.6667,
+          "scenario_count": 6
+        },
+        {
+          "model_id": "diabetes_risk",
+          "metric": "Evidence grounding",
+          "rate": 1.0,
+          "scenario_count": 6
+        },
+        {
+          "model_id": "diabetes_risk",
+          "metric": "Policy compliance",
+          "rate": 1.0,
+          "scenario_count": 6
+        },
+        {
+          "model_id": "diabetes_risk",
+          "metric": "Approval completion",
+          "rate": 1.0,
+          "scenario_count": 6
+        },
+        {
+          "model_id": "diabetes_risk",
+          "metric": "Fallback",
+          "rate": 0.3333,
+          "scenario_count": 6
+        }
+      ],
+      "scenario_design": [
+        {
+          "model_id": "credit_default",
+          "scenario": "normal_operation",
+          "simulation_type": "unchanged_reference_replay",
+          "sample_size": 1000,
+          "seed": 20260725,
+          "labels": "all 1,000",
+          "configured_change": "Unchanged stratified replay sample.",
+          "expected_candidates": "normal_operation"
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "feature_drift",
+          "simulation_type": "deterministic_covariate_shift",
+          "sample_size": 1000,
+          "seed": 20260725,
+          "labels": "all 1,000",
+          "configured_change": "Scale LIMIT_BAL by 0.35; shift PAY_0 + RecentPaymentDelay.",
+          "expected_candidates": "feature_drift"
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "data_quality_failure",
+          "simulation_type": "deterministic_data_corruption",
+          "sample_size": 1000,
+          "seed": 20260725,
+          "labels": "all 1,000",
+          "configured_change": "Duplicate 20 IDs; set 15% of PAY_AMT1 missing; inject observed-range violations in LIMIT_BAL.",
+          "expected_candidates": "data_quality_failure"
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "performance_degradation",
+          "simulation_type": "deterministic_concept_and_outcome_shift",
+          "sample_size": 1000,
+          "seed": 20260725,
+          "labels": "all 1,000",
+          "configured_change": "Flip 180 lowest-score negative labels to positive.",
+          "expected_candidates": "performance_degradation"
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "unlabelled_drift",
+          "simulation_type": "deterministic_unlabelled_covariate_shift",
+          "sample_size": 1000,
+          "seed": 20260725,
+          "labels": "none",
+          "configured_change": "Scale LIMIT_BAL by 0.55; shift PAY_2 + MaxPaymentDelay.",
+          "expected_candidates": "feature_drift, prediction_drift, insufficient_evidence"
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "insufficient_labels",
+          "simulation_type": "deterministic_partial_label_availability",
+          "sample_size": 1000,
+          "seed": 20260725,
+          "labels": "100",
+          "configured_change": "Retain 100 aligned labels.",
+          "expected_candidates": "insufficient_evidence"
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "normal_operation",
+          "simulation_type": "unchanged_reference_replay",
+          "sample_size": 1000,
+          "seed": 20260725,
+          "labels": "all 1,000",
+          "configured_change": "Unchanged stratified replay sample.",
+          "expected_candidates": "normal_operation"
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "feature_drift",
+          "simulation_type": "deterministic_covariate_shift",
+          "sample_size": 1000,
+          "seed": 20260725,
+          "labels": "all 1,000",
+          "configured_change": "Scale BMI by 1.4; shift HighBP, GenHlth.",
+          "expected_candidates": "feature_drift"
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "data_quality_failure",
+          "simulation_type": "deterministic_data_corruption",
+          "sample_size": 1000,
+          "seed": 20260725,
+          "labels": "all 1,000",
+          "configured_change": "Duplicate 20 IDs; set 15% of BMI missing; inject observed-range violations in PhysHlth.",
+          "expected_candidates": "data_quality_failure"
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "performance_degradation",
+          "simulation_type": "deterministic_concept_and_outcome_shift",
+          "sample_size": 1000,
+          "seed": 20260725,
+          "labels": "all 1,000",
+          "configured_change": "Flip 180 lowest-score negative labels to positive.",
+          "expected_candidates": "performance_degradation"
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "unlabelled_drift",
+          "simulation_type": "deterministic_unlabelled_covariate_shift",
+          "sample_size": 1000,
+          "seed": 20260725,
+          "labels": "none",
+          "configured_change": "Scale BMI by 1.3; shift DiffWalk, GenHlth.",
+          "expected_candidates": "feature_drift, prediction_drift, insufficient_evidence"
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "insufficient_labels",
+          "simulation_type": "deterministic_partial_label_availability",
+          "sample_size": 1000,
+          "seed": 20260725,
+          "labels": "100",
+          "configured_change": "Retain 100 aligned labels.",
+          "expected_candidates": "insufficient_evidence"
+        }
+      ],
+      "scenario_results": [
+        {
+          "model_id": "credit_default",
+          "scenario": "normal_operation",
+          "batch_blocked": false,
+          "performance_evaluated": true,
+          "label_coverage": 1.0,
+          "critical_features": 0,
+          "incident_candidates": "normal_operation",
+          "overall_severity": "info",
+          "critical_evidence": "none",
+          "operating_recall": 0.583710407239819,
+          "operating_precision": 0.48863636363636365,
+          "operating_f1": 0.5319587628865979,
+          "roc_auc": 0.771899813544456,
+          "pr_auc": 0.5198985472115094,
+          "brier_score": 0.14150755868420112,
+          "run_id": "MON-CREDIT-DEFAULT-NORMAL-OPERATION-50BC897585FC"
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "feature_drift",
+          "batch_blocked": false,
+          "performance_evaluated": true,
+          "label_coverage": 1.0,
+          "critical_features": 3,
+          "incident_candidates": "mixed_incident, performance_degradation, feature_drift, prediction_drift",
+          "overall_severity": "high",
+          "critical_evidence": "DRIFT-PSI-LIMIT-BAL, DRIFT-PSI-PAY-0, DRIFT-PSI-RECENTPAYMENTDELAY, PRED-PSI-PROBABILITY, PRED-RATE-DEFAULT, PRED-RATE-OPERATING, PERF-PRECISION-OPERATING",
+          "operating_recall": 0.8054298642533937,
+          "operating_precision": 0.29276315789473684,
+          "operating_f1": 0.4294330518697226,
+          "roc_auc": 0.7090799783920678,
+          "pr_auc": 0.4435919921621853,
+          "brier_score": 0.17612236607525505,
+          "run_id": "MON-CREDIT-DEFAULT-FEATURE-DRIFT-FB07E1F7F85D"
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "data_quality_failure",
+          "batch_blocked": true,
+          "performance_evaluated": false,
+          "label_coverage": 1.0,
+          "critical_features": 0,
+          "incident_candidates": "data_quality_failure",
+          "overall_severity": "critical",
+          "critical_evidence": "DQ-DUPLICATE-RECORD-ID, DQ-RANGE-LIMIT-BAL, DQ-MISSING-PAY-AMT1",
+          "operating_recall": null,
+          "operating_precision": null,
+          "operating_f1": null,
+          "roc_auc": null,
+          "pr_auc": null,
+          "brier_score": null,
+          "run_id": "MON-CREDIT-DEFAULT-DATA-QUALITY-FAILURE-3273E8A12E4E"
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "performance_degradation",
+          "batch_blocked": false,
+          "performance_evaluated": true,
+          "label_coverage": 1.0,
+          "critical_features": 0,
+          "incident_candidates": "performance_degradation",
+          "overall_severity": "high",
+          "critical_evidence": "PERF-RECALL-OPERATING, PERF-F1-OPERATING, PERF-PRAUC, PERF-ROCAUC, PERF-BRIER",
+          "operating_recall": 0.32169576059850374,
+          "operating_precision": 0.48863636363636365,
+          "operating_f1": 0.3879699248120301,
+          "roc_auc": 0.39151495218547955,
+          "pr_auc": 0.4397978920080219,
+          "brier_score": 0.30213725914746625,
+          "run_id": "MON-CREDIT-DEFAULT-PERFORMANCE-DEGRADATION-A4639F7C848C"
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "unlabelled_drift",
+          "batch_blocked": false,
+          "performance_evaluated": false,
+          "label_coverage": 0.0,
+          "critical_features": 3,
+          "incident_candidates": "feature_drift, prediction_drift, insufficient_evidence",
+          "overall_severity": "high",
+          "critical_evidence": "DRIFT-PSI-LIMIT-BAL, DRIFT-PSI-PAY-2, DRIFT-PSI-MAXPAYMENTDELAY, PRED-PSI-PROBABILITY, PRED-RATE-OPERATING",
+          "operating_recall": null,
+          "operating_precision": null,
+          "operating_f1": null,
+          "roc_auc": null,
+          "pr_auc": null,
+          "brier_score": null,
+          "run_id": "MON-CREDIT-DEFAULT-UNLABELLED-DRIFT-65FB3D01A640"
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "insufficient_labels",
+          "batch_blocked": false,
+          "performance_evaluated": false,
+          "label_coverage": 0.1,
+          "critical_features": 0,
+          "incident_candidates": "insufficient_evidence",
+          "overall_severity": "medium",
+          "critical_evidence": "none",
+          "operating_recall": null,
+          "operating_precision": null,
+          "operating_f1": null,
+          "roc_auc": null,
+          "pr_auc": null,
+          "brier_score": null,
+          "run_id": "MON-CREDIT-DEFAULT-INSUFFICIENT-LABELS-A5368B13F92C"
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "normal_operation",
+          "batch_blocked": false,
+          "performance_evaluated": true,
+          "label_coverage": 1.0,
+          "critical_features": 0,
+          "incident_candidates": "normal_operation",
+          "overall_severity": "info",
+          "critical_evidence": "none",
+          "operating_recall": 0.5827338129496403,
+          "operating_precision": 0.3767441860465116,
+          "operating_f1": 0.4576271186440678,
+          "roc_auc": 0.810852363405443,
+          "pr_auc": 0.4033259757456456,
+          "brier_score": 0.10039922687600812,
+          "run_id": "MON-DIABETES-RISK-NORMAL-OPERATION-CE10F3C834AD"
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "feature_drift",
+          "batch_blocked": false,
+          "performance_evaluated": true,
+          "label_coverage": 1.0,
+          "critical_features": 3,
+          "incident_candidates": "mixed_incident, performance_degradation, feature_drift, prediction_drift",
+          "overall_severity": "high",
+          "critical_evidence": "DRIFT-PSI-HIGHBP, DRIFT-PSI-BMI, DRIFT-PSI-GENHLTH, PRED-PSI-PROBABILITY, PRED-RATE-DEFAULT, PRED-RATE-OPERATING, PERF-PRECISION-OPERATING, PERF-F1-OPERATING, PERF-BRIER",
+          "operating_recall": 0.935251798561151,
+          "operating_precision": 0.18759018759018758,
+          "operating_f1": 0.3125,
+          "roc_auc": 0.7362110311750599,
+          "pr_auc": 0.3375400802449485,
+          "brier_score": 0.16890077426431976,
+          "run_id": "MON-DIABETES-RISK-FEATURE-DRIFT-44994E7FD981"
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "data_quality_failure",
+          "batch_blocked": true,
+          "performance_evaluated": false,
+          "label_coverage": 1.0,
+          "critical_features": 0,
+          "incident_candidates": "data_quality_failure",
+          "overall_severity": "critical",
+          "critical_evidence": "DQ-DUPLICATE-RECORD-ID, DQ-MISSING-BMI, DQ-RANGE-PHYSHLTH",
+          "operating_recall": null,
+          "operating_precision": null,
+          "operating_f1": null,
+          "roc_auc": null,
+          "pr_auc": null,
+          "brier_score": null,
+          "run_id": "MON-DIABETES-RISK-DATA-QUALITY-FAILURE-1820BD308846"
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "performance_degradation",
+          "batch_blocked": false,
+          "performance_evaluated": true,
+          "label_coverage": 1.0,
+          "critical_features": 0,
+          "incident_candidates": "performance_degradation",
+          "overall_severity": "high",
+          "critical_evidence": "PERF-RECALL-OPERATING, PERF-F1-OPERATING, PERF-PRAUC, PERF-ROCAUC, PERF-BRIER",
+          "operating_recall": 0.25391849529780564,
+          "operating_precision": 0.3767441860465116,
+          "operating_f1": 0.30337078651685395,
+          "roc_auc": 0.3318603013271098,
+          "pr_auc": 0.31663149002123436,
+          "brier_score": 0.2779643237745792,
+          "run_id": "MON-DIABETES-RISK-PERFORMANCE-DEGRADATION-4C5CB3466929"
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "unlabelled_drift",
+          "batch_blocked": false,
+          "performance_evaluated": false,
+          "label_coverage": 0.0,
+          "critical_features": 3,
+          "incident_candidates": "feature_drift, prediction_drift, insufficient_evidence",
+          "overall_severity": "high",
+          "critical_evidence": "DRIFT-PSI-BMI, DRIFT-PSI-GENHLTH, DRIFT-PSI-DIFFWALK, PRED-PSI-PROBABILITY, PRED-RATE-DEFAULT, PRED-RATE-OPERATING",
+          "operating_recall": null,
+          "operating_precision": null,
+          "operating_f1": null,
+          "roc_auc": null,
+          "pr_auc": null,
+          "brier_score": null,
+          "run_id": "MON-DIABETES-RISK-UNLABELLED-DRIFT-173A5F3AE6C8"
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "insufficient_labels",
+          "batch_blocked": false,
+          "performance_evaluated": false,
+          "label_coverage": 0.1,
+          "critical_features": 0,
+          "incident_candidates": "insufficient_evidence",
+          "overall_severity": "medium",
+          "critical_evidence": "none",
+          "operating_recall": null,
+          "operating_precision": null,
+          "operating_f1": null,
+          "roc_auc": null,
+          "pr_auc": null,
+          "brier_score": null,
+          "run_id": "MON-DIABETES-RISK-INSUFFICIENT-LABELS-2360057DFAF3"
+        }
+      ],
+      "feature_dictionary": [
+        {
+          "model_id": "credit_default",
+          "position": 1,
+          "field": "LIMIT_BAL",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "10000 to 750000",
+          "allowed_values": "-",
+          "meaning": "Granted credit limit."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 2,
+          "field": "EDUCATION",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "1 to 6",
+          "allowed_values": "1, 2, 3, 4, 5, 6",
+          "meaning": "Encoded education category."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 3,
+          "field": "MARRIAGE",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 3",
+          "allowed_values": "0, 1, 2, 3",
+          "meaning": "Encoded marital-status category."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 4,
+          "field": "AGE",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "21 to 75",
+          "allowed_values": "-",
+          "meaning": "Account-holder age in years."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 5,
+          "field": "PAY_0",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "-2 to 8",
+          "allowed_values": "-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8",
+          "meaning": "Most recent repayment-status code."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 6,
+          "field": "PAY_2",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "-2 to 7",
+          "allowed_values": "-2, -1, 0, 1, 2, 3, 4, 5, 6, 7",
+          "meaning": "Monthly repayment-status code."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 7,
+          "field": "PAY_3",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "-2 to 7",
+          "allowed_values": "-2, -1, 0, 1, 2, 3, 4, 5, 6, 7",
+          "meaning": "Monthly repayment-status code."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 8,
+          "field": "PAY_4",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "-2 to 7",
+          "allowed_values": "-2, -1, 0, 2, 3, 4, 5, 6, 7",
+          "meaning": "Monthly repayment-status code."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 9,
+          "field": "PAY_5",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "-2 to 7",
+          "allowed_values": "-2, -1, 0, 2, 3, 4, 5, 7",
+          "meaning": "Monthly repayment-status code."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 10,
+          "field": "PAY_6",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "-2 to 8",
+          "allowed_values": "-2, -1, 0, 2, 3, 4, 5, 6, 7, 8",
+          "meaning": "Monthly repayment-status code."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 11,
+          "field": "BILL_AMT1",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "-165580 to 581319",
+          "allowed_values": "-",
+          "meaning": "Monthly bill statement amount."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 12,
+          "field": "BILL_AMT2",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "-69777 to 552144",
+          "allowed_values": "-",
+          "meaning": "Monthly bill statement amount."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 13,
+          "field": "BILL_AMT3",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "-46127 to 578971",
+          "allowed_values": "-",
+          "meaning": "Monthly bill statement amount."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 14,
+          "field": "BILL_AMT4",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "-50616 to 518741",
+          "allowed_values": "-",
+          "meaning": "Monthly bill statement amount."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 15,
+          "field": "BILL_AMT5",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "-53007 to 516139",
+          "allowed_values": "-",
+          "meaning": "Monthly bill statement amount."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 16,
+          "field": "BILL_AMT6",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "-209051 to 514975",
+          "allowed_values": "-",
+          "meaning": "Monthly bill statement amount."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 17,
+          "field": "PAY_AMT1",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 505000",
+          "allowed_values": "-",
+          "meaning": "Monthly repayment-status code."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 18,
+          "field": "PAY_AMT2",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 401003",
+          "allowed_values": "-",
+          "meaning": "Monthly repayment-status code."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 19,
+          "field": "PAY_AMT3",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 380478",
+          "allowed_values": "-",
+          "meaning": "Monthly repayment-status code."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 20,
+          "field": "PAY_AMT4",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 330982",
+          "allowed_values": "-",
+          "meaning": "Monthly repayment-status code."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 21,
+          "field": "PAY_AMT5",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 426529",
+          "allowed_values": "-",
+          "meaning": "Monthly repayment-status code."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 22,
+          "field": "PAY_AMT6",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 443001",
+          "allowed_values": "-",
+          "meaning": "Monthly repayment-status code."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 23,
+          "field": "BillToLimitRatio_1",
+          "kind": "numeric",
+          "dtype": "float64",
+          "integer_constrained": false,
+          "nullable": false,
+          "observed_range": "-0.551933 to 3.31893",
+          "allowed_values": "-",
+          "meaning": "Engineered monthly bill-to-limit utilization ratio."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 24,
+          "field": "BillToLimitRatio_2",
+          "kind": "numeric",
+          "dtype": "float64",
+          "integer_constrained": false,
+          "nullable": false,
+          "observed_range": "-1.39554 to 2.37477",
+          "allowed_values": "-",
+          "meaning": "Engineered monthly bill-to-limit utilization ratio."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 25,
+          "field": "BillToLimitRatio_3",
+          "kind": "numeric",
+          "dtype": "float64",
+          "integer_constrained": false,
+          "nullable": false,
+          "observed_range": "-0.1872 to 2.3968",
+          "allowed_values": "-",
+          "meaning": "Engineered monthly bill-to-limit utilization ratio."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 26,
+          "field": "BillToLimitRatio_4",
+          "kind": "numeric",
+          "dtype": "float64",
+          "integer_constrained": false,
+          "nullable": false,
+          "observed_range": "-0.44216 to 2.08767",
+          "allowed_values": "-",
+          "meaning": "Engineered monthly bill-to-limit utilization ratio."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 27,
+          "field": "BillToLimitRatio_5",
+          "kind": "numeric",
+          "dtype": "float64",
+          "integer_constrained": false,
+          "nullable": false,
+          "observed_range": "-0.289185 to 1.99787",
+          "allowed_values": "-",
+          "meaning": "Engineered monthly bill-to-limit utilization ratio."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 28,
+          "field": "BillToLimitRatio_6",
+          "kind": "numeric",
+          "dtype": "float64",
+          "integer_constrained": false,
+          "nullable": false,
+          "observed_range": "-1.50953 to 2.02784",
+          "allowed_values": "-",
+          "meaning": "Engineered monthly bill-to-limit utilization ratio."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 29,
+          "field": "AvgBillToLimitRatio",
+          "kind": "numeric",
+          "dtype": "float64",
+          "integer_constrained": false,
+          "nullable": false,
+          "observed_range": "-0.23259 to 2.2452",
+          "allowed_values": "-",
+          "meaning": "Mean bill-to-limit utilization ratio."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 30,
+          "field": "AvgPaymentToBillRatio",
+          "kind": "numeric",
+          "dtype": "float64",
+          "integer_constrained": false,
+          "nullable": false,
+          "observed_range": "0 to 2559.81",
+          "allowed_values": "-",
+          "meaning": "Mean payment-to-bill ratio."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 31,
+          "field": "RecentPaymentDelay",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "-2 to 8",
+          "allowed_values": "-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8",
+          "meaning": "Engineered recent repayment-delay indicator."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 32,
+          "field": "MaxPaymentDelay",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "-2 to 8",
+          "allowed_values": "-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8",
+          "meaning": "Maximum repayment-delay code across observed months."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 33,
+          "field": "NumDelayedMonths",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 6",
+          "allowed_values": "0, 1, 2, 3, 4, 5, 6",
+          "meaning": "Count of delayed-payment months."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 34,
+          "field": "AvgBillAmount",
+          "kind": "numeric",
+          "dtype": "float64",
+          "integer_constrained": false,
+          "nullable": false,
+          "observed_range": "-43253.8 to 521248",
+          "allowed_values": "-",
+          "meaning": "Mean bill amount across six months."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 35,
+          "field": "AvgPaymentAmount",
+          "kind": "numeric",
+          "dtype": "float64",
+          "integer_constrained": false,
+          "nullable": false,
+          "observed_range": "0 to 235889",
+          "allowed_values": "-",
+          "meaning": "Mean payment amount across six months."
+        },
+        {
+          "model_id": "credit_default",
+          "position": 36,
+          "field": "PaymentToLimitRatio",
+          "kind": "numeric",
+          "dtype": "float64",
+          "integer_constrained": false,
+          "nullable": false,
+          "observed_range": "0 to 1.28364",
+          "allowed_values": "-",
+          "meaning": "Payment amount relative to the granted limit."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 1,
+          "field": "HighBP",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 1",
+          "allowed_values": "0, 1",
+          "meaning": "Self-reported high-blood-pressure indicator."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 2,
+          "field": "HighChol",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 1",
+          "allowed_values": "0, 1",
+          "meaning": "Self-reported high-cholesterol indicator."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 3,
+          "field": "CholCheck",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 1",
+          "allowed_values": "0, 1",
+          "meaning": "Cholesterol check within the survey-defined period."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 4,
+          "field": "BMI",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "12 to 98",
+          "allowed_values": "-",
+          "meaning": "Body-mass-index value."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 5,
+          "field": "Smoker",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 1",
+          "allowed_values": "0, 1",
+          "meaning": "Survey smoking-history indicator."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 6,
+          "field": "Stroke",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 1",
+          "allowed_values": "0, 1",
+          "meaning": "Self-reported stroke-history indicator."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 7,
+          "field": "HeartDiseaseorAttack",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 1",
+          "allowed_values": "0, 1",
+          "meaning": "Self-reported coronary disease or heart-attack history."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 8,
+          "field": "PhysActivity",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 1",
+          "allowed_values": "0, 1",
+          "meaning": "Recent physical-activity indicator."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 9,
+          "field": "Fruits",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 1",
+          "allowed_values": "0, 1",
+          "meaning": "Daily fruit-consumption indicator."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 10,
+          "field": "Veggies",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 1",
+          "allowed_values": "0, 1",
+          "meaning": "Daily vegetable-consumption indicator."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 11,
+          "field": "HvyAlcoholConsump",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 1",
+          "allowed_values": "0, 1",
+          "meaning": "Heavy-alcohol-consumption indicator."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 12,
+          "field": "AnyHealthcare",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 1",
+          "allowed_values": "0, 1",
+          "meaning": "Any health-care coverage indicator."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 13,
+          "field": "NoDocbcCost",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 1",
+          "allowed_values": "0, 1",
+          "meaning": "Could not see a doctor because of cost."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 14,
+          "field": "GenHlth",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "1 to 5",
+          "allowed_values": "1, 2, 3, 4, 5",
+          "meaning": "Ordinal self-rated general health."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 15,
+          "field": "MentHlth",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 30",
+          "allowed_values": "-",
+          "meaning": "Poor mental-health days in the past 30 days."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 16,
+          "field": "PhysHlth",
+          "kind": "numeric",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 30",
+          "allowed_values": "-",
+          "meaning": "Poor physical-health days in the past 30 days."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 17,
+          "field": "DiffWalk",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 1",
+          "allowed_values": "0, 1",
+          "meaning": "Serious difficulty walking or climbing stairs."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 18,
+          "field": "Sex",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "0 to 1",
+          "allowed_values": "0, 1",
+          "meaning": "Encoded survey sex field."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 19,
+          "field": "Age",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "1 to 13",
+          "allowed_values": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13",
+          "meaning": "Ordinal age-band code."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 20,
+          "field": "Education",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "1 to 6",
+          "allowed_values": "1, 2, 3, 4, 5, 6",
+          "meaning": "Ordinal education-level code."
+        },
+        {
+          "model_id": "diabetes_risk",
+          "position": 21,
+          "field": "Income",
+          "kind": "categorical/discrete",
+          "dtype": "int64",
+          "integer_constrained": true,
+          "nullable": false,
+          "observed_range": "1 to 8",
+          "allowed_values": "1, 2, 3, 4, 5, 6, 7, 8",
+          "meaning": "Ordinal income-band code."
+        }
+      ],
+      "live_evaluation_rows": [
+        {
+          "model_id": "credit_default",
+          "scenario": "normal_operation",
+          "incident": "normal_operation",
+          "route": "no_additional_diagnostics",
+          "structured_output": true,
+          "first_pass": true,
+          "revisions": 0,
+          "fallback": false,
+          "approval_complete": true,
+          "latency_ms": 2673.26,
+          "tokens": 5811
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "feature_drift",
+          "incident": "mixed_incident",
+          "route": "mixed_diagnostics",
+          "structured_output": true,
+          "first_pass": true,
+          "revisions": 0,
+          "fallback": false,
+          "approval_complete": true,
+          "latency_ms": 4457.58,
+          "tokens": 7959
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "data_quality_failure",
+          "incident": "data_quality_failure",
+          "route": "data_quality_diagnostics",
+          "structured_output": true,
+          "first_pass": false,
+          "revisions": 1,
+          "fallback": false,
+          "approval_complete": true,
+          "latency_ms": 4418.93,
+          "tokens": 7224
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "performance_degradation",
+          "incident": "performance_degradation",
+          "route": "performance_diagnostics",
+          "structured_output": true,
+          "first_pass": true,
+          "revisions": 0,
+          "fallback": false,
+          "approval_complete": true,
+          "latency_ms": 2604.25,
+          "tokens": 4823
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "unlabelled_drift",
+          "incident": "feature_drift",
+          "route": "drift_diagnostics",
+          "structured_output": true,
+          "first_pass": true,
+          "revisions": 0,
+          "fallback": false,
+          "approval_complete": true,
+          "latency_ms": 4137.0,
+          "tokens": 7504
+        },
+        {
+          "model_id": "credit_default",
+          "scenario": "insufficient_labels",
+          "incident": "insufficient_evidence",
+          "route": "evidence_sufficiency_review",
+          "structured_output": true,
+          "first_pass": true,
+          "revisions": 0,
+          "fallback": false,
+          "approval_complete": true,
+          "latency_ms": 2230.44,
+          "tokens": 3715
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "normal_operation",
+          "incident": "normal_operation",
+          "route": "no_additional_diagnostics",
+          "structured_output": true,
+          "first_pass": true,
+          "revisions": 0,
+          "fallback": false,
+          "approval_complete": true,
+          "latency_ms": 3922.12,
+          "tokens": 7901
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "feature_drift",
+          "incident": "mixed_incident",
+          "route": "mixed_diagnostics",
+          "structured_output": false,
+          "first_pass": false,
+          "revisions": 0,
+          "fallback": true,
+          "approval_complete": true,
+          "latency_ms": 31281.17,
+          "tokens": 4199
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "data_quality_failure",
+          "incident": "data_quality_failure",
+          "route": "data_quality_diagnostics",
+          "structured_output": true,
+          "first_pass": true,
+          "revisions": 0,
+          "fallback": false,
+          "approval_complete": true,
+          "latency_ms": 3068.92,
+          "tokens": 5955
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "performance_degradation",
+          "incident": "performance_degradation",
+          "route": "performance_diagnostics",
+          "structured_output": true,
+          "first_pass": true,
+          "revisions": 0,
+          "fallback": false,
+          "approval_complete": true,
+          "latency_ms": 16227.06,
+          "tokens": 6230
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "unlabelled_drift",
+          "incident": "feature_drift",
+          "route": "drift_diagnostics",
+          "structured_output": false,
+          "first_pass": false,
+          "revisions": 0,
+          "fallback": true,
+          "approval_complete": true,
+          "latency_ms": 29900.07,
+          "tokens": 3735
+        },
+        {
+          "model_id": "diabetes_risk",
+          "scenario": "insufficient_labels",
+          "incident": "insufficient_evidence",
+          "route": "evidence_sufficiency_review",
+          "structured_output": true,
+          "first_pass": true,
+          "revisions": 0,
+          "fallback": false,
+          "approval_complete": true,
+          "latency_ms": 2794.49,
+          "tokens": 4475
+        }
+      ],
+      "module_inventory": [
+        {
+          "path": "src/monitoring_agent/__init__.py",
+          "stage": "Project infrastructure",
+          "purpose": "Foundational package for the Agentic Model Risk & Monitoring Copilot.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/adapters/__init__.py",
+          "stage": "Model inference and classification metrics",
+          "purpose": "Model-adapter interfaces and binary-classification implementation.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/adapters/base.py",
+          "stage": "Model inference and classification metrics",
+          "purpose": "Protocol shared by deterministic model adapters.",
+          "key_objects": "ModelAdapter"
+        },
+        {
+          "path": "src/monitoring_agent/adapters/binary_classification.py",
+          "stage": "Model inference and classification metrics",
+          "purpose": "Reusable scikit-learn binary-classification adapter.",
+          "key_objects": "AdapterInputError, CalibratedBinaryClassifier, BinaryClassificationAdapter"
+        },
+        {
+          "path": "src/monitoring_agent/agent/__init__.py",
+          "stage": "Bounded agentic orchestration and governance",
+          "purpose": "Evidence-grounded LangGraph monitoring orchestrator.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/agent/checkpointing.py",
+          "stage": "Bounded agentic orchestration and governance",
+          "purpose": "Lifecycle-safe checkpointer construction for local agent workflows.",
+          "key_objects": "create_checkpointer"
+        },
+        {
+          "path": "src/monitoring_agent/agent/config.py",
+          "stage": "Bounded agentic orchestration and governance",
+          "purpose": "Environment-backed configuration for the single monitoring agent.",
+          "key_objects": "AgentSettings"
+        },
+        {
+          "path": "src/monitoring_agent/agent/evidence_selector.py",
+          "stage": "Bounded agentic orchestration and governance",
+          "purpose": "Compact deterministic evidence selection for LLM consumption.",
+          "key_objects": "build_evidence_packet"
+        },
+        {
+          "path": "src/monitoring_agent/agent/fallback.py",
+          "stage": "Bounded agentic orchestration and governance",
+          "purpose": "Conservative deterministic recommendation when the LLM path is unusable.",
+          "key_objects": "build_fallback_recommendation"
+        },
+        {
+          "path": "src/monitoring_agent/agent/graph.py",
+          "stage": "Bounded agentic orchestration and governance",
+          "purpose": "LangGraph construction for the bounded single-agent workflow.",
+          "key_objects": "build_monitoring_graph"
+        },
+        {
+          "path": "src/monitoring_agent/agent/llm.py",
+          "stage": "Bounded agentic orchestration and governance",
+          "purpose": "Groq structured-output adapter and dependency-injection contracts.",
+          "key_objects": "StructuredCallResult, StructuredMonitoringLLM, create_groq_llm, GroqStructuredMonitoringLLM"
+        },
+        {
+          "path": "src/monitoring_agent/agent/nodes.py",
+          "stage": "Bounded agentic orchestration and governance",
+          "purpose": "Node implementations for the single LangGraph monitoring orchestrator.",
+          "key_objects": "AgentNodes, utc_approval_payload, approval_resume_payload"
+        },
+        {
+          "path": "src/monitoring_agent/agent/policy.py",
+          "stage": "Bounded agentic orchestration and governance",
+          "purpose": "Deterministic incident and action policy for agent recommendations.",
+          "key_objects": "build_policy_context, deterministic_triage, triage_violations, evaluate_hard_policy"
+        },
+        {
+          "path": "src/monitoring_agent/agent/prompts.py",
+          "stage": "Bounded agentic orchestration and governance",
+          "purpose": "Concise system prompts for evidence-grounded structured outputs.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/agent/reporting.py",
+          "stage": "Bounded agentic orchestration and governance",
+          "purpose": "JSON and Markdown reporting for completed agentic monitoring runs.",
+          "key_objects": "write_agentic_reports, migrate_legacy_fake_reports"
+        },
+        {
+          "path": "src/monitoring_agent/agent/schemas.py",
+          "stage": "Bounded agentic orchestration and governance",
+          "purpose": "Strict structured-output contracts for triage, recommendations, and approval.",
+          "key_objects": "AgentSchema, AgentTriage, EvidenceBackedClaim, RecommendedAction, AgentRecommendation, VerificationResult, ApprovalDecision"
+        },
+        {
+          "path": "src/monitoring_agent/agent/state.py",
+          "stage": "Bounded agentic orchestration and governance",
+          "purpose": "Serializable LangGraph state for the monitoring orchestrator.",
+          "key_objects": "AgentState"
+        },
+        {
+          "path": "src/monitoring_agent/agent/verifier.py",
+          "stage": "Bounded agentic orchestration and governance",
+          "purpose": "Deterministic grounding and policy verification for LLM recommendations.",
+          "key_objects": "verify_recommendation"
+        },
+        {
+          "path": "src/monitoring_agent/bundle/__init__.py",
+          "stage": "Bundle schemas and integrity",
+          "purpose": "Compatibility namespace for registered-model bundle loading.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/bundle/loader.py",
+          "stage": "Bundle schemas and integrity",
+          "purpose": "Backward-compatible exports for registered-model bundle loading.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/bundle/schemas.py",
+          "stage": "Bundle schemas and integrity",
+          "purpose": "Pydantic schemas for the exported credit-default monitoring bundle.",
+          "key_objects": "StrictSchema, ModelMetadata, TargetDefinition, FeatureDefinition, FeatureSchema, ManifestFile, BundleManifest, ConfusionMatrix, ThresholdMetrics, ReferenceMetrics, ValidationIssue, BundleValidationResult"
+        },
+        {
+          "path": "src/monitoring_agent/bundle/validation.py",
+          "stage": "Bundle schemas and integrity",
+          "purpose": "Generic integrity, alignment, leakage, threshold, and inference checks.",
+          "key_objects": "validate_bundle"
+        },
+        {
+          "path": "src/monitoring_agent/constants.py",
+          "stage": "Project infrastructure",
+          "purpose": "Foundational project constants.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/domains/__init__.py",
+          "stage": "Domain feature compatibility and policy",
+          "purpose": "Domain wording and governance policy packs.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/domains/base.py",
+          "stage": "Domain feature compatibility and policy",
+          "purpose": "Strict loader for domain policy packs.",
+          "key_objects": "DomainPolicy, load_domain_policy"
+        },
+        {
+          "path": "src/monitoring_agent/domains/credit_risk/__init__.py",
+          "stage": "Domain feature compatibility and policy",
+          "purpose": "Credit-risk domain policy pack.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/domains/diabetes_screening/__init__.py",
+          "stage": "Domain feature compatibility and policy",
+          "purpose": "BRFSS diabetes-screening preprocessing compatibility.",
+          "key_objects": "BRFSSFeatureEngineer"
+        },
+        {
+          "path": "src/monitoring_agent/evaluation/__init__.py",
+          "stage": "Live-output evaluation",
+          "purpose": "Deterministic evaluation of completed live agent runs.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/evaluation/evaluator.py",
+          "stage": "Live-output evaluation",
+          "purpose": "Mostly deterministic evaluation of live structured-agent outputs.",
+          "key_objects": "scenario_expectations, evaluate_scenario, evaluate_live_runs"
+        },
+        {
+          "path": "src/monitoring_agent/evaluation/reporting.py",
+          "stage": "Live-output evaluation",
+          "purpose": "JSON, Markdown, and CSV outputs for live-agent evaluation.",
+          "key_objects": "registered_live_evaluation_dir, readiness_verdict, write_live_evaluation_outputs, relative_output_paths"
+        },
+        {
+          "path": "src/monitoring_agent/evaluation/schemas.py",
+          "stage": "Live-output evaluation",
+          "purpose": "Pydantic contracts for deterministic live-agent evaluation artifacts.",
+          "key_objects": "EvaluationSchema, ScenarioEvaluation, LiveEvaluationSummary"
+        },
+        {
+          "path": "src/monitoring_agent/models/__init__.py",
+          "stage": "Registry and model contracts",
+          "purpose": "Registered binary-classification model contracts and loading.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/models/bundle.py",
+          "stage": "Registry and model contracts",
+          "purpose": "Generic registered-model bundle loader.",
+          "key_objects": "RegisteredModelBundle, CreditDefaultBundle"
+        },
+        {
+          "path": "src/monitoring_agent/models/manifest.py",
+          "stage": "Registry and model contracts",
+          "purpose": "Strict registered-model manifest contracts.",
+          "key_objects": "ManifestSection, ModelIdentity, BusinessContext, BundlePaths, PredictionContract, DataContract, MonitoringPolicy, Governance, Provenance, RegisteredModelManifest"
+        },
+        {
+          "path": "src/monitoring_agent/models/registry.py",
+          "stage": "Registry and model contracts",
+          "purpose": "YAML-backed registered-model registry.",
+          "key_objects": "RegistryEntry, RegistryConfig, ModelRegistry"
+        },
+        {
+          "path": "src/monitoring_agent/models/validation.py",
+          "stage": "Registry and model contracts",
+          "purpose": "Validation helpers for registered-model manifests and paths.",
+          "key_objects": "validate_manifest_paths"
+        },
+        {
+          "path": "src/monitoring_agent/monitoring/__init__.py",
+          "stage": "Deterministic data quality, drift, and performance",
+          "purpose": "Deterministic monitoring, evidence aggregation, and reporting.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/monitoring/data_quality.py",
+          "stage": "Deterministic data quality, drift, and performance",
+          "purpose": "Deterministic schema, identifier, missingness, and range checks.",
+          "key_objects": "evaluate_data_quality"
+        },
+        {
+          "path": "src/monitoring_agent/monitoring/drift.py",
+          "stage": "Deterministic data quality, drift, and performance",
+          "purpose": "Deterministic feature and prediction distribution comparisons.",
+          "key_objects": "population_stability_index, categorical_distribution_metrics, evaluate_drift"
+        },
+        {
+          "path": "src/monitoring_agent/monitoring/engine.py",
+          "stage": "Deterministic data quality, drift, and performance",
+          "purpose": "Model-aware deterministic monitoring orchestration.",
+          "key_objects": "MonitoringEngine"
+        },
+        {
+          "path": "src/monitoring_agent/monitoring/evidence.py",
+          "stage": "Deterministic data quality, drift, and performance",
+          "purpose": "Deterministic evidence identifiers, uniqueness, and severity helpers.",
+          "key_objects": "sanitise_identifier, evidence_id, EvidenceRegistry, maximum_severity"
+        },
+        {
+          "path": "src/monitoring_agent/monitoring/performance.py",
+          "stage": "Deterministic data quality, drift, and performance",
+          "purpose": "Deterministic labelled-performance evaluation against bundle baselines.",
+          "key_objects": "evaluate_performance"
+        },
+        {
+          "path": "src/monitoring_agent/monitoring/reporting.py",
+          "stage": "Deterministic data quality, drift, and performance",
+          "purpose": "Deterministic JSON and Markdown monitoring reports.",
+          "key_objects": "write_json_report, write_markdown_report"
+        },
+        {
+          "path": "src/monitoring_agent/monitoring/schemas.py",
+          "stage": "Deterministic data quality, drift, and performance",
+          "purpose": "Pydantic contracts for deterministic monitoring results and evidence.",
+          "key_objects": "MonitoringSchema, EvidenceItem, DataQualityResult, DriftResult, PerformanceResult, MonitoringRunResult"
+        },
+        {
+          "path": "src/monitoring_agent/onboarding/__init__.py",
+          "stage": "Read-only discovery and one-time export",
+          "purpose": "Deterministic binary-classifier inspection and onboarding.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/onboarding/bundle_builder.py",
+          "stage": "Read-only discovery and one-time export",
+          "purpose": "Deterministic full-inference export for a registered binary classifier.",
+          "key_objects": "onboard_binary_classifier"
+        },
+        {
+          "path": "src/monitoring_agent/onboarding/inspector.py",
+          "stage": "Read-only discovery and one-time export",
+          "purpose": "Read-only deterministic discovery for candidate model projects.",
+          "key_objects": "inspect_model_project, write_inspection_outputs"
+        },
+        {
+          "path": "src/monitoring_agent/onboarding/schemas.py",
+          "stage": "Read-only discovery and one-time export",
+          "purpose": "Strict onboarding inspection and validation records.",
+          "key_objects": "OnboardingSchema, InspectionField, ProjectInspection, OnboardingValidation"
+        },
+        {
+          "path": "src/monitoring_agent/onboarding/validator.py",
+          "stage": "Read-only discovery and one-time export",
+          "purpose": "Registered bundle validation entry point for onboarding.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/paths.py",
+          "stage": "Project infrastructure",
+          "purpose": "Project paths resolved independently of the current working directory.",
+          "key_objects": "ensure_runtime_directories, print_project_paths"
+        },
+        {
+          "path": "src/monitoring_agent/scenarios/__init__.py",
+          "stage": "Controlled replay generation",
+          "purpose": "Deterministic production-replay scenario generation.",
+          "key_objects": "package exports/constants"
+        },
+        {
+          "path": "src/monitoring_agent/scenarios/generator.py",
+          "stage": "Controlled replay generation",
+          "purpose": "Generate reproducible model-aware replay scenarios.",
+          "key_objects": "scenario_directory, resolve_scenario_directory, generate_scenario, generate_all_scenarios"
+        },
+        {
+          "path": "src/monitoring_agent/scenarios/schemas.py",
+          "stage": "Controlled replay generation",
+          "purpose": "Pydantic contracts for generated monitoring scenarios.",
+          "key_objects": "ScenarioManifest"
+        },
+        {
+          "path": "scripts/build_project_explainer.py",
+          "stage": "Command-line workflow",
+          "purpose": "Build the canonical evidence-backed HTML explainer for this repository.\n\nThe script deliberately re-computes bundle, reference-data, metric, and deterministic\nscenario evidence. It does not call the live LLM provider, regenerate scenarios, retrain\nmodels, or overwrite historical monitoring/evaluation reports.",
+          "key_objects": "reproduce_evidence, build_artifact, main"
+        },
+        {
+          "path": "scripts/evaluate_cross_model_agent.py",
+          "stage": "Command-line workflow",
+          "purpose": "Combine validated model-specific live summaries without rerunning evaluation.",
+          "key_objects": "build_cross_model_summary, write_outputs, main"
+        },
+        {
+          "path": "scripts/evaluate_live_agent.py",
+          "stage": "Command-line workflow",
+          "purpose": "Evaluate completed core or extended live Groq agent runs deterministically.",
+          "key_objects": "main"
+        },
+        {
+          "path": "scripts/evaluate_reliability_rerun.py",
+          "stage": "Command-line workflow",
+          "purpose": "Compare two isolated diabetes reliability reruns with preserved first runs.",
+          "key_objects": "verify_original_hashes, build_summary, write_outputs, main"
+        },
+        {
+          "path": "scripts/export_credit_default_bundle.py",
+          "stage": "Command-line workflow",
+          "purpose": "Export the selected credit-default model and held-out reference split.",
+          "key_objects": "export_bundle, main"
+        },
+        {
+          "path": "scripts/generate_monitoring_scenarios.py",
+          "stage": "Command-line workflow",
+          "purpose": "Generate one or all deterministic monitoring replay scenarios.",
+          "key_objects": "main"
+        },
+        {
+          "path": "scripts/inspect_model_project.py",
+          "stage": "Command-line workflow",
+          "purpose": "Inspect a candidate model project without executing its artifacts.",
+          "key_objects": "main"
+        },
+        {
+          "path": "scripts/list_registered_models.py",
+          "stage": "Command-line workflow",
+          "purpose": "List enabled registered models without exposing source-machine paths.",
+          "key_objects": "main"
+        },
+        {
+          "path": "scripts/onboard_binary_classifier.py",
+          "stage": "Command-line workflow",
+          "purpose": "Onboard a validated fitted binary classifier without retraining.",
+          "key_objects": "main"
+        },
+        {
+          "path": "scripts/run_agentic_monitoring.py",
+          "stage": "Command-line workflow",
+          "purpose": "Run deterministic monitoring followed by the bounded LangGraph orchestrator.",
+          "key_objects": "main"
+        },
+        {
+          "path": "scripts/run_monitoring.py",
+          "stage": "Command-line workflow",
+          "purpose": "Run deterministic monitoring for one or all replay scenarios.",
+          "key_objects": "main"
+        },
+        {
+          "path": "scripts/validate_credit_default_bundle.py",
+          "stage": "Command-line workflow",
+          "purpose": "Validate the complete exported credit-default monitoring bundle.",
+          "key_objects": "main"
+        },
+        {
+          "path": "scripts/verify_setup.py",
+          "stage": "Command-line workflow",
+          "purpose": "Verify that the repository scaffold and initial configuration are usable.",
+          "key_objects": "main"
+        }
+      ],
+      "test_inventory": [
+        {
+          "suite": ".",
+          "test_count": 3,
+          "coverage_examples": "package_version, static_project_paths_exist, ensure_runtime_directories"
+        },
+        {
+          "suite": "adapters",
+          "test_count": 4,
+          "coverage_examples": "scores_and_thresholds_are_bounded, wrong_feature_order_and_target_leakage_are_rejected, binary_metrics_and_undefined_metrics_are_transparent, missing_or_nonbinary_labels_are_rejected"
+        },
+        {
+          "suite": "agent",
+          "test_count": 39,
+          "coverage_examples": "sqlite_factory_creates_parent_and_database, checkpoint_factory_rejects_unknown_backend, new_graph_resumes_saved_interrupt_without_llm_call, missing_sqlite_thread_returns_clear_error, memory_backend_rejects_cross_process_resume"
+        },
+        {
+          "suite": "bundle",
+          "test_count": 7,
+          "coverage_examples": "metadata_and_schemas_load, reference_files_align, feature_order_is_enforced, target_leakage_guard, probabilities_and_threshold_predictions"
+        },
+        {
+          "suite": "evaluation",
+          "test_count": 11,
+          "coverage_examples": "cross_model_revision_rate_is_calculated_from_scenarios, scenario_expectations_are_controlled, grounded_result_passes, hallucinated_evidence_id_fails, unsafe_data_quality_recommendation_fails_policy"
+        },
+        {
+          "suite": "models",
+          "test_count": 7,
+          "coverage_examples": "credit_preservation_manifest_matches_every_authoritative_file, registry_lists_two_enabled_binary_models, unknown_model_id_is_rejected, credit_manifest_preserves_validated_contract, credit_authoritative_artifacts_and_evaluation_are_byte_identical"
+        },
+        {
+          "suite": "monitoring",
+          "test_count": 8,
+          "coverage_examples": "data_quality_failure_blocks_downstream_evaluation, feature_drift_is_critical_without_data_quality_block, normal_operation_remains_noncritical, evidence_ids_are_unique_and_present_for_incidents, partial_aligned_labels_abstain_below_minimum"
+        },
+        {
+          "suite": "onboarding",
+          "test_count": 4,
+          "coverage_examples": "inspector_classifies_candidates_and_preserves_business_unknowns, diabetes_manifest_uses_verified_binary_contract, manifest_rejects_extra_fields, probability_reproduction_tolerance_remains_sub_micro"
+        },
+        {
+          "suite": "scenarios",
+          "test_count": 5,
+          "coverage_examples": "edge_scenario_features_generate_reproducibly, unlabelled_drift_has_no_labels_file, insufficient_labels_has_exact_aligned_subset, generated_manifests_and_feature_order, normal_scenario_generation_is_reproducible"
+        }
+      ],
+      "preservation_mismatches": [
+        {
+          "relative_path": "artifacts/metadata/bundle_manifest.json",
+          "exists": true,
+          "expected_size": 6019,
+          "actual_size": 6019,
+          "size_matches": true,
+          "expected_sha256": "5a8feb5eaff711a86fed179105f0fcd93f507f7faf12abb9fa1f38d1fa42e677",
+          "actual_sha256": "5031263b0d38ba8967b9c883c70d7aca54408ca59da72015d310dd48b1105234",
+          "sha256_matches": false
+        }
+      ],
+      "metric_dictionary": [
+        {
+          "metric": "Accuracy",
+          "applies_to": "Labelled classification",
+          "definition": "Share of thresholded predictions equal to labels.",
+          "direction": "Higher",
+          "boundary": "Can hide minority-class failure; never called generic model accuracy here."
+        },
+        {
+          "metric": "Precision",
+          "applies_to": "Labelled classification",
+          "definition": "True positives divided by all predicted positives.",
+          "direction": "Higher",
+          "boundary": "Undefined when no positive prediction exists."
+        },
+        {
+          "metric": "Recall",
+          "applies_to": "Labelled classification",
+          "definition": "True positives divided by all observed positives.",
+          "direction": "Higher",
+          "boundary": "Threshold-dependent; source threshold 0.25 prioritizes recall."
+        },
+        {
+          "metric": "Specificity",
+          "applies_to": "Explainer recomputation",
+          "definition": "True negatives divided by all observed negatives.",
+          "direction": "Higher",
+          "boundary": "Not a stored monitoring policy metric; added for threshold interpretation."
+        },
+        {
+          "metric": "F1",
+          "applies_to": "Labelled classification",
+          "definition": "Harmonic mean of precision and recall.",
+          "direction": "Higher",
+          "boundary": "Does not encode domain-specific false-positive/false-negative costs."
+        },
+        {
+          "metric": "ROC-AUC",
+          "applies_to": "Labelled classification",
+          "definition": "Ranking discrimination across all thresholds.",
+          "direction": "Higher",
+          "boundary": "Can look optimistic under imbalance and is not generic accuracy."
+        },
+        {
+          "metric": "PR-AUC",
+          "applies_to": "Labelled classification",
+          "definition": "Average precision across recall levels.",
+          "direction": "Higher",
+          "boundary": "Baseline depends on positive prevalence; populations are not pooled."
+        },
+        {
+          "metric": "Brier score",
+          "applies_to": "Probability quality",
+          "definition": "Mean squared error of predicted probabilities.",
+          "direction": "Lower",
+          "boundary": "Captures calibration and discrimination jointly; no calibration curve/ECE is implemented."
+        },
+        {
+          "metric": "PSI",
+          "applies_to": "Feature/prediction drift",
+          "definition": "Reference-versus-current distribution change using reference bins.",
+          "direction": "Lower",
+          "boundary": "Thresholds are replay-MVP settings, not production-validated limits."
+        },
+        {
+          "metric": "Jensen-Shannon divergence",
+          "applies_to": "Discrete drift",
+          "definition": "Symmetric divergence between categorical distributions.",
+          "direction": "Lower",
+          "boundary": "Used with PSI and unseen-category rate."
+        },
+        {
+          "metric": "KS statistic",
+          "applies_to": "Numeric/prediction drift",
+          "definition": "Maximum empirical-CDF distance between samples.",
+          "direction": "Lower",
+          "boundary": "Supporting evidence only; p-values do not set materiality."
+        },
+        {
+          "metric": "Structured-output success",
+          "applies_to": "Live agent evaluation",
+          "definition": "Both live triage and recommendation calls parsed; fallback is excluded.",
+          "direction": "Higher",
+          "boundary": "One controlled run per scenario; not long-run reliability."
+        },
+        {
+          "metric": "First-pass verification",
+          "applies_to": "Live agent evaluation",
+          "definition": "Final deterministic verification passed with zero revision and no fallback.",
+          "direction": "Higher",
+          "boundary": "A revision can still yield a safe approved output."
+        },
+        {
+          "metric": "Evidence grounding",
+          "applies_to": "Live agent evaluation",
+          "definition": "All cited IDs exist and all claims/actions cite deterministic evidence.",
+          "direction": "Higher",
+          "boundary": "Does not score prose quality."
+        },
+        {
+          "metric": "Fallback rate",
+          "applies_to": "Live agent evaluation",
+          "definition": "Share of scenarios using the deterministic recommendation fallback.",
+          "direction": "Lower",
+          "boundary": "Fallback is a safety control, not a successful live structured output."
+        }
+      ],
+      "future_scope": [
+        {
+          "priority": 1,
+          "observed_gap": "The protected credit bundle manifest matches by size but not by SHA-256; only 21/22 preservation checks pass.",
+          "proposed_work": "Recover or re-export the intended authoritative manifest through the governed source workflow, then update no hashes unless provenance proves the replacement.",
+          "acceptance_evidence": "The protected file equals the approved source byte-for-byte and both preservation tests pass without weakening their assertions."
+        },
+        {
+          "priority": 2,
+          "observed_gap": "Critical dtype/empty/infinite/integer findings can leave batch_blocked false.",
+          "proposed_work": "Make every inference-safety critical finding block before estimator calls and add regression cases.",
+          "acceptance_evidence": "Malformed batches return batch_blocked=true and MonitoringEngine never calls predict_scores."
+        },
+        {
+          "priority": 3,
+          "observed_gap": "Both references are internal random held-out splits from public academic data.",
+          "proposed_work": "Add later-period, external, or out-of-distribution evaluation with governed baselines.",
+          "acceptance_evidence": "Versioned external/temporal benchmark with cohort definitions and uncertainty."
+        },
+        {
+          "priority": 4,
+          "observed_gap": "Operating thresholds are imported; replay drift limits are placeholders.",
+          "proposed_work": "Validate thresholds against domain false-positive/false-negative costs using validation-only selection.",
+          "acceptance_evidence": "Approved cost matrix, validation selection record, locked test evaluation, and owner sign-off."
+        },
+        {
+          "priority": 5,
+          "observed_gap": "Brier score is present, but reliability curves, ECE, and interval estimates are absent.",
+          "proposed_work": "Add calibration plots, expected calibration error, and bootstrap uncertainty by model/subgroup.",
+          "acceptance_evidence": "Calibration artifacts with sample sizes, intervals, and recalibration policy."
+        },
+        {
+          "priority": 6,
+          "observed_gap": "Protected fields are declared but subgroup/fairness performance is not implemented.",
+          "proposed_work": "Add governed subgroup metrics and stability tests only with suitable definitions and sample support.",
+          "acceptance_evidence": "Approved groups, minimum counts, disparity measures, and review process."
+        },
+        {
+          "priority": 7,
+          "observed_gap": "The authoritative live evaluation is one 12-case run; the repeat covers only two cases.",
+          "proposed_work": "Run repeated provider trials with frozen prompts/evidence, failure taxonomy, and confidence intervals.",
+          "acceptance_evidence": "Pre-registered trial count, isolated run labels, preserved failures, latency/token distributions."
+        },
+        {
+          "priority": 8,
+          "observed_gap": "No production ingestion, identity/access control, case management, or observability integration exists.",
+          "proposed_work": "Package a versioned service with immutable case IDs, authentication, audit logs, alerts, and SLOs.",
+          "acceptance_evidence": "Load/security tests, rollback plan, monitored pilot, and human-acceptance criteria."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "current_reproduction",
+      "label": "Current explainer reproduction snapshot",
+      "path": "reports/project_explainer_evidence.json",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('reports/project_explainer_evidence.json')",
+        "description": "Current bundle validation, reference profiling, independently recomputed metrics, deterministic scenario reruns, and code/test inventories.",
+        "tables_used": [
+          "reports/project_explainer_evidence.json"
+        ],
+        "filters": [
+          "Repository-local evidence only"
+        ]
+      }
+    },
+    {
+      "id": "credit_metrics",
+      "label": "Credit-default reference metrics",
+      "path": "artifacts/baselines/reference_metrics.json",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('artifacts/baselines/reference_metrics.json')",
+        "description": "Stored held-out credit-default metrics and threshold results.",
+        "tables_used": [
+          "artifacts/baselines/reference_metrics.json"
+        ],
+        "filters": [
+          "Repository-local evidence only"
+        ]
+      }
+    },
+    {
+      "id": "diabetes_metrics",
+      "label": "Diabetes-risk reference metrics",
+      "path": "registered_models/diabetes_risk/baselines/reference_metrics.json",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('registered_models/diabetes_risk/baselines/reference_metrics.json')",
+        "description": "Stored held-out BRFSS diabetes-risk metrics and threshold results.",
+        "tables_used": [
+          "registered_models/diabetes_risk/baselines/reference_metrics.json"
+        ],
+        "filters": [
+          "Repository-local evidence only"
+        ]
+      }
+    },
+    {
+      "id": "cross_model_eval",
+      "label": "Preserved cross-model live evaluation",
+      "path": "reports/evaluations/cross_model/cross_model_summary.json",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('reports/evaluations/cross_model/cross_model_summary.json')",
+        "description": "Authoritative first-run evaluation across two models and six scenarios per model.",
+        "tables_used": [
+          "reports/evaluations/cross_model/cross_model_summary.json"
+        ],
+        "filters": [
+          "Repository-local evidence only"
+        ]
+      }
+    },
+    {
+      "id": "cross_model_rows",
+      "label": "Cross-model scenario comparison",
+      "path": "reports/evaluations/cross_model/scenario_comparison.csv",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_csv_auto('reports/evaluations/cross_model/scenario_comparison.csv', header=true)",
+        "description": "Per-model, per-scenario live-agent outcomes used in the aggregate evaluation.",
+        "tables_used": [
+          "reports/evaluations/cross_model/scenario_comparison.csv"
+        ],
+        "filters": [
+          "Repository-local evidence only"
+        ]
+      }
+    },
+    {
+      "id": "reliability_rerun",
+      "label": "Isolated diabetes reliability repeat",
+      "path": "reports/evaluations/diabetes_risk/reliability_rerun/reliability_summary.json",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT * FROM read_json_auto('reports/evaluations/diabetes_risk/reliability_rerun/reliability_summary.json')",
+        "description": "Two-case repeat evidence that preserves rather than replaces the original evaluation.",
+        "tables_used": [
+          "reports/evaluations/diabetes_risk/reliability_rerun/reliability_summary.json"
+        ],
+        "filters": [
+          "Repository-local evidence only"
+        ]
+      }
+    },
+    {
+      "id": "registry_contract",
+      "label": "Registered-model contracts",
+      "path": "configs/model_registry.yaml",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT content FROM read_text('configs/model_registry.yaml')",
+        "description": "Registry entry point for the two strict binary-classification manifests.",
+        "tables_used": [
+          "configs/model_registry.yaml"
+        ],
+        "filters": [
+          "Repository-local evidence only"
+        ]
+      }
+    },
+    {
+      "id": "monitoring_code",
+      "label": "Deterministic monitoring engine",
+      "path": "src/monitoring_agent/monitoring/engine.py",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT content FROM read_text('src/monitoring_agent/monitoring/engine.py')",
+        "description": "Authoritative orchestration for data-quality gating, scoring, drift, performance, evidence, and incident candidates.",
+        "tables_used": [
+          "src/monitoring_agent/monitoring/engine.py"
+        ],
+        "filters": [
+          "Repository-local evidence only"
+        ]
+      }
+    },
+    {
+      "id": "agent_graph",
+      "label": "Bounded LangGraph workflow",
+      "path": "src/monitoring_agent/agent/graph.py",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT content FROM read_text('src/monitoring_agent/agent/graph.py')",
+        "description": "Authoritative graph topology for triage, diagnostics, recommendation, verification, fallback, and approval.",
+        "tables_used": [
+          "src/monitoring_agent/agent/graph.py"
+        ],
+        "filters": [
+          "Repository-local evidence only"
+        ]
+      }
+    },
+    {
+      "id": "agent_policy",
+      "label": "Deterministic agent policy and verifier",
+      "path": "src/monitoring_agent/agent/policy.py",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT content FROM read_text('src/monitoring_agent/agent/policy.py')",
+        "description": "Hard policy checks governing evidence, labels, actions, revisions, fallback, and human approval.",
+        "tables_used": [
+          "src/monitoring_agent/agent/policy.py"
+        ],
+        "filters": [
+          "Repository-local evidence only"
+        ]
+      }
+    },
+    {
+      "id": "scenario_configs",
+      "label": "Controlled replay definitions",
+      "path": "configs/scenarios/credit_default.yaml",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "sql": "SELECT content FROM read_text('configs/scenarios/credit_default.yaml')",
+        "description": "Model-aware replay definitions paired with configs/scenarios/diabetes_risk.yaml.",
+        "tables_used": [
+          "configs/scenarios/credit_default.yaml"
+        ],
+        "filters": [
+          "Repository-local evidence only"
+        ]
+      }
+    }
+  ]
+}
